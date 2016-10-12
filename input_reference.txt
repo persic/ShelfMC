@@ -36,4 +36,4 @@
 350     #TNOISE noise temperature in Kelvin
 100     #FREQ_LOW low frequency of LPDA Response MHz
 1000    #FREQ_HIGH high frequency of LPDA Response MHz
-/pub/cpersich/ShelfMC/forLisa/LP_gain_manual.txt 	  #GAINFILENAME
+/pub/cpersich/ShelfMCGit/ShelfMC/GainFiles/LP_gain_manual.txt 	  #GAINFILENAME
