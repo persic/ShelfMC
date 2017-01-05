@@ -7,13 +7,13 @@ quetag         = "Standard1Stn" # must start with letter
 basedir        = "/pub/cpersich/ShelfMC/myshelfmc/ARIANNA_Baseline/SingleStn_withShadowing/"
 runVeffShelfMC = "/pub/cpersich/ShelfMC/myshelfmc/runVeffShelfMC.py"
 
-emin = 15.0 # incl
+emin = 15.5 # incl
 emax = 21.5 # excl
 #emax = 17.0 # excl
 estp = 0.5
 
-MaxEvntPerJob=int(1e7)
-EventsNeededInBin=3000
+MaxEvntPerJob=int(1e5)
+EventsNeededInBin=300
 startSeed=41 #each instance will be given a different RNG seed, starting with this one
 
 inrefn = "input_reference.txt" #template input file of ShelfMC parameters
@@ -42,7 +42,7 @@ ATTEN_UP=500 #Average Atten Length (or something like that)
 refl  = [ 0.9 ] #reflectivity
 shadowing = 1 #Whether of not to enable the shadowing effect
 ST4R = 3.0 #Radius in meters between center station and antenna
-FREQ_LOW = 100 #low frequency of LPDA Response MHz
+FREQ_LOW = 50 #low frequency of LPDA Response MHz
 FREQ_HIGH = 1000 #high frequency of LPDA Response MHz
 
 # nrows, ncols, n_ant_perST, n_ant_trigger, nsigma
