@@ -2,7 +2,7 @@
 10000000 #NNU, setting to 1 for unique neutrino
 42      #seed Seed for Rand3
 15.0    #EXPONENT, !should be exclusive with SPECTRUM
-1000   	#ATGap, m (overriden by HEXAGONAL option, thanks JT)
+1000   	#ATGap, m, distance between stations
 4     	#ST_TYPE, !restrict to 4 now!
 4 #N_Ant_perST, not to be confused with ST_TYPE above
 2 #N_Ant_Trigger, this is the minimum number of AT to trigger

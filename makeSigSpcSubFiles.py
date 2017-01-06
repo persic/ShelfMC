@@ -32,6 +32,7 @@ ICETHICK=575 #575 for Moore's Bay, 2700 for SP
 ATTEN_UP=500 #Average Atten Length (or something like that)
 refl  = [ 0.9 ] #reflectivity
 shadowing = 1
+ATGap = 1000 #distance between stations in meters
 ST4R = 3.0 #Radius in meters between center station and antenna
 FREQ_LOW = 100 #low frequency of LPDA Response MHz
 FREQ_HIGH = 1000 #high frequency of LPDA Response MHz
@@ -94,6 +95,8 @@ for r in refl:
                         elif ("#EXPONENT" in l):
                             l = "{0:0.1f}    #EXPONENT, !should be exclusive with "\
                                 "SPECTRUM\n".format(0)
+                        elif ("#ATGap" in l):
+		            l = "{0:0.1f}    #ATGap, distance between stations in meters\n".format(ATGap)
                         elif ("#N_Ant_perST" in l):
                             l = "{0:d} #N_Ant_perST, not to be confused with "\
                                 "ST_TYPE above\n".format(nants)

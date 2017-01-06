@@ -3,9 +3,9 @@ import numpy
 import subprocess
 import time
 
-quetag         = "Standard1Stn" # must start with letter
-basedir        = "/pub/cpersich/ShelfMC/myshelfmc/ARIANNA_Baseline/SingleStn_withShadowing/"
-runVeffShelfMC = "/pub/cpersich/ShelfMC/myshelfmc/runVeffShelfMC.py"
+quetag         = "Base36x36" # must start with letter
+basedir        = "/pub/cpersich/ShelfMCGit/ShelfMC/test/Baseline36x36"
+runVeffShelfMC = "/pub/cpersich/ShelfMCGit/ShelfMC/runVeffShelfMC.py"
 
 emin = 15.5 # incl
 emax = 21.5 # excl
@@ -13,7 +13,7 @@ emax = 21.5 # excl
 estp = 0.5
 
 MaxEvntPerJob=int(1e5)
-EventsNeededInBin=300
+EventsNeededInBin=10
 startSeed=41 #each instance will be given a different RNG seed, starting with this one
 
 inrefn = "input_reference.txt" #template input file of ShelfMC parameters
@@ -41,6 +41,7 @@ ICETHICK=575 #575 for Moore's Bay, 2700 for SP
 ATTEN_UP=500 #Average Atten Length (or something like that)
 refl  = [ 0.9 ] #reflectivity
 shadowing = 1 #Whether of not to enable the shadowing effect
+ATGap = 1000 #distance between stations in meters
 ST4R = 3.0 #Radius in meters between center station and antenna
 FREQ_LOW = 50 #low frequency of LPDA Response MHz
 FREQ_HIGH = 1000 #high frequency of LPDA Response MHz
@@ -105,6 +106,8 @@ for e in evals:
 		            elif ("#EXPONENT" in l):
 		                l = "{0:0.1f}    #EXPONENT, !should be exclusive with "\
 		                    "SPECTRUM\n".format(e)
+		            elif ("#ATGap" in l):
+		                l = "{0:0.1f}    #ATGap, distance between stations in meters\n".format(ATGap)
 		            elif ("#N_Ant_perST" in l):
 		                l = "{0:d} #N_Ant_perST, not to be confused with "\
 		                    "ST_TYPE above\n".format(nants)
