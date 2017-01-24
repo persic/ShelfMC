@@ -186,6 +186,7 @@ double AttenLengthAtDepth(double d)
 {
   d *= 420. / ICETHICK;
   double L = (1250.*0.08886 * exp(-0.048827 * (225.6746 - 86.517596 * log10(848.870 - (d)))));
+  L *= ATTEN_UP/262.0;
   return L;
 }
 
@@ -244,9 +245,6 @@ void GetAttenlength(double* posnu, double& attenlength_up, double& attenlength_d
       //cout << "upward: 2*effectivemaxdepth - effectivedepth = " << (2 * effectivemaxdepth - effectivedepth) << endl<<endl;
 
       attenlength_down *= ATTEN_FACTOR;
-      if (ATTEN_EXP)
-         attenlength_down *= ATTEN_UP / 262.; // KD:02/22/11: should this be ATTEN_DOWN? No, as commented in input.txt, this is pre Minna Bluff measurement era.
-
 
       if (effectivedepth < 1.e-1)
          effectivedepth = 1.e-1;
@@ -262,9 +260,6 @@ void GetAttenlength(double* posnu, double& attenlength_up, double& attenlength_d
       attenlength_up = sum_up / effectivedepth;
 
       attenlength_up *= ATTEN_FACTOR;
-      if (ATTEN_EXP)
-         attenlength_up *= ATTEN_UP / 262.;
-
 
    }
 
