@@ -3,8 +3,8 @@ import numpy
 import subprocess
 import time
 
-quetag         = "Base36x36" # must start with letter
-basedir        = "/pub/cpersich/ShelfMCGit/ShelfMC/test/Baseline36x36"
+quetag         = "SingleLowAtten" # must start with letter
+basedir        = "/pub/cpersich/ShelfMCGit/ShelfMC/ARIANNALowAtten/SingleShadow_262"
 runVeffShelfMC = "/pub/cpersich/ShelfMCGit/ShelfMC/runVeffShelfMC.py"
 
 emin = 15.5 # incl
@@ -12,8 +12,8 @@ emax = 21.5 # excl
 #emax = 17.0 # excl
 estp = 0.5
 
-MaxEvntPerJob=int(1e5)
-EventsNeededInBin=10
+MaxEvntPerJob=int(1e6)
+EventsNeededInBin=3000
 startSeed=41 #each instance will be given a different RNG seed, starting with this one
 
 inrefn = "input_reference.txt" #template input file of ShelfMC parameters
@@ -38,13 +38,14 @@ def getNevts(e, nrows, EventsNeededInBin):
     return int(SafetyFactor*EventsNeededInBin*numpy.power(10,expNum)/numpy.sqrt(nrows))
 
 ICETHICK=575 #575 for Moore's Bay, 2700 for SP
-ATTEN_UP=500 #Average Atten Length (or something like that)
+ATTEN_UP=262 #Average Atten Length (or something like that)
 refl  = [ 0.9 ] #reflectivity
 shadowing = 1 #Whether of not to enable the shadowing effect
 ATGap = 1000 #distance between stations in meters
 ST4R = 3.0 #Radius in meters between center station and antenna
 FREQ_LOW = 50 #low frequency of LPDA Response MHz
 FREQ_HIGH = 1000 #high frequency of LPDA Response MHz
+SIGNAL_FLUCT = 1 #1=add noise fluctuation to signal or 0=do not
 
 # nrows, ncols, n_ant_perST, n_ant_trigger, nsigma
 stations = [ (1,1,4,2,4),  # single Stn
@@ -144,6 +145,9 @@ for e in evals:
 		            elif ("#ST4_R" in l):
 		                l = "{0:0.1f}     #ST4_R radius in meters between center "\
 				    "of station and antenna\n".format(ST4R)
+		            elif   ("#SIGNAL_FLUCT" in l):
+		                l = "{0:d}      #SIGNAL_FLUCT 1=add noise fluctuation to signal or 0=do not\n"\
+		                    .format(SIGNAL_FLUCT)
 		            elif ("#FREQ_LOW" in l):
 		                l = "{0:0.1f}     #FREQ_LOW low frequency of LPDA Response MHz\n"\
 		                    .format(FREQ_LOW)

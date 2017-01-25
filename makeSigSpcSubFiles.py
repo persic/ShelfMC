@@ -3,13 +3,13 @@ import numpy
 import subprocess
 import time
 
-quetag         = "SigNoShadow" # must start with letter
-basedir        = "/pub/cpersich/ShelfMC/myshelfmc/SigSpcTestE2_1Stn_NoShadow"
-runVeffShelfMC = "/pub/cpersich/ShelfMC/myshelfmc/runVeffShelfMC.py"
+quetag         = "AGKZS" # must start with letter
+basedir        = "/pub/cpersich/ShelfMCGit/ShelfMC/ARIANNA_GKZ_Shadow"
+runVeffShelfMC = "/pub/cpersich/ShelfMCGit/ShelfMC/runVeffShelfMC.py"
 
-MaxEvntPerJob=int(1e6)
-NNUTotal=int(1e8)
-startSeed=51
+MaxEvntPerJob=int(1e5)
+NNUTotal=int(1e7)
+startSeed=41
 
 inrefn = "input_reference.txt"
 
@@ -21,21 +21,22 @@ def checkDirExists(d):
             if ex.errno != errno.EEXIST:
                 raise
 SpecName = {
-0:"GKZ",
-1:"E-2"
+0:"E-2",
+1:"GKZ"
 }
 
 SPECTRUM= 1 #Use Spectrum if 1, single energy if 0
 WIDESPECTRUM = 1 #Exp 16-21.5 if 1, 17-20 if 0
-GKZ = 0 #Use GKZ spectrum if 1, E-2 if 0
+GKZ = 1 #Use GKZ spectrum if 1, E-2 if 0
 ICETHICK=575 #575 for Moore's Bay, 2700 for SP
 ATTEN_UP=500 #Average Atten Length (or something like that)
 refl  = [ 0.9 ] #reflectivity
 shadowing = 1
 ATGap = 1000 #distance between stations in meters
 ST4R = 3.0 #Radius in meters between center station and antenna
-FREQ_LOW = 100 #low frequency of LPDA Response MHz
+FREQ_LOW = 50 #low frequency of LPDA Response MHz
 FREQ_HIGH = 1000 #high frequency of LPDA Response MHz
+SIGNAL_FLUCT = 1 #1=add noise fluctuation to signal or 0=do not
 
 # nrows, ncols, n_ant_perST, n_ant_trigger, nsigma
 stations = [ (1,1,4,2,4),  # single Stn
@@ -142,6 +143,9 @@ for r in refl:
                         elif ("#ST4_R" in l):
                             l = "{0:0.1f}     #ST4_R radius in meters between center "\
                                 "of station and antenna\n".format(ST4R)
+                        elif   ("#SIGNAL_FLUCT" in l):
+                            l = "{0:d}      #SIGNAL_FLUCT 1=add noise fluctuation to signal or 0=do not\n"\
+                                .format(SIGNAL_FLUCT)
                         elif ("#FREQ_LOW" in l):
                             l = "{0:0.1f}     #FREQ_LOW low frequency of LPDA Response MHz\n"\
                                 .format(FREQ_LOW)
