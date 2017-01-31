@@ -1555,11 +1555,11 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 // KD What does this do?
-      if (ST_TYPE == 4) {
+//      if (ST_TYPE == 4) {
          if (sum_AToncone == 0) //KD: for ST_TYPE 4, looks like we just want more than one triggering?
 //cout<<"KD : This is printed if sum_AToncone=0."<<endl;   //THIS COMMENT TERMINATES THE LOOP FOR SOME REASON
             continue;
-      }
+//      }
 
 
       /* //KD: deactivated on 5/17/11. Still don't understand why should be >=3
@@ -1644,12 +1644,12 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 
 //KD: N_Ant_perST now overriden by input file. It will only affect ST_TYPE 4 as it stands.
 //      int N_Ant_perST=1;//number of antennas each station
-      if (ST_TYPE == 3)
-         N_Ant_perST = 5;
+//      if (ST_TYPE == 3)
+//         N_Ant_perST = 5;
 //     if(ST_TYPE==4)
 // N_Ant_perST=4;//to be changed accordingly //FW:8 log periodic antennas per station
 
-      if (ST_TYPE == 3 || ST_TYPE == 4) {
+//      if (ST_TYPE == 3 || ST_TYPE == 4) {
 
          //KD: added 01/13/2011
          //vector<double> ST_Posi_x;
@@ -1870,8 +1870,8 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                if(ST_TYPE==3)
                  VectorMinus(ATCoordinates5[WhichAntenna],posnu,new_posnu2AT);
                  */
-               if (ST_TYPE == 4)
-                  VectorMinus(ATCoordinates8[WhichAntenna], posnu, new_posnu2AT); //cout<<"I'm here 1"<<endl;
+//               if (ST_TYPE == 4)
+               VectorMinus(ATCoordinates8[WhichAntenna], posnu, new_posnu2AT); //cout<<"I'm here 1"<<endl;
                nVector(new_posnu2AT, nposnu2AT);
 
                if (nposnu2AT[1] >= 0) {
@@ -1935,16 +1935,16 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                      double x2 = nconst; // x2 is not angle. x2=sin(theta)^2
                      //double deltax=sqrt(Square(posnu[0]-ATCoordinate[0])+Square(posnu[1]-ATCoordinate[1]));
                      double deltax;
-                     if (ST_TYPE == 4)
+//                     if (ST_TYPE == 4)
                         deltax = sqrt(Square(posnu[0] - ATCoordinates8[WhichAntenna][0]) + Square(posnu[1] - ATCoordinates8[WhichAntenna][1]));
                      /* //COMMENTED OUT 5/9/11
                      else if(ST_TYPE==3)
                        deltax=sqrt(Square(posnu[0]-ATCoordinates5[WhichAntenna][0])+Square(posnu[1]-ATCoordinates5[WhichAntenna][1]));
                        */
-                     else {
-                        deltax = 0;
-                        cout << "Wrong ST_TYPE value" << endl;
-                     }
+//                     else {
+//                        deltax = 0;
+//                        cout << "Wrong ST_TYPE value" << endl;
+//                     }
                      if (deltax == 0) {
                         theta1 = 0.;
                         theta2 = 0.;
@@ -2156,18 +2156,18 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                   vmmhz_max = VmMHz_attenuated(d_posnu2AT, vmmhz_max, attenlength_up);
 
                   if (ATTEN_FREQ) {
-                     if (ST_TYPE == 4) {
+//                     if (ST_TYPE == 4) {
                         if (vmmhz_max_freq[0]*heff_max_LPA * BW < NV)
                            continue;
-                     }
+//                     }
                      GetVmMHz_freq(vmmhz_max_freq, vmmhz1m_max, pnu, vmmhz);
                   }
 
                   else {
-                     if (ST_TYPE == 4) {
+//                     if (ST_TYPE == 4) {
                         if (vmmhz_max * heff_max_LPA * BW < NV)
                            continue;
-                     }
+//                     }
                      //    cout<<"I'm here 2"<<endl;
                      GetVmMHz(vmmhz_max, vmmhz1m_max, pnu, vmmhz); //KD there's a loop over freq here, creates vmmhz[i]
 
@@ -2224,7 +2224,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 
 //cout<<"|"<<inu<<"(DIR):"<<iRow_oncone.at(WhichStation)<<","<<iCol_oncone.at(WhichStation)<<","<<NV;
 
-               if (ST_TYPE == 4) {
+//               if (ST_TYPE == 4) {
                   volt_max = sum_vmmhz * heff_max_LPA;
 //cout<<"KD8: "<< "volt_max:" << volt_max << " sum_vmmhz:" << sum_vmmhz << " heff_max_LPA:" << heff_max_LPA << endl;
                   if (volt_max < NV) {
@@ -2239,7 +2239,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                      b1.totaltime[WhichAntenna] = 0;
                      continue;
                   }
-               }
+//               }
 
                //  cout<<"I'm here 3"<<endl;
                abs_time = (hy1 * NICE + hy2 * NFIRN) / C;
@@ -2247,7 +2247,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                // int count_channels=0; //KD: a relic of ST_TYPE 3?
 //cout<<"KD1: "<< inu <<" , "<<abs_time <<endl;
 
-               if (ST_TYPE == 4) {
+//Replace with new antenna model               if (ST_TYPE == 4) {
                   // cout<<"I'm here 4"<<endl;
                   if (FIRN)
                      GetHitAngle_LPA(WhichAntenna, N_Ant_perST, nsignal_atAT, n_pol, hitangle_e_LPA, hitangle_h_LPA, e_component_LPA, h_component_LPA); //KD:added N_Ant_perST
@@ -2416,7 +2416,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 //b1.hitangle_e_LPA[WhichAntenna]      = hitangle_e_LPA*RAD2DEG;
 
                   //  cout<<"I'm here 4.7"<<endl;
-               }
+//replace with new antenna model               }
                b1.sum_vmmhz1m_unattened_max  = sum_vmmhz1m_unattened_max;
 //b1.Emax_atposnu       = sum_vmmhz1m_unattened_max;
                b1.hitangle_e_LPA[WhichAntenna]     = hitangle_e_LPA * RAD2DEG;
@@ -2457,11 +2457,11 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 //++cout<<"KD  : I'm here in a loop since sum_triggeredAT>=2"<<endl;
 
 //KD 02/17/11: THE ABOVE IS AN EXTRA STEP AS I EVENTUALLY DISCARD THE '==n-1' CONDITION IMMEDIATELY BELOW
-               if (ST_TYPE == 4) {
+//               if (ST_TYPE == 4) {
                   if (sum_triggeredAT == N_Ant_Trigger - 1) //KD: new variable from input file
 //          if(sum_triggeredAT==2)//at least 3 out of 8 LPAs
                      continue;   //KD: it looks like here, I just terminate surface stations calculations and move on to mirror calculation.
-               }
+//               }
 //++cout<<"KD  : I'm continuing presumably because sum_t'AT isn't 2 but is: "<<sum_triggeredAT <<endl;
 
 
@@ -2766,8 +2766,8 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 //for(int WhichMirrorAntenna=0; WhichMirrorAntenna<3; WhichMirrorAntenna++)
             {
 
-               if (ST_TYPE == 4)
-                  VectorMinus(MirrorATCoordinates8[WhichMirrorAntenna], posnu, new_posnu2MirrorAT);
+//               if (ST_TYPE == 4)
+               VectorMinus(MirrorATCoordinates8[WhichMirrorAntenna], posnu, new_posnu2MirrorAT);
 
                nVector(new_posnu2MirrorAT, nposnu2MirrorAT);
 
@@ -2854,13 +2854,13 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                      double nconst_mirror = n2 * n2 / n1 / n1; //here n2=NFIRN, n1=NICE
                      double x2_mirror = nconst_mirror;
                      double deltax_mirror;
-                     if (ST_TYPE == 4)
+//                     if (ST_TYPE == 4)
                         deltax_mirror = sqrt(Square(posnu[0] - MirrorATCoordinates8[WhichMirrorAntenna][0]) + Square(posnu[1] - MirrorATCoordinates8[WhichMirrorAntenna][1]));
 
-                     else {
-                        deltax_mirror = 0;
-                        cout << "Wrong ST_TYPE" << endl;
-                     }
+//                     else {
+//                        deltax_mirror = 0;
+//                        cout << "Wrong ST_TYPE" << endl;
+//                     }
 
                      if (deltax_mirror == 0) {
                         theta1_mirror = 0.;
@@ -3187,20 +3187,20 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 
                   vmmhz_max = VmMHz_attenuated(d_posnu2MirrorAT, vmmhz_max, attenlength_down);
                   if (ATTEN_FREQ) {
-                     if (ST_TYPE == 4) {
+//                     if (ST_TYPE == 4) {
                         if (vmmhz_max_freq[0]*heff_max_LPA * BW < NV) {
                            continue;
                         }
-                     }
+//                     }
 
                      GetVmMHz_freq(vmmhz_max_freq, vmmhz1m_max, pnu, vmmhz);
 
                   } else {
-                     if (ST_TYPE == 4) {
+//                     if (ST_TYPE == 4) {
                         if (vmmhz_max * heff_max_LPA * BW < NV) {
                            continue;
                         }
-                     }
+//                     }
                      GetVmMHz(vmmhz_max, vmmhz1m_max, pnu, vmmhz);
 //KD these are different now because mirror distances and attenuations come in
                      double Esum_vmmhz_mirror = 0.;
@@ -3259,7 +3259,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 
 //cout<<"|"<<inu<<"(REF):"<<iRow_oncone_mirror.at(WhichMirrorStation)<<","<<iCol_oncone_mirror.at(WhichMirrorStation)<<","<<NV;
 
-               if (ST_TYPE == 4) {
+//               if (ST_TYPE == 4) {
                   volt_mirror_max = sum_vmmhz_mirror * heff_max_LPA;
                   if (volt_mirror_max < NV) {
                      b1.iAT_mirror[WhichMirrorAntenna]      = 0;
@@ -3274,12 +3274,12 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 
                      continue;
                   }
-               }
+//               }
 
                //int count_channels_mirror=0; // KD: a relic of ST_TYPE 3?
 
 
-               if (ST_TYPE == 4) {
+//Replace with new antenna model               if (ST_TYPE == 4) {
 
                   if (FIRN)
                      GetMirrorHitAngle_LPA(WhichMirrorAntenna, N_Ant_perST, nsignal_mirror_atAT, n_pol, hitangle_e_LPA, hitangle_h_LPA, e_component_LPA, h_component_LPA);
@@ -3385,7 +3385,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 //b1.sum_vmmhz1m_unattened_mirror[WhichMirrorAntenna] = sum_vmmhz1m_unattened_mirror;
 //b1.hitangle_e_LPA_mirror[WhichMirrorAntenna]     = hitangle_e_LPA;
 
-               }
+//replace with new antenna model               }
 
                b1.sum_vmmhz1m_unattened_mirror_max       = sum_vmmhz1m_unattened_mirror_max;
                b1.hitangle_e_LPA_mirror[WhichMirrorAntenna] = hitangle_e_LPA * RAD2DEG;
@@ -3417,11 +3417,11 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 //       if(sum_triggeredAT_mirror<2)//if the mirror station is not triggered
                continue;
             else {
-               if (ST_TYPE == 4) {
+//               if (ST_TYPE == 4) {
                   if (sum_triggeredAT_mirror == N_Ant_Trigger - 1) //KD : new variable
 //          if(sum_triggeredAT_mirror==2)//at least 3 out of 8
                      continue;
-               }
+//               }
 //++cout<<"KD  : ...where we continue because sum_t'_AT_mirror isn't 2 but is: "<<sum_triggeredAT_mirror<<endl;
 
                if (0) { // activate for studies of different scenario
@@ -3698,7 +3698,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
          b3.N_ATs = allAT;
 //   // cout<<allAT<<" "<<iAT_L3.size()<<endl;//make sure they are equal
 
-      } //end of if(ST_TYPE=3 or 4)
+//      } //end of if(ST_TYPE=3 or 4)
 
 
 
@@ -3783,7 +3783,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
       b1.costhetanu = cos(theta_nu);         //KD: costhetanu->Fill(cos(theta_nu),weight);
       b1.phi_nu = phi_nu * RAD2DEG;
 
-      int ff = 0;
+//      int ff = 0;
       if (nuflavor == "nue")
          ff = 1;
       else if (nuflavor == "numu")
