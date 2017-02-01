@@ -43,7 +43,7 @@ int SPECTRUM;
 int WIDESPECTRUM;
 int DIPOLE;
 int ST_TYPE;//different station designs, ST0--only one seavey antenna with an optional dipole, ST1--2 Seaveys intercrossing each other, ST2--5 close Seaveys, ST3--5 separate Seaveys, ST4--8 LPA
-int N_Ant_perST; //KD now input as part of input file
+int N_Ant_perST = 0; //KD now input as part of input file
 int N_Ant_Trigger; //KD new majority logic variable
 int n_chan_perST;//the total number of channels each station
 double  NFIRN;//the initial refraction index at the surface of the ice
@@ -151,7 +151,6 @@ double viewangles[NVIEWANGLE] = {acos(1 / NICE),
 
 double GetNoise(double);
 double GetDecayLength(double EXPONENT); //CP 07/15
-
 void GetBothLocation(int, int, double*, double*);
 void GetATLocation(int, int, double*);
 void GetMirrorATLocation(int, int, double*);

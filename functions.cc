@@ -86,7 +86,6 @@ void GetATLocation(int iRow, int iCol, double* ATCoordinate)
 
 }
 
-
 void GetMirrorATLocation(int iRow, int iCol, double* MirrorATCoordinate)
 {
 

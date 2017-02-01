@@ -59,7 +59,8 @@ ofstream outantposall;
 
 TRandom3 Rand3;
 
-
+//adding flexability to get away from global variables
+const int StationType = ST_TYPE;
 int main(int argc, char** argv) //MC IceShelf 09/01/2005
 {
    string workDir;
@@ -1788,17 +1789,38 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                                {ATCoordinate[0]-ST_DISTANCE, ATCoordinate[1],ATCoordinate[2]},{ATCoordinate[0],ATCoordinate[1]+ST_DISTANCE, ATCoordinate[2]}};
             */
 
-            //if st_type=4
+            //Set Antenna Positions
+            double ATCoordinates8[N_Ant_perST][3];//the detailed position of the center of each LPA in a station                        
 
-            //commented JCH Jan30th to test asymmetric antennas.
-            double ATCoordinates8[N_Ant_perST][3];//the detailed position of the center of each LPA in a station
-
-            for (int i = 0; i < N_Ant_perST; i++) {
-               double phi = (2. / N_Ant_perST) * PI * i; //the phi angle of each LPA's center
-               ATCoordinates8[i][0] = ATCoordinate[0] + ST4_R * cos(phi);
-               ATCoordinates8[i][1] = ATCoordinate[1] + ST4_R * sin(phi);
-               ATCoordinates8[i][2] = ATCoordinate[2];
+            if (StationType == 0){ //All antennas pointing down, equally spaced around station center
+                for (int i = 0; i < N_Ant_perST; i++) {
+                   double phi = (2. / N_Ant_perST) * PI * i; //the phi angle of each LPA's center
+                   ATCoordinates8[i][0] = ATCoordinate[0] + ST4_R * cos(phi);
+                   ATCoordinates8[i][1] = ATCoordinate[1] + ST4_R * sin(phi);
+                   ATCoordinates8[i][2] = ATCoordinate[2];
+                }
             }
+            if (StationType == 1){ //Some custom antenna config
+                cout<<"Haven't defined this yet"<<endl;
+            }
+            else {
+                cout<<"Invalid Station type "<<StationType<<endl;
+            }
+            
+            //Set Antenna Types
+            int AntType[N_Ant_perST];
+
+            //type 1 = 100MHz Create LPDA
+            if (StationType == 0){
+                for (int i = 0; i < N_Ant_perST; i++) {
+                    AntType[i]=1;
+                }
+            }
+            else {
+                cout<<"Invalid Station type "<<StationType<<endl;
+            }
+
+
             //define some variables before going into the antenna loop of one station
 
             //variables after antenna trigger(L1)
@@ -2241,14 +2263,9 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                   }
 //               }
 
-               //  cout<<"I'm here 3"<<endl;
                abs_time = (hy1 * NICE + hy2 * NFIRN) / C;
-               //cout<<hy1<<" "<<hy2<<" "<<C<<" "<<abs_time<<endl;
-               // int count_channels=0; //KD: a relic of ST_TYPE 3?
-//cout<<"KD1: "<< inu <<" , "<<abs_time <<endl;
 
 //Replace with new antenna model               if (ST_TYPE == 4) {
-                  // cout<<"I'm here 4"<<endl;
                   if (FIRN)
                      GetHitAngle_LPA(WhichAntenna, N_Ant_perST, nsignal_atAT, n_pol, hitangle_e_LPA, hitangle_h_LPA, e_component_LPA, h_component_LPA); //KD:added N_Ant_perST
                   else
@@ -2261,16 +2278,6 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 
                   b1.e_component_LPA[WhichAntenna] = e_component_LPA;
                   b1.h_component_LPA[WhichAntenna] = h_component_LPA;
-
-
-//cout<<"KD9a: "<<" n_eplane=("<< n_eplane[0] <<","<< n_eplane[1] <<","<< n_eplane[2] <<")"<<endl; //cout<<"KD9a: "<<" n_hplane=("<< n_hplane[0] <<","<< n_hplane[1] <<","<< n_hplane[2] <<")"<<endl;
-
-
-//cout<<"KD9c: "<<" hitangle_e_LPA="<< hitangle_e_LPA*RAD2DEG <<"deg  hitangle_h_LPA="<< hitangle_h_LPA*RAD2DEG<<"deg"<<endl;
-
-//cout<<"NFREQ:"<< NFREQ <<endl;
-
-//cout<<"inu "<< inu<< " WhichAntenna "<<WhichAntenna<<endl;
 
                   for (int i = 0; i < NFREQ; i++) { //here needs to be modified
 
@@ -2981,12 +2988,12 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                      double nconst_mirror = NFIRN * NFIRN / NICE / NICE; //for FIRN case
                      double x2_mirror = nconst_mirror;
                      double deltax_mirror;
-                     if (ST_TYPE == 4)
+//                     if (ST_TYPE == 4)
                         deltax_mirror = sqrt(Square(posnu[0] - MirrorATCoordinates8[WhichMirrorAntenna][0]) + Square(posnu[1] - MirrorATCoordinates8[WhichMirrorAntenna][1]));
-                     else {
-                        deltax_mirror = 0;
-                        cout << "Wrong ST_TYPE" << endl;
-                     }
+//                     else {
+//                        deltax_mirror = 0;
+//                        cout << "Wrong ST_TYPE" << endl;
+//                     }
 
                      if (deltax_mirror == 0) {
                         theta1_mirror = 0.;
@@ -3772,8 +3779,6 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
       b1.changle  = changle * RAD2DEG;
       b1.eshower_em  = eshower_em;
       b1.eshower_had = eshower_had;
-
-//.N_Ant_perST = N_Ant_perST;
 
       b1.sum_triggeredST = sum_triggeredST;
       b1.sum_triggeredST_mirror = sum_triggeredST_mirror;
