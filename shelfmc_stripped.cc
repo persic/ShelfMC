@@ -1791,7 +1791,6 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 
             //Set Antenna Positions
             double ATCoordinates8[N_Ant_perST][3];//the detailed position of the center of each LPA in a station                        
-
             if (StationType == 0){ //All antennas pointing down, equally spaced around station center
                 for (int i = 0; i < N_Ant_perST; i++) {
                    double phi = (2. / N_Ant_perST) * PI * i; //the phi angle of each LPA's center
@@ -1800,7 +1799,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                    ATCoordinates8[i][2] = ATCoordinate[2];
                 }
             }
-            if (StationType == 1){ //Some custom antenna config
+            else if (StationType == 1){ //Some custom antenna config
                 cout<<"Haven't defined this yet"<<endl;
             }
             else {
@@ -1809,9 +1808,14 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
             
             //Set Antenna Types
             int AntType[N_Ant_perST];
-
-            //type 1 = 100MHz Create LPDA
+            //type 0 = 100MHz theoretical LPDA (original ShelfMC model)
+            //type 1 = 100MHz Create LPDA, Anna's WhippleD model
             if (StationType == 0){
+                for (int i = 0; i < N_Ant_perST; i++) {
+                    AntType[i]=0;
+                }
+            }
+            else if (StationType == 1){
                 for (int i = 0; i < N_Ant_perST; i++) {
                     AntType[i]=1;
                 }
@@ -1819,8 +1823,20 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
             else {
                 cout<<"Invalid Station type "<<StationType<<endl;
             }
+/*
+            //Set Antenna Orientation
+            double Ant_n_boresight[N_Ant_perST][3];
+            double Ant_n_eplane[N_Ant_perST][3];
 
-
+            if (StationType == 0) {
+                n_boresight = {0.,0.,-1.};
+                for (int i = 0; i < N_Ant_perST; i++) {
+                    n_eplane = {cos((0.5 + i * (2. / N_Ant_perST))*PI), sin((0.5 + i * (2. / N_Ant_perST))*PI), 0.};
+                    Ant_n_boresight[N_Ant_perST] = n_boresight;
+                    Ant_n_eplane[N_Ant_perST] = n_eplane;
+                }
+            }
+*/
             //define some variables before going into the antenna loop of one station
 
             //variables after antenna trigger(L1)
