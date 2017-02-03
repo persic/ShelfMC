@@ -1129,20 +1129,6 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
          fprintf(stderr, "Processing %d / %d...            \r", inu, NNU);
       }
       
-      /*
-      if(inu%(NNU/10)==0)  //take inu, divide by NNU/100 and compare remainder
-      //if(inu%(NNU/100)==0)  //take inu, divide by NNU/100 and compare remainder
-      // if less than 100, it breaks down, deactivate for <100
-      {cout<<count_step<<"% ";
-      //count_step++;
-      count_step=count_step + 10;
-      }
-      */
-
-//++cout<<"---------------------------------------------"<<endl;
-//++cout<<"count_step:"<<count_step<<endl; count_step++; //KD
-
-
 
       if (SPECTRUM) {
          if (WIDESPECTRUM) {
@@ -1171,7 +1157,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
          }
 
          EXPONENT = log10(pnu);
-//KD: cout<<" EXPONENT "<<  EXPONENT <<endl;
+
       } //END of if(SPECTRUM)
 
 
@@ -1275,7 +1261,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
       }
 
       Sigma(pnu, sigma, int_len_kgm2);
-//cout<<"pnu:"<<pnu<<" sigma="<<sigma<<endl;
+
       //output<<"sigma="<<sigma<<endl;
       // cout<<sigma*DensityICE/AMU<<endl;
       //for testing the normalization of nnu
@@ -1298,8 +1284,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
          iCol_min = 0;
       if (iCol_max > NCOLS)
          iCol_max = NCOLS;
-      // cout<<"posnu_iRow"<<posnu_iRow<<"  "<<posnu_iCol<<endl;
-      // cout<<iRow_min<<"  "<<iRow_max<<"  "<<iCol_min<<"  "<<iCol_max<<endl;
+
       iRow_oncone.clear();
       iCol_oncone.clear();
       iRow_oncone_mirror.clear();
@@ -1319,13 +1304,11 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
             }
 
             GetBothLocation(iRow, iCol, ATCoordinate, MirrorATCoordinate);
-//cout<< ATCoordinate[0]<<";"<<ATCoordinate[1]<<";"<<ATCoordinate[2]<<endl;
 
             if (Distance(ATCoordinate, posnu) > Max_distance)
                continue;
 
             VectorMinus(ATCoordinate, posnu, posnu2AT);
-//cout<<"KD2b: "<<"posnu= ("<<posnu[0]<<","<<posnu[1]<<","<<posnu[2]<<")"<<" ; "<<"posnu2AT[]= ["<<posnu2AT[0]<<","<< posnu2AT[1] <<","<< posnu2AT[2]<<"]"<<endl;
 
 
 //KD: INTRODUCING PLANE WAVE CALCULATIONS 01/14/10
@@ -1419,9 +1402,6 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                iRow_oncone.push_back(iRow);//read out the information of first_step trigged antennas
                iCol_oncone.push_back(iCol);//here the count_Atoncone begins from 1 to the biggest number of the trigged number
             }
-
-//cout<<"KD3: "<< "viewangle: " << viewangle <<"rad= "<<viewangle*RAD2DEG<< "deg;   changle:" << changle <<"rad= "<<changle*RAD2DEG<<"deg"<<endl;
-
 
 
 
@@ -1540,18 +1520,12 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                iCol_oncone_mirror.push_back(iCol);
             }
 
-//cout<<inu<<" icol:"<< iCol<<" irow"<<iRow<<" ";
-
          }//end of icol loop
       }//end of irow loop
-//cout<<endl; //linked out iCol iRow output above
 
-
-      // cout<<"line 569"<<endl;
       int sum_AToncone = iRow_oncone.size() + iRow_oncone_mirror.size();
       //  if((int)iRow_oncone_mirror.size()==0&&(int)iRow_oncone.size()==0)  {outVector(nnu,3); outVector(posnu,3);}
       // cout<<sum_AToncone<<endl;
-//+cout<<"KD4a: "<<"sum_AToncone = " <<sum_AToncone<<" = iRow_oncone.size + iRow_oncone_mirror.size = "<<iRow_oncone.size()<<" + "<<iRow_oncone_mirror.size()<<endl;
 
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -1572,7 +1546,6 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
       */
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-      //cout<<"1st place"<<double(clock()-init_time)/CLOCKS_PER_SEC<<endl;
       //begin to analyze the signals
       //first get the maximum signal and the spreading angles
       vmmhz1m_max = GetVmMHz1m(pnu, FREQ_HIGH, X0ICE, ECICE, n1, AEX_ICE);
@@ -1601,7 +1574,6 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
       b7.Ehadfrac = hadfrac;
 //-------------------------------
 
-//cout<<"KD4b: "<<"deltatheta_em_max= " << deltheta_em_max <<"  deltheta_had_max ="<< deltheta_had_max << endl;
 
       int sum_triggeredST = 0;
       int sum_triggeredST_mirror = 0;
@@ -1665,8 +1637,6 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
          //ST_iCol.clear();
 
 
-
-         //cout<<"2nd place"<<double(clock()-init_time)/CLOCKS_PER_SEC<<endl;
          //variables after event trigger(L3),including both direct and reflected events
          vector<int> N_TriggeredAT_perST_L3;//the number of triggered antennas in each triggered station
          vector<int> Trig_Type_L3;//triggered by direct or reflected signal;
@@ -1760,8 +1730,6 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
          hitangle_e_LPA_L2.clear();
          hitangle_h_LPA_L2.clear();
 
-
-//++cout <<"KD  : HERE I'M AT SURFACE STATION CALCULATIONS"<<endl;
          sum_triggeredST = 0;
          for (uint WhichStation = 0; WhichStation < iRow_oncone.size(); WhichStation++) {
             GetATLocation(iRow_oncone.at(WhichStation), iCol_oncone.at(WhichStation), ATCoordinate); //get the coordinates of the center of the station
@@ -1933,7 +1901,6 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                viewangle = Angle(nnu, nposnu2AT);
                GetPolarization(nnu, nposnu2AT, n_pol, n_Bfield);
                theta2 = theta_nposnu2AT;
-//cout<<endl;
 
                /*
                if (WhichAntenna==7){
@@ -1991,8 +1958,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                      } else {
                         do {
                            x3 = (x1 + x2) / 2.;
-                           //cout<<fx(x3,h1,h2,nconst,deltax)<<endl;
-                           // cout<<x1<<" "<<x2<<" "<<x3<<endl;
+
                            if (fx(x1, h1, h2, nconst, deltax)*fx(x3, h1, h2, nconst, deltax) < 0)
                               x2 = x3;
                            else x1 = x3;
@@ -2000,8 +1966,6 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                            // if(ncount > 100) cout<<"ncount="<<ncount<<endl;
                         } while (fabs(fx(x3, h1, h2, nconst, deltax)) > 0.00001);
 
-                        // cout<<x3<<endl;
-                        // cout<<"x="<<x3<<" fx="<<" h1="<<h1<<" h2="<<h2<<" nconst="<<nconst<<" deltax="<<deltax<<(fx(x3,h1,h2,nconst,deltax))<<endl;
                         theta1 = asin(sqrt(x3));
                         theta2 = asin(n1 * sin(theta1) / n2);
                         hy1 = h1 / cos(theta1);
@@ -2033,9 +1997,6 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                      SphAngles(n_pol, sphangles);
                      b1.polariz_phi_D_original = sphangles[0] * RAD2DEG;
                      b1.polariz_theta_D_original = sphangles[1] * RAD2DEG;
-
-//cout<<"KD7a: "<<"in ICETHICK: "<<"d_posnu2AT="<< d_posnu2AT <<"m"<<endl;
-//cout<<"KD7a: "<<" theta_nposnu2AT="<<theta_nposnu2AT <<"rad, "<<theta_nposnu2AT*RAD2DEG<<"deg; "<<" viewangle="<<viewangle<<"rad,"<<viewangle*RAD2DEG<<"deg"<<endl;
 
                      nsignal_atAT[0] = sin(theta2) * cos(phi_nposnu2AT);
                      nsignal_atAT[1] = sin(theta2) * sin(phi_nposnu2AT);
