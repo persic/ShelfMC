@@ -2698,16 +2698,60 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 //cout<<inu<<"(REF):"<<iRow_oncone_mirror.at(WhichMirrorStation)<<","<<iCol_oncone_mirror.at(WhichMirrorStation)<<","<<NV;
 //-----------------------------------------------------------------------------------------------------------
 
-            //Commented out by JCH Jan30 2013
-            double MirrorATCoordinates8[N_Ant_perST][3];//KD: changed from '8' to N_Ant_perST
-            for (int i = 0; i < N_Ant_perST; i++) { //KD: changed from '8' to N_Ant_perST
-               double phi = (2. / N_Ant_perST) * PI * i; //the phi angle of each LPA's center
+            //Set Antenna Positions
+            double MirrorATCoordinates8[N_Ant_perST][3];//the detailed position of the center of each LPA in a station                        
+            if (StationType == 0){ //All antennas pointing down (up), equally spaced around station center
+                for (int i = 0; i < N_Ant_perST; i++) {
+                   double phi = (2. / N_Ant_perST) * PI * i; //the phi angle of each LPA's center
+                   MirrorATCoordinates8[i][0] = MirrorATCoordinate[0] + ST4_R * cos(phi);
+                   MirrorATCoordinates8[i][1] = MirrorATCoordinate[1] + ST4_R * sin(phi);
+                   MirrorATCoordinates8[i][2] = MirrorATCoordinate[2];
+                }
+            }
+            else if (StationType == 1){ //Some custom antenna config
+                cout<<"Haven't defined this yet"<<endl;
+            }
+            else {
+                cout<<"Invalid Station type "<<StationType<<endl;
+            }
+            
+            //Set Antenna Types (This better be the same as for the non-mirrored case)
+            int AntType[N_Ant_perST];
+            //type 0 = 100MHz theoretical LPDA (original ShelfMC model)
+            //type 1 = 100MHz Create LPDA, Anna's WhippleD model
+            if (StationType == 0){
+                for (int i = 0; i < N_Ant_perST; i++) {
+                    AntType[i]=0;
+                }
+            }
+            else if (StationType == 1){
+                for (int i = 0; i < N_Ant_perST; i++) {
+                    AntType[i]=1;
+                }
+            }
+            else {
+                cout<<"Invalid Station type "<<StationType<<endl;
+            }
 
-               MirrorATCoordinates8[i][0] = MirrorATCoordinate[0] + ST4_R * cos(phi);
-               MirrorATCoordinates8[i][1] = MirrorATCoordinate[1] + ST4_R * sin(phi);
-               MirrorATCoordinates8[i][2] = MirrorATCoordinate[2];
-//cout<<"KD5ii: "<<"MirrorATCoordinates: ("<<MirrorATCoordinates8[i][0]<<","<<MirrorATCoordinates8[i][1]<<","<<MirrorATCoordinates8[i][2]<<")"<<endl;
+            //Set Antenna Orientation (Flip z component WRT non-mirrored case)
+            double MirrorAnt_n_boresight[N_Ant_perST][3];
+            double MirrorAnt_n_eplane[N_Ant_perST][3];
 
+            if (StationType == 0) {
+                for (int i = 0; i < N_Ant_perST; i++) {
+                    MirrorAnt_n_eplane[i][0] = cos((0.5 + i * (2. / N_Ant_perST))*PI);
+                    MirrorAnt_n_eplane[i][1] = sin((0.5 + i * (2. / N_Ant_perST))*PI);
+                    MirrorAnt_n_eplane[i][3] = 0.;
+                    MirrorAnt_n_boresight[i][0] = 0.;
+                    MirrorAnt_n_boresight[i][1] = 0.;
+                    MirrorAnt_n_boresight[i][2] = 1.; //facing up now, since Stn is mirrored
+                }
+            }
+            else if (StationType == 1) {
+                cout<<"haven't defined this yet"<<endl;
+            }
+            else {
+                cout<<"Invalid Station Type"<<endl;
             }
 
             //define some variables before going into the antenna loop of one station
