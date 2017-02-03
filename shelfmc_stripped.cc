@@ -1791,20 +1791,28 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
             else {
                 cout<<"Invalid Station type "<<StationType<<endl;
             }
-/*
+
             //Set Antenna Orientation
             double Ant_n_boresight[N_Ant_perST][3];
             double Ant_n_eplane[N_Ant_perST][3];
 
             if (StationType == 0) {
-                n_boresight = {0.,0.,-1.};
                 for (int i = 0; i < N_Ant_perST; i++) {
-                    n_eplane = {cos((0.5 + i * (2. / N_Ant_perST))*PI), sin((0.5 + i * (2. / N_Ant_perST))*PI), 0.};
-                    Ant_n_boresight[N_Ant_perST] = n_boresight;
-                    Ant_n_eplane[N_Ant_perST] = n_eplane;
+                    Ant_n_eplane[i][0] = cos((0.5 + i * (2. / N_Ant_perST))*PI);
+                    Ant_n_eplane[i][1] = sin((0.5 + i * (2. / N_Ant_perST))*PI);
+                    Ant_n_eplane[i][3] = 0.;
+                    Ant_n_boresight[i][0] = 0.;
+                    Ant_n_boresight[i][1] = 0.;
+                    Ant_n_boresight[i][2] = -1.;
                 }
             }
-*/
+            else if (StationType == 1) {
+                cout<<"haven't defined this yet"<<endl;
+            }
+            else {
+                cout<<"Invalid Station Type"<<endl;
+            }
+
             //define some variables before going into the antenna loop of one station
 
             //variables after antenna trigger(L1)
