@@ -2291,8 +2291,12 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                      term_LPA = vmmhz[i] * FREQ_BIN * 0.5 * GaintoHeight(gainv, freq[i] * 1.E6) *
                                 sqrt((pow(e_component_LPA * exp(-2 * ALOG2 * (hitangle_e_LPA / flare[0][i]) * (hitangle_e_LPA / flare[0][i])), 2)  +   pow(e_component_LPA * exp(-2 * ALOG2 * (hitangle_h_LPA / flare[1][i]) * (hitangle_h_LPA / flare[1][i])), 2)) / 2);
 		    */
+		    
+		    if (FIRN)
+		      term_LPA = vmmhz[i] * FREQ_BIN * 0.5 * GetHeff(AntType[WhichAntenna], freq[i],n_boresight,n_eplane, nsignal_atAT, n_pol);
+		    else
+		      term_LPA = vmmhz[i] * FREQ_BIN * 0.5 * GetHeff(AntType[WhichAntenna], freq[i],n_boresight,n_eplane, nposnu2AT, n_pol);
 
-		    term_LPA = vmmhz[i] * FREQ_BIN * 0.5 * GetHeff(AntType[WhichAntenna], freq[i],n_boresight,n_eplane, nsignal_atAT, n_pol);
 
                      /*//works for gain tests
                      term_LPA=vmmhz[i]*FREQ_BIN*0.5*GaintoHeight(gainv,freq[i]*1.E6)*sqrt(pow(e_component_LPA*exp(-2*ALOG2*(hitangle_e_LPA/flare[0][i])*(hitangle_e_LPA/flare[0][i])),2)     +
@@ -3336,6 +3340,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 
 //Replace with new antenna model               if (ST_TYPE == 4) {
 
+/*  //OldShelfMC
                   if (FIRN)
                      GetMirrorHitAngle_LPA(WhichMirrorAntenna, N_Ant_perST, nsignal_mirror_atAT, n_pol, hitangle_e_LPA, hitangle_h_LPA, e_component_LPA, h_component_LPA);
                   else
@@ -3349,16 +3354,48 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 //KD are these different for direct and reflected? Yep
                   b1.e_component_LPA_mirror[WhichMirrorAntenna] = e_component_LPA;
                   b1.h_component_LPA_mirror[WhichMirrorAntenna] = h_component_LPA;
+*/
+
+
+	       //antenna orientation vectors to pass into Heff function
+	          double n_boresight_mirror[3];
+		  double n_eplane_mirror[3];
+		  for (int i =0; i<3; i++){
+		    n_boresight_mirror[i]=MirrorAnt_n_boresight[WhichMirrorAntenna][i];
+		    n_eplane_mirror[i]=MirrorAnt_n_eplane[WhichMirrorAntenna][i];
+		  }
+
+		  //Give an e and h plane component for output tree
+		  if (FIRN)
+		    GetHitAngle(n_boresight_mirror, n_eplane_mirror, nsignal_mirror_atAT, n_pol, hitangle_e_LPA, hitangle_h_LPA, e_component_LPA, h_component_LPA);
+                  else
+		    GetHitAngle(n_boresight_mirror, n_eplane_mirror, nposnu2MirrorAT, n_pol, hitangle_e_LPA, hitangle_h_LPA, e_component_LPA, h_component_LPA);
+		  
+                  double volt_LPA_mirror = 0; //volts of log periodic antenna
+                  double volt_LPA_mirror_preNoise = 0;
+                  term_LPA = 0; //zero term_LPA
+                  term_LPA_e = 0;
+                  term_LPA_h = 0;
+
+//KD are these different for direct and reflected? Yep
+                  b1.e_component_LPA_mirror[WhichMirrorAntenna] = e_component_LPA;
+                  b1.h_component_LPA_mirror[WhichMirrorAntenna] = h_component_LPA;
+
 
                   for (int i = 0; i < NFREQ; i++) {
 
 //term_LPA=vmmhz[i]*FREQ_BIN*0.5*GaintoHeight(gainv,freq[i]*1.E6)*
 //sqrt(       pow(e_component_LPA*exp(-2*ALOG2*(hitangle_e_LPA/flare[0][i])*(hitangle_e_LPA/flare[0][i]))*exp(-2*ALOG2*(hitangle_h_LPA/flare[1][i])*(hitangle_h_LPA/flare[1][i]))   ,2)     );
 
-
+/* //2-23-2017 moved to GetHeff()
                      term_LPA = vmmhz[i] * FREQ_BIN * 0.5 * GaintoHeight(gainv, freq[i] * 1.E6) *
                                 sqrt((pow(e_component_LPA * exp(-2 * ALOG2 * (hitangle_e_LPA / flare[0][i]) * (hitangle_e_LPA / flare[0][i])), 2)  +   pow(e_component_LPA * exp(-2 * ALOG2 * (hitangle_h_LPA / flare[1][i]) * (hitangle_h_LPA / flare[1][i])), 2)) / 2);
+*/
 
+		    if (FIRN)
+		      term_LPA = vmmhz[i] * FREQ_BIN * 0.5 * GetHeff(AntType[WhichMirrorAntenna], freq[i],n_boresight_mirror,n_eplane_mirror, nsignal_mirror_atAT, n_pol);
+		    else
+		      term_LPA = vmmhz[i] * FREQ_BIN * 0.5 * GetHeff(AntType[WhichMirrorAntenna], freq[i],n_boresight_mirror,n_eplane_mirror, nposnu2MirrorAT, n_pol);
 
                      /*//works for gain tests
                      term_LPA=vmmhz[i]*FREQ_BIN*0.5*GaintoHeight(gainv,freq[i]*1.E6)*sqrt(pow(e_component_LPA*exp(-2*ALOG2*(hitangle_e_LPA/flare[0][i])*(hitangle_e_LPA/flare[0][i])),2)     +
