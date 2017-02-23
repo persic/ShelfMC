@@ -206,6 +206,7 @@ void GetFresnel(double theta1, double theta2, double* original_nsignal, double* 
 //KD: our rotation matrix
 void GetRotation(double theta1, double theta2, double* original_nsignal, double* n_pol, double* n_pol_out);
 
+void GetHitAngle(double*, double*, double*, double*, double&, double&, double&, double&);
 void GetHitAngle_ST0(double*, double*, double&, double&, double&, double&);
 void GetMirrorHitAngle_ST0(double* posnu2MirrorAT, double* n_pol, double& hitangle_e, double& hitangle_h, double& e_component, double& h_component);
 void GetHitAngle_ST1(double*, double*, double&, double&, double&, double&, double&, double&, double&, double&);

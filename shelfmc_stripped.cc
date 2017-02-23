@@ -2251,10 +2251,26 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                abs_time = (hy1 * NICE + hy2 * NFIRN) / C;
 
 //Replace with new antenna model               if (ST_TYPE == 4) {
-                  if (FIRN)
+/* //OldShelfMC                 
+		  if (FIRN)
                      GetHitAngle_LPA(WhichAntenna, N_Ant_perST, nsignal_atAT, n_pol, hitangle_e_LPA, hitangle_h_LPA, e_component_LPA, h_component_LPA); //KD:added N_Ant_perST
                   else
                      GetHitAngle_LPA(WhichAntenna, N_Ant_perST, nposnu2AT, n_pol, hitangle_e_LPA, hitangle_h_LPA, e_component_LPA, h_component_LPA);
+*/
+	       //antenna orientation vectors to pass into Heff function
+	          double n_boresight[3];
+		  double n_eplane[3];
+		  for (int i =0; i<3; i++){
+		    n_boresight[i]=Ant_n_boresight[WhichAntenna][i];
+		    n_eplane[i]=Ant_n_eplane[WhichAntenna][i];
+		  }
+
+		  //Give an e and h plane component for output tree
+		  if (FIRN)
+		    GetHitAngle(n_boresight, n_eplane, nsignal_atAT, n_pol, hitangle_e_LPA, hitangle_h_LPA, e_component_LPA, h_component_LPA);
+                  else
+		    GetHitAngle(n_boresight, n_eplane, nposnu2AT, n_pol, hitangle_e_LPA, hitangle_h_LPA, e_component_LPA, h_component_LPA);
+		  
                   double volt_LPA = 0; //volts of log periodic antenna
                   double volt_LPA_preNoise = 0;
                   term_LPA = 0; //zero term_LPA

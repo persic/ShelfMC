@@ -1420,7 +1420,35 @@ void GetFresnel(//const Vector &surface_normal,
 } //GetFresnel
 
 
+void GetHitAngle(double* n_boresight, double* n_eplane, double* n_arrival, double* n_pol, double& hitangle_e, double& hitangle_h, double& e_component,
+                     double& h_component)
+{
 
+   double n_hplane[3];
+   Cross(n_boresight,n_eplane,n_hplane);
+
+   //these are the components of the propagation vector in the e and h plane.  They are overwritten later in the function
+   e_component = -Dot(n_arrival, n_eplane);
+   h_component = -Dot(n_arrival, n_hplane);
+   double n_component = -Dot(n_arrival, n_boresight);
+
+   hitangle_e = atan(h_component / n_component);
+   if (n_component < 0 && h_component < 0)
+      hitangle_e -= PI;
+   if (n_component < 0 && h_component > 0)
+      hitangle_e += PI;
+
+   hitangle_h = atan(e_component / n_component);
+   if (n_component < 0 && e_component < 0)
+      hitangle_h -= PI;
+   if (n_component < 0 && e_component > 0)
+      hitangle_h += PI;
+
+   //NOTE: this is a re-evaluated e_component and h_component that goes into term_LPA calculation
+   e_component = Dot(n_pol, n_eplane);
+   h_component = Dot(n_pol, n_hplane);
+
+}
 
 
 void GetHitAngle_ST0(double* nposnu2AT, double* n_pol, double& hitangle_e, double& hitangle_h, double& e_component,
@@ -1448,11 +1476,9 @@ void GetHitAngle_ST0(double* nposnu2AT, double* n_pol, double& hitangle_e, doubl
    e_component = Dot(n_pol, n_eplane);
    h_component = Dot(n_pol, n_hplane);
 
-
-
-
-
 }
+
+
 void GetHitAngle_ST2(double* nposnu2AT, double* n_pol, double* hitangle_e, double* hitangle_h, double* e_component,
                      double* h_component)
 //KD: Z is downward angle specified in input file
