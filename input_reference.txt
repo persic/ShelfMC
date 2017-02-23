@@ -2,8 +2,8 @@
 10000000 #NNU, setting to 1 for unique neutrino
 42      #seed Seed for Rand3
 15.0    #EXPONENT, !should be exclusive with SPECTRUM
-1000   	#ATGap, m, distance between stations
-4     	#ST_TYPE, !restrict to 4 now!
+1000   	#ATGap, distance between stations in meters
+0     	#ST_TYPE, !restrict to 0 for now!
 4 #N_Ant_perST, not to be confused with ST_TYPE above
 2 #N_Ant_Trigger, this is the minimum number of AT to trigger
 30    	#Z for ST_TYPE=2
@@ -22,7 +22,7 @@
 250   	#ATTEN_DOWN, this is the average attenlength_down before Minna Bluff measurement(not used anymore except for CONST_ATTENLENGTH)
 4 #NSIGMA, threshold of trigger
 1.    	#ATTEN_FACTOR, change of the attenuation length 
-0.5    #REFLECT_RATE,power reflection rate at the ice bottom
+0.9    #REFLECT_RATE,power reflection rate at the ice bottom
 0     	#GZK, 1 means using GZK flux, 0 means E-2 flux
 0     	#FANFLUX, use fenfang's flux which only covers from 10^17 eV to 10^20 eV
 1   	#WIDESPECTRUM, use 10^16 eV to 10^21.5 eV as the energy spectrum, otherwise use 17-20
@@ -34,6 +34,6 @@
 1       #TAUREGENERATION if 1=tau regeneration effect, if 0=original
 3.5     #ST4_R radius in meters between center of station and antenna
 350     #TNOISE noise temperature in Kelvin
-100     #FREQ_LOW low frequency of LPDA Response MHz
+50     #FREQ_LOW low frequency of LPDA Response MHz
 1000    #FREQ_HIGH high frequency of LPDA Response MHz
 /pub/cpersich/ShelfMCGit/ShelfMC/GainFiles/LP_gain_manual.txt 	  #GAINFILENAME

@@ -2287,9 +2287,12 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 
 //06/20/11: SB: an average as to get G=G'G(0) where G'=0.5(G_e + G_h)
 
+		    /* //2-13-2017 Moved to GetHeff()
                      term_LPA = vmmhz[i] * FREQ_BIN * 0.5 * GaintoHeight(gainv, freq[i] * 1.E6) *
                                 sqrt((pow(e_component_LPA * exp(-2 * ALOG2 * (hitangle_e_LPA / flare[0][i]) * (hitangle_e_LPA / flare[0][i])), 2)  +   pow(e_component_LPA * exp(-2 * ALOG2 * (hitangle_h_LPA / flare[1][i]) * (hitangle_h_LPA / flare[1][i])), 2)) / 2);
+		    */
 
+		    term_LPA = vmmhz[i] * FREQ_BIN * 0.5 * GetHeff(AntType[WhichAntenna], freq[i],n_boresight,n_eplane, nsignal_atAT, n_pol);
 
                      /*//works for gain tests
                      term_LPA=vmmhz[i]*FREQ_BIN*0.5*GaintoHeight(gainv,freq[i]*1.E6)*sqrt(pow(e_component_LPA*exp(-2*ALOG2*(hitangle_e_LPA/flare[0][i])*(hitangle_e_LPA/flare[0][i])),2)     +

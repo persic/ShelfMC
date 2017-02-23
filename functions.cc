@@ -1036,6 +1036,65 @@ int GetBeamWidths(double flare[4][NFREQ],double gain[2][NFREQ],double freq[NFREQ
 }
 */
 
+void GetFlare(double freq, double* flare_tmp)
+{
+   double specs[5][4];
+   double freq_specs[5];
+   double scale = 0;
+
+//KD: here are the beam widths from Jordan, but flip it due to hitangle e and h definitions in main code
+   //GOOD ONES
+   specs[0][0] = 144;
+   specs[0][1] = 74;
+   specs[0][2] = 0;
+   specs[0][3] = 0;
+   specs[1][0] = 128;
+   specs[1][1] = 70;
+   specs[1][2] = 0;
+   specs[1][3] = 0;
+   specs[2][0] = 134;
+   specs[2][1] = 74;
+   specs[2][2] = 0;
+   specs[2][3] = 0;
+   specs[3][0] = 132;
+   specs[3][1] = 68;
+   specs[3][2] = 0;
+   specs[3][3] = 0;
+   specs[4][0] = 154;
+   specs[4][1] = 70;
+   specs[4][2] = 0;
+   specs[4][3] = 0;
+
+   freq_specs[0] = 300; //  freq_specs[0]=300.E6;
+   freq_specs[1] = 600; //  freq_specs[1]=600.E6;
+   freq_specs[2] = 900; //  freq_specs[2]=900.E6;
+   freq_specs[3] = 1200; //  freq_specs[3]=1200.E6;
+   freq_specs[4] = 1500; //  freq_specs[4]=1500.E6;
+
+   if (freq < freq_specs[0]) {
+     for (int j = 0; j < 4; j++) {
+       flare_tmp[j] = specs[0][j] * DEG2RAD;
+     } //for
+   } //if
+   else if (freq >= freq_specs[3]) {
+     for (int j = 0; j < 4; j++) {
+       flare_tmp[j] = specs[3][j] * DEG2RAD;
+     } //for
+   } //else if
+   else {
+     for (int i = 0; i < 4; i++) {
+       if (freq >= freq_specs[i] && freq < freq_specs[i + 1]) {
+	 scale = (freq - freq_specs[i]) / (freq_specs[i + 1] - freq_specs[i]);
+
+	 for (int j = 0; j < 4; j++) {
+	   flare_tmp[j] = (specs[i][j] + scale * (specs[i + 1][j] - specs[i][j])) * DEG2RAD;
+	 } //for
+	 i = 4;
+       } //if
+     } //for
+   } //else
+
+}
 
 int GetBeamWidths(double flare[4][NFREQ], double gain[2][NFREQ], double freq[NFREQ])
 {
@@ -1213,7 +1272,6 @@ int GetBeamWidths(double flare[4][NFREQ], double gain[2][NFREQ], double freq[NFR
 }
 
 
-
 double GetGainV(double freq)
 {
 
@@ -1239,6 +1297,30 @@ double GaintoHeight(double gain, double freq)
    return 2 * sqrt(gain / 4 / PI * C * C / (freq * freq) * Zr / Z0 * NICE);
 } //GaintoHeight
 
+double GetHeff(int AntType, double freq, double* n_boresight, double* n_eplane, double* n_arrival, double* n_pol)
+{
+  if (AntType==0){
+
+    double hitangle_e, hitangle_h, e_component, h_component;
+    GetHitAngle(n_boresight, n_eplane, n_arrival, n_pol, hitangle_e, hitangle_h, e_component, h_component);
+    
+    double flare_i[4];
+    GetFlare(freq, flare_i);
+
+    double Heff = GaintoHeight(gainv, freq * 1.E6) *
+           sqrt((pow(e_component * exp(-2 * ALOG2 * (hitangle_e / flare_i[0]) * (hitangle_e / flare_i[0])), 2)  +   pow(e_component * exp(-2 * ALOG2 * (hitangle_h / flare_i[1]) * (hitangle_h / flare_i[1])), 2)) / 2);
+    return Heff;
+
+  }
+  else if (AntType==1){
+    cout<<"Antenna Type "<<AntType<<" not defined yet!"<<endl;
+    return -1;
+  }
+  else {
+    cout<<"invalid Antenna Type!"<<endl;
+    return -1;
+  }
+}
 
 void ReadGains()
 {

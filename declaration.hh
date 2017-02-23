@@ -158,6 +158,8 @@ double GetGainV(double freq);
 double GetGainH(double freq);
 double GaintoHeight(double gain, double freq);
 
+double GetHeff(int, double, double*, double*, double*, double*);
+
 double GetN(double* posnu);
 double GetRange(double firndepth); //KD added 9/23/10
 void GetInteractionPoint(double* posnu);
@@ -196,6 +198,7 @@ void GetSpread(double pnu,
 double VmMHz1m(double viewangle, double freq, double emfrac, double hadfrac, double em_shower_length, double had_shower_length); //Seckel's scaling
 double VmMHz(double vmmhz1m, double r);
 double VmMHz_attenuated(double d_posnu2AT, double vmmhz, double attenlength);
+void GetFlare(double freq, double* flare_tmp);
 int GetBeamWidths(double flare[4][NFREQ], double gain[2][NFREQ], double freq[NFREQ]);
 void ReadGains();
 void ConvertEHtoLR(double e_component, double h_component, double& lcp_component, double& rcp_component);
