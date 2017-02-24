@@ -1800,7 +1800,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                 for (int i = 0; i < N_Ant_perST; i++) {
                     Ant_n_eplane[i][0] = cos((0.5 + i * (2. / N_Ant_perST))*PI);
                     Ant_n_eplane[i][1] = sin((0.5 + i * (2. / N_Ant_perST))*PI);
-                    Ant_n_eplane[i][3] = 0.;
+                    Ant_n_eplane[i][2] = 0.;
                     Ant_n_boresight[i][0] = 0.;
                     Ant_n_boresight[i][1] = 0.;
                     Ant_n_boresight[i][2] = -1.;
@@ -2764,7 +2764,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                 for (int i = 0; i < N_Ant_perST; i++) {
                     MirrorAnt_n_eplane[i][0] = cos((0.5 + i * (2. / N_Ant_perST))*PI);
                     MirrorAnt_n_eplane[i][1] = sin((0.5 + i * (2. / N_Ant_perST))*PI);
-                    MirrorAnt_n_eplane[i][3] = 0.;
+                    MirrorAnt_n_eplane[i][2] = 0.;
                     MirrorAnt_n_boresight[i][0] = 0.;
                     MirrorAnt_n_boresight[i][1] = 0.;
                     MirrorAnt_n_boresight[i][2] = 1.; //facing up now, since Stn is mirrored
