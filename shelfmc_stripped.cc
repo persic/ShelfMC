@@ -1759,7 +1759,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 
             //Set Antenna Positions
             double ATCoordinates8[N_Ant_perST][3];//the detailed position of the center of each LPA in a station                        
-            if (StationType == 0){ //All antennas pointing down, equally spaced around station center
+            if (StationType == 0 || StationType == 1 || StationType == 2){ //All antennas pointing down, equally spaced around station center
                 for (int i = 0; i < N_Ant_perST; i++) {
                    double phi = (2. / N_Ant_perST) * PI * i; //the phi angle of each LPA's center
                    ATCoordinates8[i][0] = ATCoordinate[0] + ST4_R * cos(phi);
@@ -1767,7 +1767,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                    ATCoordinates8[i][2] = ATCoordinate[2];
                 }
             }
-            else if (StationType == 1){ //Some custom antenna config
+            else if (StationType == 3){ //Some custom antenna config
                 cout<<"Haven't defined this yet"<<endl;
             }
             else {
@@ -1788,6 +1788,11 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                     AntType[i]=1;
                 }
             }
+            else if (StationType == 2){
+                for (int i = 0; i < N_Ant_perST; i++) {
+                    AntType[i]=2;
+                }
+            }
             else {
                 cout<<"Invalid Station type "<<StationType<<endl;
             }
@@ -1796,7 +1801,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
             double Ant_n_boresight[N_Ant_perST][3];
             double Ant_n_eplane[N_Ant_perST][3];
 
-            if (StationType == 0) {
+            if (StationType == 0 || StationType == 1 || StationType == 2) {
                 for (int i = 0; i < N_Ant_perST; i++) {
                     Ant_n_eplane[i][0] = cos((0.5 + i * (2. / N_Ant_perST))*PI);
                     Ant_n_eplane[i][1] = sin((0.5 + i * (2. / N_Ant_perST))*PI);
@@ -1806,7 +1811,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                     Ant_n_boresight[i][2] = -1.;
                 }
             }
-            else if (StationType == 1) {
+            else if (StationType == 3) {
                 cout<<"haven't defined this yet"<<endl;
             }
             else {
@@ -2723,7 +2728,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 
             //Set Antenna Positions
             double MirrorATCoordinates8[N_Ant_perST][3];//the detailed position of the center of each LPA in a station                        
-            if (StationType == 0){ //All antennas pointing down (up), equally spaced around station center
+            if (StationType == 0  || StationType == 1 || StationType == 2){ //All antennas pointing down (up), equally spaced around station center
                 for (int i = 0; i < N_Ant_perST; i++) {
                    double phi = (2. / N_Ant_perST) * PI * i; //the phi angle of each LPA's center
                    MirrorATCoordinates8[i][0] = MirrorATCoordinate[0] + ST4_R * cos(phi);
@@ -2731,7 +2736,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                    MirrorATCoordinates8[i][2] = MirrorATCoordinate[2];
                 }
             }
-            else if (StationType == 1){ //Some custom antenna config
+            else if (StationType == 3){ //Some custom antenna config
                 cout<<"Haven't defined this yet"<<endl;
             }
             else {
@@ -2752,6 +2757,11 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                     AntType[i]=1;
                 }
             }
+            else if (StationType == 2){
+                for (int i = 0; i < N_Ant_perST; i++) {
+                    AntType[i]=2;
+                }
+            }
             else {
                 cout<<"Invalid Station type "<<StationType<<endl;
             }
@@ -2760,7 +2770,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
             double MirrorAnt_n_boresight[N_Ant_perST][3];
             double MirrorAnt_n_eplane[N_Ant_perST][3];
 
-            if (StationType == 0) {
+            if (StationType == 0 || StationType == 1 || StationType == 2 ) {
                 for (int i = 0; i < N_Ant_perST; i++) {
                     MirrorAnt_n_eplane[i][0] = cos((0.5 + i * (2. / N_Ant_perST))*PI);
                     MirrorAnt_n_eplane[i][1] = sin((0.5 + i * (2. / N_Ant_perST))*PI);
@@ -2770,7 +2780,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                     MirrorAnt_n_boresight[i][2] = 1.; //facing up now, since Stn is mirrored
                 }
             }
-            else if (StationType == 1) {
+            else if (StationType == 3) {
                 cout<<"haven't defined this yet"<<endl;
             }
             else {
