@@ -37,6 +37,7 @@ def getNevts(e, nrows, EventsNeededInBin):
     expNum=a+b*numpy.power(10,c*e)
     return int(SafetyFactor*EventsNeededInBin*numpy.power(10,expNum)/numpy.sqrt(nrows))
 
+ST_TYPE = 1 #Check ReadMe for definitions
 ICETHICK=575 #575 for Moore's Bay, 2700 for SP
 ATTEN_UP=262 #Average Atten Length (or something like that)
 refl  = [ 0.9 ] #reflectivity
@@ -107,6 +108,9 @@ for e in evals:
 		            elif ("#EXPONENT" in l):
 		                l = "{0:0.1f}    #EXPONENT, !should be exclusive with "\
 		                    "SPECTRUM\n".format(e)
+                            if   ("#ST_TYPE" in l):
+                                l = "{0:d} #ST_TYPE, See ReadMe for definitions\n"\
+                                    .format(ST_TYPE)
 		            elif ("#ATGap" in l):
 		                l = "{0:0.1f}    #ATGap, distance between stations in meters\n".format(ATGap)
 		            elif ("#N_Ant_perST" in l):

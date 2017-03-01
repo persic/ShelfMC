@@ -25,6 +25,7 @@ SpecName = {
 1:"GKZ"
 }
 
+ST_TYPE = 0 #Check ReadMe for definitions
 SPECTRUM= 1 #Use Spectrum if 1, single energy if 0
 WIDESPECTRUM = 1 #Exp 16-21.5 if 1, 17-20 if 0
 GKZ = 1 #Use GKZ spectrum if 1, E-2 if 0
@@ -96,6 +97,9 @@ for r in refl:
                         elif ("#EXPONENT" in l):
                             l = "{0:0.1f}    #EXPONENT, !should be exclusive with "\
                                 "SPECTRUM\n".format(0)
+                        if   ("#ST_TYPE" in l):
+                            l = "{0:d} #ST_TYPE, See ReadMe for definitions\n"\
+                                .format(ST_TYPE)
                         elif ("#ATGap" in l):
 		            l = "{0:0.1f}    #ATGap, distance between stations in meters\n".format(ATGap)
                         elif ("#N_Ant_perST" in l):
