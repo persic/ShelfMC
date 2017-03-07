@@ -1776,8 +1776,9 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
             
             //Set Antenna Types
             int AntType[N_Ant_perST];
-            //type 0 = 100MHz theoretical LPDA (original ShelfMC model)
-            //type 1 = 100MHz Create LPDA, Anna's WhippleD model
+	    //type 0 = Isotropic antenna response
+            //type 1 = 100MHz theoretical LPDA (original ShelfMC model)
+            //type 2 = 100MHz Create LPDA, Anna's WhippleD model
             if (StationType == 0){
                 for (int i = 0; i < N_Ant_perST; i++) {
                     AntType[i]=0;
@@ -2745,8 +2746,9 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
             
             //Set Antenna Types (This better be the same as for the non-mirrored case)
             int AntType[N_Ant_perST];
-            //type 0 = 100MHz theoretical LPDA (original ShelfMC model)
-            //type 1 = 100MHz Create LPDA, Anna's WhippleD model
+	    //type 0 = Isotropic antenna response
+            //type 1 = 100MHz theoretical LPDA (original ShelfMC model)
+            //type 2 = 100MHz Create LPDA, Anna's WhippleD model
             if (StationType == 0){
                 for (int i = 0; i < N_Ant_perST; i++) {
                     AntType[i]=0;

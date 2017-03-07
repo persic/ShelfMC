@@ -1299,7 +1299,12 @@ double GaintoHeight(double gain, double freq)
 
 double GetHeff(int AntType, double freq, double* n_boresight, double* n_eplane, double* n_arrival, double* n_pol)
 {
+
   if (AntType==0){
+    double Heff = GaintoHeight(gainv, freq * 1.E6);
+    return Heff;
+}
+  else if (AntType==1){
 
     double hitangle_e, hitangle_h, e_component, h_component;
     GetHitAngle(n_boresight, n_eplane, n_arrival, n_pol, hitangle_e, hitangle_h, e_component, h_component);
@@ -1310,9 +1315,8 @@ double GetHeff(int AntType, double freq, double* n_boresight, double* n_eplane, 
     double Heff = GaintoHeight(gainv, freq * 1.E6) *
            sqrt((pow(e_component * exp(-2 * ALOG2 * (hitangle_e / flare_i[0]) * (hitangle_e / flare_i[0])), 2)  +   pow(e_component * exp(-2 * ALOG2 * (hitangle_h / flare_i[1]) * (hitangle_h / flare_i[1])), 2)) / 2);
     return Heff;
-
   }
-  else if (AntType==1){
+  else if (AntType==2){
     cout<<"Antenna Type "<<AntType<<" not defined yet!"<<endl;
     return -1;
   }
