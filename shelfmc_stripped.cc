@@ -31,6 +31,7 @@
 #include "TStyle.h"
 #include "declaration.hh"
 #include "TMath.h"
+#include "antennamodel_lpda.hh"
 typedef unsigned int uint;
 using namespace std;
 
@@ -58,6 +59,9 @@ ofstream output;
 ofstream outantposall;
 
 TRandom3 Rand3;
+
+//Initialize classes for antenna model framework
+LPDA* Create100 = new LPDA((char *)"WIPLD_antennamodel_firn_v2.root"); 
 
 //adding flexability to get away from global variables
 const int StationType = ST_TYPE;
@@ -2286,6 +2290,9 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                   b1.e_component_LPA[WhichAntenna] = e_component_LPA;
                   b1.h_component_LPA[WhichAntenna] = h_component_LPA;
 
+		  //Load Gains for this orientation for this antenna from the Antenna Model Framework
+                  Create100->LoadGain(n_boresight, n_eplane, nsignal_atAT);
+
                   for (int i = 0; i < NFREQ; i++) { //here needs to be modified
 
 //term_LPA=vmmhz[i]*FREQ_BIN*0.5*GaintoHeight(gainv,freq[i]*1.E6)*
@@ -3393,6 +3400,8 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                   b1.e_component_LPA_mirror[WhichMirrorAntenna] = e_component_LPA;
                   b1.h_component_LPA_mirror[WhichMirrorAntenna] = h_component_LPA;
 
+		  //Load Gains for this orientation for this antenna from the Antenna Model Framework
+                  Create100->LoadGain(n_boresight_mirror, n_eplane_mirror, nsignal_mirror_atAT);
 
                   for (int i = 0; i < NFREQ; i++) {
 

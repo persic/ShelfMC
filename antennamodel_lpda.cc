@@ -6,7 +6,7 @@
 #include <TVector3.h>
 #include <TMath.h>
 
-#include "antennamodel_lpda.h"
+#include "antennamodel_lpda.hh"
 
 LPDA::LPDA()
     {
@@ -119,7 +119,7 @@ LPDA::AntennaAngles LPDA::GetThetaAndPhiFlexible(double zenith,
         return ant_angles;
         }
 
-double LPDA::GetGain(double freq, double nfreq, double* frequencies, double* gains){
+double LPDA::GetGain(double freq, double nfreq, float* frequencies, double* gains){
         int i = 0;
         for (int j = 0; j < nfreq; j++ ){
             if (frequencies[j] > freq) {
@@ -140,8 +140,7 @@ double LPDA::GetGain(double freq, double nfreq, double* frequencies, double* gai
         }
 
         
-void LPDA::LoadGain(double freq, 
-                      double* n_boresight, 
+void LPDA::LoadGain(double* n_boresight, 
                       double* n_eplane, 
                       double* n_arrivaldir){
                                   

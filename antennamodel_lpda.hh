@@ -65,9 +65,8 @@ class LPDA {
                                              double azi_orientation, 
                                              double zen_orientation);
         
-        double GetGain(double freq, double nfreq, double* frequencies, double* gains);
-        void LoadGain(double freq, 
-                        double* n_boresight, 
+        double GetGain(double freq, double nfreq, float* frequencies, double* gains);
+        void LoadGain(double* n_boresight, 
                         double* n_eplane, 
                         double* n_arrivaldir);     
         
