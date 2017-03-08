@@ -1302,6 +1302,9 @@ double GetHeff(int AntType, double freq, double* n_boresight, double* n_eplane, 
 
   if (AntType==0){//Isotropic Antenne
     double Heff = GaintoHeight(gainv, freq * 1.E6);
+
+    //    cout<<"AntType = "<<AntType<<", freq = "<<freq<<", Heff = "<<Heff<<endl;
+
     return Heff;
 }
   else if (AntType==1){//Old SHelfMC LPDA
@@ -1314,6 +1317,9 @@ double GetHeff(int AntType, double freq, double* n_boresight, double* n_eplane, 
 
     double Heff = GaintoHeight(gainv, freq * 1.E6) *
            sqrt((pow(e_component * exp(-2 * ALOG2 * (hitangle_e / flare_i[0]) * (hitangle_e / flare_i[0])), 2)  +   pow(e_component * exp(-2 * ALOG2 * (hitangle_h / flare_i[1]) * (hitangle_h / flare_i[1])), 2)) / 2);
+
+    //    cout<<"AntType = "<<AntType<<", freq = "<<freq<<", Heff = "<<Heff<<endl;
+    
     return Heff;
   }
   else if (AntType==2){//100MHz Create LPDA with Anna's Antenna Model Framework
@@ -1323,7 +1329,10 @@ double GetHeff(int AntType, double freq, double* n_boresight, double* n_eplane, 
 
     double gain = Create100->GetGain(freq,  Create100->N[0], Create100->frequencies, Create100->gains);
 
-    double Heff = gain * e_component;
+    double Heff = gain * abs( e_component);
+
+    //    cout<<"AntType = "<<AntType<<", freq = "<<freq<<", Heff = "<<Heff<<endl;
+
     return Heff;
   }
   else {

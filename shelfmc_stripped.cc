@@ -63,8 +63,6 @@ TRandom3 Rand3;
 //Initialize classes for antenna model framework
 LPDA* Create100 = new LPDA((char *)"WIPLD_antennamodel_firn_v2.root"); 
 
-//adding flexability to get away from global variables
-const int StationType = ST_TYPE;
 int main(int argc, char** argv) //MC IceShelf 09/01/2005
 {
    string workDir;
@@ -107,6 +105,9 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
    //assigning some globals
    BW = FREQ_HIGH - FREQ_LOW; //MHz
    FREQ_BIN = BW / NFREQ;
+
+   //adding flexability to get away from global variables
+   const int StationType = ST_TYPE;
 
    int N_ST_required = 1;
    double Max_distance;
@@ -2304,11 +2305,11 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                      term_LPA = vmmhz[i] * FREQ_BIN * 0.5 * GaintoHeight(gainv, freq[i] * 1.E6) *
                                 sqrt((pow(e_component_LPA * exp(-2 * ALOG2 * (hitangle_e_LPA / flare[0][i]) * (hitangle_e_LPA / flare[0][i])), 2)  +   pow(e_component_LPA * exp(-2 * ALOG2 * (hitangle_h_LPA / flare[1][i]) * (hitangle_h_LPA / flare[1][i])), 2)) / 2);
 		    */
-		    
+		    //Chris removed a factor 0.5 here for sanity 03/08/2018		    
 		    if (FIRN)
-		      term_LPA = vmmhz[i] * FREQ_BIN * 0.5 * GetHeff(AntType[WhichAntenna], freq[i],n_boresight,n_eplane, nsignal_atAT, n_pol);
+		      term_LPA = vmmhz[i] * FREQ_BIN * GetHeff(AntType[WhichAntenna], freq[i],n_boresight,n_eplane, nsignal_atAT, n_pol);
 		    else
-		      term_LPA = vmmhz[i] * FREQ_BIN * 0.5 * GetHeff(AntType[WhichAntenna], freq[i],n_boresight,n_eplane, nposnu2AT, n_pol);
+		      term_LPA = vmmhz[i] * FREQ_BIN * GetHeff(AntType[WhichAntenna], freq[i],n_boresight,n_eplane, nposnu2AT, n_pol);
 
 
                      /*//works for gain tests
@@ -3412,11 +3413,11 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                      term_LPA = vmmhz[i] * FREQ_BIN * 0.5 * GaintoHeight(gainv, freq[i] * 1.E6) *
                                 sqrt((pow(e_component_LPA * exp(-2 * ALOG2 * (hitangle_e_LPA / flare[0][i]) * (hitangle_e_LPA / flare[0][i])), 2)  +   pow(e_component_LPA * exp(-2 * ALOG2 * (hitangle_h_LPA / flare[1][i]) * (hitangle_h_LPA / flare[1][i])), 2)) / 2);
 */
-
+		    //Chris removed a factor 0.5 here for sanity 03/08/2018
 		    if (FIRN)
-		      term_LPA = vmmhz[i] * FREQ_BIN * 0.5 * GetHeff(AntType[WhichMirrorAntenna], freq[i],n_boresight_mirror,n_eplane_mirror, nsignal_mirror_atAT, n_pol);
+		      term_LPA = vmmhz[i] * FREQ_BIN * GetHeff(AntType[WhichMirrorAntenna], freq[i],n_boresight_mirror,n_eplane_mirror, nsignal_mirror_atAT, n_pol);
 		    else
-		      term_LPA = vmmhz[i] * FREQ_BIN * 0.5 * GetHeff(AntType[WhichMirrorAntenna], freq[i],n_boresight_mirror,n_eplane_mirror, nposnu2MirrorAT, n_pol);
+		      term_LPA = vmmhz[i] * FREQ_BIN * GetHeff(AntType[WhichMirrorAntenna], freq[i],n_boresight_mirror,n_eplane_mirror, nposnu2MirrorAT, n_pol);
 
                      /*//works for gain tests
                      term_LPA=vmmhz[i]*FREQ_BIN*0.5*GaintoHeight(gainv,freq[i]*1.E6)*sqrt(pow(e_component_LPA*exp(-2*ALOG2*(hitangle_e_LPA/flare[0][i])*(hitangle_e_LPA/flare[0][i])),2)     +
