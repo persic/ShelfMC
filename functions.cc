@@ -1294,7 +1294,8 @@ double GaintoHeight(double gain, double freq)
 {
    // from f=4*pi*A_eff/lambda^2
    // and h_eff=2*sqrt(A_eff*Z_rx/Z_air)
-   return 2 * sqrt(gain / 4 / PI * C * C / (freq * freq) * Zr / Z0 * NICE);
+  //Shouldn't there be a factor 1/NFIRN^2 to shift frequencies?
+   return 2.0*sqrt(gain / 4 / PI * C * C / (freq * freq) * Zr / Z0 * NICE);
 } //GaintoHeight
 
 double GetHeff(int AntType, double freq, double* n_boresight, double* n_eplane, double* n_arrival, double* n_pol)
@@ -1324,12 +1325,25 @@ double GetHeff(int AntType, double freq, double* n_boresight, double* n_eplane, 
   }
   else if (AntType==2){//100MHz Create LPDA with Anna's Antenna Model Framework
 
+    int NC = Create100->N[0];
+
     double hitangle_e, hitangle_h, e_component, h_component;
     GetHitAngle(n_boresight, n_eplane, n_arrival, n_pol, hitangle_e, hitangle_h, e_component, h_component);
 
-    double gain = Create100->GetGain(freq,  Create100->N[0], Create100->frequencies, Create100->gains);
+    double Re_Z = Create100->InterpolateToSingleFrequency(freq,  NC, Create100->frequencies, Create100->Re_Z);//Function name is misnomer, just interpolates the impedence as function as frequency.
 
-    double Heff = gain * abs( e_component);
+    double gain = Create100->InterpolateToSingleFrequency(freq,  NC, Create100->frequencies, Create100->gains);
+
+    /*
+    cout<<"freq = "<<freq<<endl;
+    cout<<"gain = "<<gain<<endl;
+    cout<<"Re_Z = "<<Re_Z<<endl;
+    cout<<"EffectiveHeight = "<<Create100->GetEffectiveHeight(gain,freq,Re_Z,C,119.99169*PI)<<endl;
+    cout<<"abs(e_component) = "<<abs( e_component)<<endl;
+
+*/
+    //    double Heff = 2.0*C/(freq)*sqrt(gain / 4 / PI * C * C / (freq * freq) * Zr / Z0 * NICE)
+    double Heff =  Create100->GetEffectiveHeight(gain,freq,Re_Z,C,119.99169*PI) * abs( e_component);
 
     //    cout<<"AntType = "<<AntType<<", freq = "<<freq<<", Heff = "<<Heff<<endl;
 
