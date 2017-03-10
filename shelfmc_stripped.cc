@@ -60,8 +60,8 @@ ofstream outantposall;
 
 TRandom3 Rand3;
 
-//Initialize classes for antenna model framework
-LPDA* Create100 = new LPDA((char *)"WIPLD_antennamodel_firn_v2.root"); 
+//Initialize classes for antenna model framework ABSOLUTE PATH NEEDED!
+LPDA* Create100 = new LPDA((char *)"/pub/cpersich/ShelfMCGit/ShelfMCUCIDev/WIPLD_antennamodel_firn_v2.root"); 
 
 int main(int argc, char** argv) //MC IceShelf 09/01/2005
 {
@@ -1772,8 +1772,34 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                    ATCoordinates8[i][2] = ATCoordinate[2];
                 }
             }
-            else if (StationType == 3){ //Some custom antenna config
-                cout<<"Haven't defined this yet"<<endl;
+            else if (StationType == 3 || StationType ==4){ //8 Channel Outward Facing
+	      ATCoordinates8[0][0] = ATCoordinate[0] + ST4_R;
+	      ATCoordinates8[0][1] = ATCoordinate[1];
+	      ATCoordinates8[0][2] = ATCoordinate[2];
+	      ATCoordinates8[1][0] = ATCoordinate[0] + ST4_R;
+	      ATCoordinates8[1][1] = ATCoordinate[1];
+	      ATCoordinates8[1][2] = ATCoordinate[2];
+
+	      ATCoordinates8[2][0] = ATCoordinate[0];
+	      ATCoordinates8[2][1] = ATCoordinate[1] + ST4_R;
+	      ATCoordinates8[2][2] = ATCoordinate[2];
+	      ATCoordinates8[3][0] = ATCoordinate[0];
+	      ATCoordinates8[3][1] = ATCoordinate[1] + ST4_R;
+	      ATCoordinates8[3][2] = ATCoordinate[2];
+
+	      ATCoordinates8[4][0] = ATCoordinate[0] - ST4_R;
+	      ATCoordinates8[4][1] = ATCoordinate[1];
+	      ATCoordinates8[4][2] = ATCoordinate[2];
+	      ATCoordinates8[5][0] = ATCoordinate[0] - ST4_R;
+	      ATCoordinates8[5][1] = ATCoordinate[1];
+	      ATCoordinates8[5][2] = ATCoordinate[2];
+
+	      ATCoordinates8[6][0] = ATCoordinate[0];
+	      ATCoordinates8[6][1] = ATCoordinate[1] - ST4_R;
+	      ATCoordinates8[6][2] = ATCoordinate[2];
+	      ATCoordinates8[7][0] = ATCoordinate[0];
+	      ATCoordinates8[7][1] = ATCoordinate[1] - ST4_R;
+	      ATCoordinates8[7][2] = ATCoordinate[2];
             }
             else {
                 cout<<"Invalid Station type "<<StationType<<endl;
@@ -1794,7 +1820,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                     AntType[i]=1;
                 }
             }
-            else if (StationType == 2){
+            else if (StationType == 2 || StationType == 3 || StationType == 4){
                 for (int i = 0; i < N_Ant_perST; i++) {
                     AntType[i]=2;
                 }
@@ -1818,7 +1844,120 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                 }
             }
             else if (StationType == 3) {
-                cout<<"haven't defined this yet"<<endl;
+	      Ant_n_eplane[0][0] = 0.;
+	      Ant_n_eplane[0][1] = 1.;
+	      Ant_n_eplane[0][2] = 0.;
+	      Ant_n_eplane[1][0] = 0.;
+	      Ant_n_eplane[1][1] = -1.;
+	      Ant_n_eplane[1][2] = 0.;
+
+	      Ant_n_eplane[2][0] = -1.;
+	      Ant_n_eplane[2][1] = 0.;
+	      Ant_n_eplane[2][2] = 0.;
+	      Ant_n_eplane[3][0] = 1.;
+	      Ant_n_eplane[3][1] = 0.;
+	      Ant_n_eplane[3][2] = 0.;
+
+	      Ant_n_eplane[4][0] = 0.;
+	      Ant_n_eplane[4][1] = 1.;
+	      Ant_n_eplane[4][2] = 0.;
+	      Ant_n_eplane[5][0] = 0.;
+	      Ant_n_eplane[5][1] = -1.;
+	      Ant_n_eplane[5][2] = 0.;
+
+	      Ant_n_eplane[6][0] = -1.;
+	      Ant_n_eplane[6][1] = 0.;
+	      Ant_n_eplane[6][2] = 0.;
+	      Ant_n_eplane[7][0] = 1.;
+	      Ant_n_eplane[7][1] = 0.;
+	      Ant_n_eplane[7][2] = 0.;
+
+
+	      Ant_n_boresight[0][0] = 1.;
+	      Ant_n_boresight[0][1] = 0.;
+	      Ant_n_boresight[0][2] = 0.;
+	      Ant_n_boresight[1][0] = -1.;
+	      Ant_n_boresight[1][1] = 0.;
+	      Ant_n_boresight[1][2] = 0.;
+
+	      Ant_n_boresight[2][0] = 0.;
+	      Ant_n_boresight[2][1] = 1.;
+	      Ant_n_boresight[2][2] = 0.;
+	      Ant_n_boresight[3][0] = 0.;
+	      Ant_n_boresight[3][1] = -1.;
+	      Ant_n_boresight[3][2] = 0.;
+
+	      Ant_n_boresight[4][0] = 1.;
+	      Ant_n_boresight[4][1] = 0.;
+	      Ant_n_boresight[4][2] = 0.;
+	      Ant_n_boresight[5][0] = -1.;
+	      Ant_n_boresight[5][1] = 0.;
+	      Ant_n_boresight[5][2] = 0.;
+
+	      Ant_n_boresight[6][0] = 0.;
+	      Ant_n_boresight[6][1] = 1.;
+	      Ant_n_boresight[6][2] = 0.;
+	      Ant_n_boresight[7][0] = 0.;
+	      Ant_n_boresight[7][1] = -1.;
+	      Ant_n_boresight[7][2] = 0.;
+            }
+            else if (StationType == 4) {
+	      Ant_n_eplane[0][0] = 0.;
+	      Ant_n_eplane[0][1] = 0.;
+	      Ant_n_eplane[0][2] = 1.;
+	      Ant_n_eplane[1][0] = 0.;
+	      Ant_n_eplane[1][1] = 0.;
+	      Ant_n_eplane[1][2] = -1.;
+
+	      Ant_n_eplane[2][0] = 0.;
+	      Ant_n_eplane[2][1] = 0.;
+	      Ant_n_eplane[2][2] = 1.;
+	      Ant_n_eplane[3][0] = 0.;
+	      Ant_n_eplane[3][1] = 0.;
+	      Ant_n_eplane[3][2] = -1.;
+
+	      Ant_n_eplane[4][0] = 0.;
+	      Ant_n_eplane[4][1] = 0.;
+	      Ant_n_eplane[4][2] = 1.;
+	      Ant_n_eplane[5][0] = 0.;
+	      Ant_n_eplane[5][1] = 0.;
+	      Ant_n_eplane[5][2] = -1.;
+
+	      Ant_n_eplane[6][0] = 0.;
+	      Ant_n_eplane[6][1] = 0.;
+	      Ant_n_eplane[6][2] = 1.;
+	      Ant_n_eplane[7][0] = 0.;
+	      Ant_n_eplane[7][1] = 0.;
+	      Ant_n_eplane[7][2] = -1.;
+
+
+	      Ant_n_boresight[0][0] = 1.;
+	      Ant_n_boresight[0][1] = 0.;
+	      Ant_n_boresight[0][2] = 0.;
+	      Ant_n_boresight[1][0] = -1.;
+	      Ant_n_boresight[1][1] = 0.;
+	      Ant_n_boresight[1][2] = 0.;
+
+	      Ant_n_boresight[2][0] = 0.;
+	      Ant_n_boresight[2][1] = 1.;
+	      Ant_n_boresight[2][2] = 0.;
+	      Ant_n_boresight[3][0] = 0.;
+	      Ant_n_boresight[3][1] = -1.;
+	      Ant_n_boresight[3][2] = 0.;
+
+	      Ant_n_boresight[4][0] = 1.;
+	      Ant_n_boresight[4][1] = 0.;
+	      Ant_n_boresight[4][2] = 0.;
+	      Ant_n_boresight[5][0] = -1.;
+	      Ant_n_boresight[5][1] = 0.;
+	      Ant_n_boresight[5][2] = 0.;
+
+	      Ant_n_boresight[6][0] = 0.;
+	      Ant_n_boresight[6][1] = 1.;
+	      Ant_n_boresight[6][2] = 0.;
+	      Ant_n_boresight[7][0] = 0.;
+	      Ant_n_boresight[7][1] = -1.;
+	      Ant_n_boresight[7][2] = 0.;
             }
             else {
                 cout<<"Invalid Station Type"<<endl;
@@ -2744,8 +2883,34 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                    MirrorATCoordinates8[i][2] = MirrorATCoordinate[2];
                 }
             }
-            else if (StationType == 3){ //Some custom antenna config
-                cout<<"Haven't defined this yet"<<endl;
+            else if (StationType == 3 || StationType ==4){ //8 Channel Outward Facing
+	      MirrorATCoordinates8[0][0] = MirrorATCoordinate[0] + ST4_R;
+	      MirrorATCoordinates8[0][1] = MirrorATCoordinate[1];
+	      MirrorATCoordinates8[0][2] = MirrorATCoordinate[2];
+	      MirrorATCoordinates8[1][0] = MirrorATCoordinate[0] + ST4_R;
+	      MirrorATCoordinates8[1][1] = MirrorATCoordinate[1];
+	      MirrorATCoordinates8[1][2] = MirrorATCoordinate[2];
+
+	      MirrorATCoordinates8[2][0] = MirrorATCoordinate[0];
+	      MirrorATCoordinates8[2][1] = MirrorATCoordinate[1] + ST4_R;
+	      MirrorATCoordinates8[2][2] = MirrorATCoordinate[2];
+	      MirrorATCoordinates8[3][0] = MirrorATCoordinate[0];
+	      MirrorATCoordinates8[3][1] = MirrorATCoordinate[1] + ST4_R;
+	      MirrorATCoordinates8[3][2] = MirrorATCoordinate[2];
+
+	      MirrorATCoordinates8[4][0] = MirrorATCoordinate[0] - ST4_R;
+	      MirrorATCoordinates8[4][1] = MirrorATCoordinate[1];
+	      MirrorATCoordinates8[4][2] = MirrorATCoordinate[2];
+	      MirrorATCoordinates8[5][0] = MirrorATCoordinate[0] - ST4_R;
+	      MirrorATCoordinates8[5][1] = MirrorATCoordinate[1];
+	      MirrorATCoordinates8[5][2] = MirrorATCoordinate[2];
+
+	      MirrorATCoordinates8[6][0] = MirrorATCoordinate[0];
+	      MirrorATCoordinates8[6][1] = MirrorATCoordinate[1] - ST4_R;
+	      MirrorATCoordinates8[6][2] = MirrorATCoordinate[2];
+	      MirrorATCoordinates8[7][0] = MirrorATCoordinate[0];
+	      MirrorATCoordinates8[7][1] = MirrorATCoordinate[1] - ST4_R;
+	      MirrorATCoordinates8[7][2] = MirrorATCoordinate[2];
             }
             else {
                 cout<<"Invalid Station type "<<StationType<<endl;
@@ -2766,7 +2931,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                     AntType[i]=1;
                 }
             }
-            else if (StationType == 2){
+            else if (StationType == 2 || StationType == 3 || StationType == 4){
                 for (int i = 0; i < N_Ant_perST; i++) {
                     AntType[i]=2;
                 }
@@ -2790,7 +2955,120 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                 }
             }
             else if (StationType == 3) {
-                cout<<"haven't defined this yet"<<endl;
+	      MirrorAnt_n_eplane[0][0] = 0.;
+	      MirrorAnt_n_eplane[0][1] = 1.;
+	      MirrorAnt_n_eplane[0][2] = 0.;
+	      MirrorAnt_n_eplane[1][0] = 0.;
+	      MirrorAnt_n_eplane[1][1] = -1.;
+	      MirrorAnt_n_eplane[1][2] = 0.;
+
+	      MirrorAnt_n_eplane[2][0] = -1.;
+	      MirrorAnt_n_eplane[2][1] = 0.;
+	      MirrorAnt_n_eplane[2][2] = 0.;
+	      MirrorAnt_n_eplane[3][0] = 1.;
+	      MirrorAnt_n_eplane[3][1] = 0.;
+	      MirrorAnt_n_eplane[3][2] = 0.;
+
+	      MirrorAnt_n_eplane[4][0] = 0.;
+	      MirrorAnt_n_eplane[4][1] = 1.;
+	      MirrorAnt_n_eplane[4][2] = 0.;
+	      MirrorAnt_n_eplane[5][0] = 0.;
+	      MirrorAnt_n_eplane[5][1] = -1.;
+	      MirrorAnt_n_eplane[5][2] = 0.;
+
+	      MirrorAnt_n_eplane[6][0] = -1.;
+	      MirrorAnt_n_eplane[6][1] = 0.;
+	      MirrorAnt_n_eplane[6][2] = 0.;
+	      MirrorAnt_n_eplane[7][0] = 1.;
+	      MirrorAnt_n_eplane[7][1] = 0.;
+	      MirrorAnt_n_eplane[7][2] = 0.;
+
+
+	      MirrorAnt_n_boresight[0][0] = 1.;
+	      MirrorAnt_n_boresight[0][1] = 0.;
+	      MirrorAnt_n_boresight[0][2] = 0.;
+	      MirrorAnt_n_boresight[1][0] = -1.;
+	      MirrorAnt_n_boresight[1][1] = 0.;
+	      MirrorAnt_n_boresight[1][2] = 0.;
+
+	      MirrorAnt_n_boresight[2][0] = 0.;
+	      MirrorAnt_n_boresight[2][1] = 1.;
+	      MirrorAnt_n_boresight[2][2] = 0.;
+	      MirrorAnt_n_boresight[3][0] = 0.;
+	      MirrorAnt_n_boresight[3][1] = -1.;
+	      MirrorAnt_n_boresight[3][2] = 0.;
+
+	      MirrorAnt_n_boresight[4][0] = 1.;
+	      MirrorAnt_n_boresight[4][1] = 0.;
+	      MirrorAnt_n_boresight[4][2] = 0.;
+	      MirrorAnt_n_boresight[5][0] = -1.;
+	      MirrorAnt_n_boresight[5][1] = 0.;
+	      MirrorAnt_n_boresight[5][2] = 0.;
+
+	      MirrorAnt_n_boresight[6][0] = 0.;
+	      MirrorAnt_n_boresight[6][1] = 1.;
+	      MirrorAnt_n_boresight[6][2] = 0.;
+	      MirrorAnt_n_boresight[7][0] = 0.;
+	      MirrorAnt_n_boresight[7][1] = -1.;
+	      MirrorAnt_n_boresight[7][2] = 0.;
+            }
+            else if (StationType == 4) {
+	      MirrorAnt_n_eplane[0][0] = 0.;
+	      MirrorAnt_n_eplane[0][1] = 0.;
+	      MirrorAnt_n_eplane[0][2] = -1.;
+	      MirrorAnt_n_eplane[1][0] = 0.;
+	      MirrorAnt_n_eplane[1][1] = 0.;
+	      MirrorAnt_n_eplane[1][2] = 1.;
+
+	      MirrorAnt_n_eplane[2][0] = 0.;
+	      MirrorAnt_n_eplane[2][1] = 0.;
+	      MirrorAnt_n_eplane[2][2] = -1.;
+	      MirrorAnt_n_eplane[3][0] = 0.;
+	      MirrorAnt_n_eplane[3][1] = 0.;
+	      MirrorAnt_n_eplane[3][2] = 1.;
+
+	      MirrorAnt_n_eplane[4][0] = 0.;
+	      MirrorAnt_n_eplane[4][1] = 0.;
+	      MirrorAnt_n_eplane[4][2] = -1.;
+	      MirrorAnt_n_eplane[5][0] = 0.;
+	      MirrorAnt_n_eplane[5][1] = 0.;
+	      MirrorAnt_n_eplane[5][2] = 1.;
+
+	      MirrorAnt_n_eplane[6][0] = 0.;
+	      MirrorAnt_n_eplane[6][1] = 0.;
+	      MirrorAnt_n_eplane[6][2] = -1.;
+	      MirrorAnt_n_eplane[7][0] = 0.;
+	      MirrorAnt_n_eplane[7][1] = 0.;
+	      MirrorAnt_n_eplane[7][2] = 1.;
+
+
+	      MirrorAnt_n_boresight[0][0] = 1.;
+	      MirrorAnt_n_boresight[0][1] = 0.;
+	      MirrorAnt_n_boresight[0][2] = 0.;
+	      MirrorAnt_n_boresight[1][0] = -1.;
+	      MirrorAnt_n_boresight[1][1] = 0.;
+	      MirrorAnt_n_boresight[1][2] = 0.;
+
+	      MirrorAnt_n_boresight[2][0] = 0.;
+	      MirrorAnt_n_boresight[2][1] = 1.;
+	      MirrorAnt_n_boresight[2][2] = 0.;
+	      MirrorAnt_n_boresight[3][0] = 0.;
+	      MirrorAnt_n_boresight[3][1] = -1.;
+	      MirrorAnt_n_boresight[3][2] = 0.;
+
+	      MirrorAnt_n_boresight[4][0] = 1.;
+	      MirrorAnt_n_boresight[4][1] = 0.;
+	      MirrorAnt_n_boresight[4][2] = 0.;
+	      MirrorAnt_n_boresight[5][0] = -1.;
+	      MirrorAnt_n_boresight[5][1] = 0.;
+	      MirrorAnt_n_boresight[5][2] = 0.;
+
+	      MirrorAnt_n_boresight[6][0] = 0.;
+	      MirrorAnt_n_boresight[6][1] = 1.;
+	      MirrorAnt_n_boresight[6][2] = 0.;
+	      MirrorAnt_n_boresight[7][0] = 0.;
+	      MirrorAnt_n_boresight[7][1] = -1.;
+	      MirrorAnt_n_boresight[7][2] = 0.;
             }
             else {
                 cout<<"Invalid Station Type"<<endl;
