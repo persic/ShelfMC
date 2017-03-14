@@ -61,7 +61,7 @@ ofstream outantposall;
 TRandom3 Rand3;
 
 //Initialize classes for antenna model framework ABSOLUTE PATH NEEDED!
-LPDA* Create100 = new LPDA((char *)"/pub/cpersich/ShelfMCGit/ShelfMCUCIDev/WIPLD_antennamodel_firn_v2.root"); 
+LPDA* Create100 = new LPDA((char *)"WIPLD_antennamodel_firn_v2.root"); 
 
 int main(int argc, char** argv) //MC IceShelf 09/01/2005
 {
