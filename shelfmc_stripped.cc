@@ -2430,8 +2430,14 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                   b1.e_component_LPA[WhichAntenna] = e_component_LPA;
                   b1.h_component_LPA[WhichAntenna] = h_component_LPA;
 
-		  //Load Gains for this orientation for this antenna from the Antenna Model Framework
-                  Create100->LoadGain(n_boresight, n_eplane, nsignal_atAT);
+		  //Load Gains for this orientation for this antenna from the Antenna Model Framework.  Must use arrival direction, not propagation direction!
+
+		  double n_arrival[3];
+		  for (int i = 0;i<3;i++){
+		    n_arrival[i]=-nsignal_atAT[i];
+		  }
+
+                  Create100->LoadGain(n_boresight, n_eplane, n_arrival);
 
                   for (int i = 0; i < NFREQ; i++) { //here needs to be modified
 
@@ -3680,6 +3686,14 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 
 		  //Load Gains for this orientation for this antenna from the Antenna Model Framework
                   Create100->LoadGain(n_boresight_mirror, n_eplane_mirror, nsignal_mirror_atAT);
+
+		  //Load Gains for this orientation for this antenna from the Antenna Model Framework.  Must use arrival direction, not propagation direction!
+		  double n_arrival_mirror[3];
+		  for (int i = 0;i<3;i++){
+		    n_arrival_mirror[i]=-nsignal_mirror_atAT[i];
+		  }
+
+                  Create100->LoadGain(n_boresight_mirror, n_eplane_mirror, n_arrival_mirror);
 
                   for (int i = 0; i < NFREQ; i++) {
 

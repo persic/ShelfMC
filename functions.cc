@@ -1298,7 +1298,7 @@ double GaintoHeight(double gain, double freq)
    return 2.0*sqrt(gain / 4 / PI * C * C / (freq * freq) * Zr / Z0 * NICE);
 } //GaintoHeight
 
-double GetHeff(int AntType, double freq, double* n_boresight, double* n_eplane, double* n_arrival, double* n_pol)
+double GetHeff(int AntType, double freq, double* n_boresight, double* n_eplane, double* n_prop, double* n_pol)
 {
 
   if (AntType==0){//Isotropic Antenne
@@ -1311,7 +1311,7 @@ double GetHeff(int AntType, double freq, double* n_boresight, double* n_eplane, 
   else if (AntType==1){//Old SHelfMC LPDA
 
     double hitangle_e, hitangle_h, e_component, h_component;
-    GetHitAngle(n_boresight, n_eplane, n_arrival, n_pol, hitangle_e, hitangle_h, e_component, h_component);
+    GetHitAngle(n_boresight, n_eplane, n_prop, n_pol, hitangle_e, hitangle_h, e_component, h_component);
     
     double flare_i[4];
     GetFlare(freq, flare_i);
@@ -1328,9 +1328,9 @@ double GetHeff(int AntType, double freq, double* n_boresight, double* n_eplane, 
     int NC = Create100->N[0];
 
     double hitangle_e, hitangle_h, e_component, h_component;
-    GetHitAngle(n_boresight, n_eplane, n_arrival, n_pol, hitangle_e, hitangle_h, e_component, h_component);
+    GetHitAngle(n_boresight, n_eplane, n_prop, n_pol, hitangle_e, hitangle_h, e_component, h_component);//should use arrival direction, but it doesn't matter since we only use abs(e_component)
 
-    double Re_Z = Create100->InterpolateToSingleFrequency(freq,  NC, Create100->frequencies, Create100->Re_Z);//Function name is misnomer, just interpolates the impedence as function as frequency.
+    double Re_Z = Create100->InterpolateToSingleFrequency(freq,  NC, Create100->frequencies, Create100->Re_Z);
 
     double gain = Create100->InterpolateToSingleFrequency(freq,  NC, Create100->frequencies, Create100->gains);
 
@@ -1535,7 +1535,7 @@ void GetFresnel(//const Vector &surface_normal,
 } //GetFresnel
 
 
-void GetHitAngle(double* n_boresight, double* n_eplane, double* n_arrival, double* n_pol, double& hitangle_e, double& hitangle_h, double& e_component,
+void GetHitAngle(double* n_boresight, double* n_eplane, double* n_prop, double* n_pol, double& hitangle_e, double& hitangle_h, double& e_component,
                      double& h_component)
 {
 
@@ -1543,9 +1543,9 @@ void GetHitAngle(double* n_boresight, double* n_eplane, double* n_arrival, doubl
    Cross(n_boresight,n_eplane,n_hplane);
 
    //these are the components of the propagation vector in the e and h plane.  They are overwritten later in the function
-   e_component = -Dot(n_arrival, n_eplane);
-   h_component = -Dot(n_arrival, n_hplane);
-   double n_component = -Dot(n_arrival, n_boresight);
+   e_component = -Dot(n_prop, n_eplane);
+   h_component = -Dot(n_prop, n_hplane);
+   double n_component = -Dot(n_prop, n_boresight);
 
    hitangle_e = atan(h_component / n_component);
    if (n_component < 0 && h_component < 0)
