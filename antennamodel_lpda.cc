@@ -25,10 +25,10 @@ LPDA::LPDA(char* filename)
     nt->SetBranchAddress("phis", &phis);
     nt->SetBranchAddress("frequencies", &frequencies);
     nt->SetBranchAddress("gains", &gains);
-    nt->SetBranchAddress("Re_phi", &Re_phi);
-    nt->SetBranchAddress("Im_phi", &Im_phi);
-    nt->SetBranchAddress("Re_theta", &Re_theta);
-    nt->SetBranchAddress("Im_theta", &Im_theta);
+    //    nt->SetBranchAddress("Re_phi", &Re_phi);
+    //    nt->SetBranchAddress("Im_phi", &Im_phi);
+    //    nt->SetBranchAddress("Re_theta", &Re_theta);
+    //    nt->SetBranchAddress("Im_theta", &Im_theta);
 
     nt->BuildIndex("thetas", "phis"); 
 

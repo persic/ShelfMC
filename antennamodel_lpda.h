@@ -32,10 +32,10 @@ class LPDA {
         Float_t phis[1];
         Float_t frequencies[219];
         Double_t gains[219];
-        Double_t Re_phi[219];
-        Double_t Im_phi[219];
-        Double_t Re_theta[219];
-        Double_t Im_theta[219];
+	//        Double_t Re_phi[219];
+	//        Double_t Im_phi[219];
+	//        Double_t Re_theta[219];
+	//        Double_t Im_theta[219];
         
         // ZTree
         Int_t NN[0];

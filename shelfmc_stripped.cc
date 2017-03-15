@@ -2436,8 +2436,9 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 		  for (int i = 0;i<3;i++){
 		    n_arrival[i]=-nsignal_atAT[i];
 		  }
-
-                  Create100->LoadGain(n_boresight, n_eplane, n_arrival);
+		  
+		  if (StationType == 2 || StationType == 4 || StationType == 3)//don't bother if we aren't using this antenna model
+		    Create100->LoadGain(n_boresight, n_eplane, n_arrival);
 
                   for (int i = 0; i < NFREQ; i++) { //here needs to be modified
 
