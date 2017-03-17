@@ -32,6 +32,7 @@
 #include "declaration.hh"
 #include "TMath.h"
 #include "antennamodel_lpda.h"
+#include "antennamodel_ara.h"
 typedef unsigned int uint;
 using namespace std;
 
@@ -60,8 +61,9 @@ ofstream outantposall;
 
 TRandom3 Rand3;
 
-//Initialize classes for antenna model framework ABSOLUTE PATH NEEDED!
+//Initialize classes for antenna model framework
 LPDA* Create100 = new LPDA((char *)"WIPLD_antennamodel_firn_v2.root"); 
+ARA_Ant* ARA_Bicone = new ARA_Ant((char *)"ARA_antennamodel_bicone.root");
 
 int main(int argc, char** argv) //MC IceShelf 09/01/2005
 {
@@ -1764,7 +1766,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 
             //Set Antenna Positions
             double ATCoordinates8[N_Ant_perST][3];//the detailed position of the center of each LPA in a station                        
-            if (StationType == 0 || StationType == 1 || StationType == 2){ //All antennas pointing down, equally spaced around station center
+            if (StationType == 0 || StationType == 1 || StationType == 2 || StationType == 5){ //All antennas pointing down, equally spaced around station center
                 for (int i = 0; i < N_Ant_perST; i++) {
                    double phi = (2. / N_Ant_perST) * PI * i; //the phi angle of each LPA's center
                    ATCoordinates8[i][0] = ATCoordinate[0] + ST4_R * cos(phi);
@@ -1825,6 +1827,11 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                     AntType[i]=2;
                 }
             }
+            else if (StationType == 5){
+                for (int i = 0; i < N_Ant_perST; i++) {
+                    AntType[i]=3;
+                }
+            }
             else {
                 cout<<"Invalid Station type "<<StationType<<endl;
             }
@@ -1833,7 +1840,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
             double Ant_n_boresight[N_Ant_perST][3];
             double Ant_n_eplane[N_Ant_perST][3];
 
-            if (StationType == 0 || StationType == 1 || StationType == 2) {
+            if (StationType == 0 || StationType == 1 || StationType == 2 || StationType == 5) {
                 for (int i = 0; i < N_Ant_perST; i++) {
                     Ant_n_eplane[i][0] = cos((0.5 + i * (2. / N_Ant_perST))*PI);
                     Ant_n_eplane[i][1] = sin((0.5 + i * (2. / N_Ant_perST))*PI);
@@ -2440,6 +2447,9 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 		  if (StationType == 2 || StationType == 4 || StationType == 3)//don't bother if we aren't using this antenna model
 		    Create100->LoadGain(n_boresight, n_eplane, n_arrival);
 
+		  if (StationType == 5)
+		    ARA_Bicone->LoadGain(n_boresight,n_arrival);
+
                   for (int i = 0; i < NFREQ; i++) { //here needs to be modified
 
 //term_LPA=vmmhz[i]*FREQ_BIN*0.5*GaintoHeight(gainv,freq[i]*1.E6)*
@@ -2461,6 +2471,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                      term_LPA=vmmhz[i]*FREQ_BIN*0.5*GaintoHeight(gainv,freq[i]*1.E6)*sqrt(pow(e_component_LPA*exp(-2*ALOG2*(hitangle_e_LPA/flare[0][i])*(hitangle_e_LPA/flare[0][i])),2)     +
                      0.01*pow(h_component_LPA*exp(-2*ALOG2*(hitangle_e_LPA/flare[1][i])*(hitangle_e_LPA/flare[1][i])),2));
                      */
+
 
 
                      /*
@@ -2882,7 +2893,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 
             //Set Antenna Positions
             double MirrorATCoordinates8[N_Ant_perST][3];//the detailed position of the center of each LPA in a station                        
-            if (StationType == 0  || StationType == 1 || StationType == 2){ //All antennas pointing down (up), equally spaced around station center
+            if (StationType == 0  || StationType == 1 || StationType == 2 || StationType == 5){ //All antennas pointing down (up), equally spaced around station center
                 for (int i = 0; i < N_Ant_perST; i++) {
                    double phi = (2. / N_Ant_perST) * PI * i; //the phi angle of each LPA's center
                    MirrorATCoordinates8[i][0] = MirrorATCoordinate[0] + ST4_R * cos(phi);
@@ -2943,6 +2954,11 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                     AntType[i]=2;
                 }
             }
+            else if (StationType == 5){
+                for (int i = 0; i < N_Ant_perST; i++) {
+                    AntType[i]=3;
+                }
+            }
             else {
                 cout<<"Invalid Station type "<<StationType<<endl;
             }
@@ -2951,7 +2967,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
             double MirrorAnt_n_boresight[N_Ant_perST][3];
             double MirrorAnt_n_eplane[N_Ant_perST][3];
 
-            if (StationType == 0 || StationType == 1 || StationType == 2 ) {
+            if (StationType == 0 || StationType == 1 || StationType == 2 || StationType == 5 ) {
                 for (int i = 0; i < N_Ant_perST; i++) {
                     MirrorAnt_n_eplane[i][0] = cos((0.5 + i * (2. / N_Ant_perST))*PI);
                     MirrorAnt_n_eplane[i][1] = sin((0.5 + i * (2. / N_Ant_perST))*PI);
@@ -3694,7 +3710,12 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 		    n_arrival_mirror[i]=-nsignal_mirror_atAT[i];
 		  }
 
-                  Create100->LoadGain(n_boresight_mirror, n_eplane_mirror, n_arrival_mirror);
+		  if (StationType == 2 || StationType == 4 || StationType == 3)//don't bother loading if not using antenna type
+		    Create100->LoadGain(n_boresight_mirror, n_eplane_mirror, n_arrival_mirror);
+
+		  if (StationType == 5)
+		    ARA_Bicone->LoadGain(n_boresight_mirror,n_arrival_mirror);
+		  
 
                   for (int i = 0; i < NFREQ; i++) {
 

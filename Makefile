@@ -1,6 +1,6 @@
 # make file to compile and link a test program that uses the verbmenu library
 
-CCFILE       = shelfmc_stripped.cc  functions.cc antennamodel_lpda.cc
+CCFILE       = shelfmc_stripped.cc  functions.cc antennamodel_lpda.cc antennamodel_ara.cc
 
 # Define filename suffixes
 ObjSuf        = .o

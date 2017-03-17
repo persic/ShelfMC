@@ -1349,6 +1349,19 @@ double GetHeff(int AntType, double freq, double* n_boresight, double* n_eplane, 
 
     return Heff;
   }
+  else if (AntType==3){//ARA Bicone dipole
+
+    int NC = ARA_Bicone->N[0];
+
+    double Re_Z = ARA_Bicone->InterpolateToSingleFrequency(freq,  NC, ARA_Bicone->frequencies, ARA_Bicone->Re_Z);
+
+    double gain = ARA_Bicone->InterpolateToSingleFrequency(freq,  NC, ARA_Bicone->frequencies, ARA_Bicone->gains);
+
+    double Heff =  ARA_Bicone->GetEffectiveHeight(gain,freq,Re_Z,C,119.99169*PI) * abs(Dot(n_pol,n_boresight));
+
+    return Heff;
+
+    }
   else {
     cout<<"invalid Antenna Type!"<<endl;
     return -1;
