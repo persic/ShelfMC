@@ -9,7 +9,8 @@ Station types are defined as follows:
 2. LPDA's based on the response from WIPL-D simulations(type 2) are placed equally around the station center, polarized in the tangential direction, facing down. Variable number of antennas.
 3. 8 LPDA's based on the response from WIPL-D simulations(type 2) are placed in pairs, facing out from the center.  All antennas are H-pol.
 4. 8 LPDA's based on the response from WIPL-D simulations(type 2) are placed in	pairs, facing out from the center.  All	antennas are V-pol.
- 
+5. 4 Ara bicone Dipoles (type 3)
+6. Same as type 2, but with two added ARA Bicone antennas 
 
 Antenna types are defined as follows
 0. Totally isotropic antenna.  No direction, polarization, or frequency dependence on gain.
