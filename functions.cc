@@ -1272,24 +1272,6 @@ int GetBeamWidths(double flare[4][NFREQ], double gain[2][NFREQ], double freq[NFR
 }
 
 
-double GetGainV(double freq)
-{
-
-   int whichbin = (int)((freq - frequency_forgain_measured[0]) / (frequency_forgain_measured[1] - frequency_forgain_measured[0])); //KD: we assume equally spaced frequency intervals in our gain file.
-
-   return gainv_measured[whichbin];
-
-}
-
-double GetGainH(double freq)
-{
-
-   int whichbin = (int)((freq - frequency_forgain_measured[0]) / (frequency_forgain_measured[1] - frequency_forgain_measured[0])); //KD: we assume equally spaced frequency intervals in our gain file.
-
-   return gainh_measured[whichbin];
-
-}
-
 double GaintoHeight(double gain, double freq)
 {
    // from f=4*pi*A_eff/lambda^2
@@ -1369,42 +1351,6 @@ double GetHeff(int AntType, double freq, double* n_boresight, double* n_eplane, 
     return -1;
   }
 }
-
-void ReadGains()
-{
-
-   ifstream gainsfile(GAINFILENAME.c_str());
-   if (gainsfile.good()) {
-
-      // gains from university of hawaii measurements.
-      string sfrequency;
-      string sgainv;
-      string sgainh;
-      string junk;
-
-      getline(gainsfile, junk);
-
-
-      NPOINTS_GAIN = 0;
-      while (!gainsfile.eof()) {
-         gainsfile >> sfrequency >> sgainh >> sgainv;
-         gainv_measured[NPOINTS_GAIN] = (double)atof(sgainv.c_str());
-         gainh_measured[NPOINTS_GAIN] = (double)atof(sgainh.c_str());
-         frequency_forgain_measured[NPOINTS_GAIN] = (double)atof(sfrequency.c_str()) * 1.E9;
-         NPOINTS_GAIN++;
-         getline(gainsfile, junk);
-
-         //  cout<<"NPOINTS_GAIN:"<< NPOINTS_GAIN <<",gv:" << gainv_measured[NPOINTS_GAIN]<< endl;
-      }
-   } else {
-      printf("Unable to load gain file [%s]. Cannot run.",
-             GAINFILENAME.c_str());
-      exit(0);
-   }
-   //   cout<<NPOINTS_GAIN<<endl;
-   //   cout<<frequency_forgain_measured[0]<<"  "<<frequency_forgain_measured[1]<<endl;
-}
-
 
 void GetPolarization(double* nnu, double* posnu2At, double* n_pol, double* n_Bfield)
 {
@@ -2099,11 +2045,13 @@ void ReadInput()
    FREQ_HIGH = (double) atof(number.c_str());
 
    // CJR 2015-07-15: add gain file as input.txt paramter
+   /*
    GetNextNumber(inputfile, number);
    GAINFILENAME = number;
    GAINFILENAME.erase(
       std::remove(GAINFILENAME.begin(), GAINFILENAME.end(), ' '),
       GAINFILENAME.end());
+   */
 }
 
 void GetNextNumber(ifstream& fin, string& number)
@@ -2523,3 +2471,188 @@ double  PickEnergy_fan(double* energy, double* EdNdEdAdt)
    return pow(10., thisenergy + Min(energy, 7));
 
 } //Get energy spectrum
+
+//some functions for reading in from xml using tinyxml2
+int SetIntValueXML(tinyxml2::XMLNode * pRoot, int &IntParam, const char* ParamName){
+
+  tinyxml2::XMLElement * InputParam = pRoot->FirstChildElement(ParamName);
+  if (!InputParam) {printf("Could not find %s. tintXML Parsing Error: %i\n",ParamName,tinyxml2::XML_ERROR_PARSING_ELEMENT); return tinyxml2::XML_ERROR_PARSING_ELEMENT;}
+  tinyxml2::XMLError eResult = InputParam->QueryIntText(&IntParam);
+  if (eResult != tinyxml2::XML_SUCCESS) { printf("Coult not read %s as type int, tinyXML Error: %i\n",ParamName, eResult); return eResult; }
+  printf("%s= %i\n",ParamName,IntParam);
+
+  return 0;
+}
+
+int SetBoolValueXML(tinyxml2::XMLNode * pRoot, int &BoolParam, const char* ParamName){
+
+  tinyxml2::XMLElement * InputParam = pRoot->FirstChildElement(ParamName);
+  if (!InputParam) {printf("Could not find %s. tintXML Parsing Error: %i\n",ParamName,tinyxml2::XML_ERROR_PARSING_ELEMENT); return tinyxml2::XML_ERROR_PARSING_ELEMENT;}
+  tinyxml2::XMLError eResult = InputParam->QueryIntText(&BoolParam);
+  if (eResult != tinyxml2::XML_SUCCESS) { printf("Coult not read %s as type int, tinyXML Error: %i\n",ParamName, eResult); return eResult; }
+  if (BoolParam != 0 && BoolParam != 1) { printf("%s should be boolean, so it must be 0 or 1",ParamName); return 1; }
+  printf("%s= %i\n",ParamName,BoolParam);
+
+  return 0;
+}
+
+int SetDoubleValueXML(tinyxml2::XMLNode * pRoot, double &DoubleParam, const char* ParamName){
+
+  tinyxml2::XMLElement * InputParam = pRoot->FirstChildElement(ParamName);
+  if (!InputParam) {printf("Could not find %s. tintXML Parsing Error: %i\n",ParamName,tinyxml2::XML_ERROR_PARSING_ELEMENT); return tinyxml2::XML_ERROR_PARSING_ELEMENT;}
+  tinyxml2::XMLError eResult = InputParam->QueryDoubleText(&DoubleParam);
+  if (eResult != tinyxml2::XML_SUCCESS) { printf("Coult not read %s as type double, tinyXML Error: %i\n",ParamName, eResult); return eResult; }
+  printf("%s= %f\n",ParamName,DoubleParam);
+
+  return 0;
+}
+
+int SetTextValueXML(tinyxml2::XMLNode * pRoot, const char * TextParam, const char* ParamName){
+
+  tinyxml2::XMLElement * InputParam = pRoot->FirstChildElement(ParamName);
+  if (!InputParam) {printf("Could not find %s. tintXML Parsing Error: %i\n",ParamName,tinyxml2::XML_ERROR_PARSING_ELEMENT); return tinyxml2::XML_ERROR_PARSING_ELEMENT;}
+  tinyxml2::XMLText * textNode = InputParam->FirstChild()->ToText();
+  if (!textNode) {printf("Could not convert %s to text. tintXML Parsing Error: %i\n",ParamName,tinyxml2::XML_ERROR_PARSING_ELEMENT); return tinyxml2::XML_ERROR_PARSING_ELEMENT;}
+  TextParam = textNode->Value();
+  printf("%s= %s\n",ParamName,TextParam);
+
+  return 0;
+}
+
+int ReadInputXML(const char * infn){
+  //This follows closely the  structure of the tinyxml2 tutorial found at shilohjames.wordpress.com/2014/04/27/tinyxml2-tutorial/
+  //Since this is ShelfMC, all of these parameters should be declaired at global scope ('cause that's the way we do things 'round here, apparently)
+
+  tinyxml2::XMLDocument xmlDoc;
+  tinyxml2::XMLError eResult = xmlDoc.LoadFile(infn);
+  if (eResult != tinyxml2::XML_SUCCESS) { printf("Error loading input file, tinyXML Error: %i\n", eResult); return eResult; }
+
+  tinyxml2::XMLNode * pRoot = xmlDoc.FirstChild();
+  if (!pRoot) { printf("tinyXML Error reading input file: %i\n", tinyxml2::XML_ERROR_FILE_READ_ERROR); return tinyxml2::XML_ERROR_FILE_READ_ERROR; }
+
+  int ErrorStat = 0;
+  const char* ErrMesg = "Error in ReadInputXML\n";
+
+  //Boolean parameters can go here (They are actually still ints, but who's watching?)
+  ErrorStat = SetBoolValueXML(pRoot, SPECTRUM, "SPECTRUM");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetBoolValueXML(pRoot, WIDESPECTRUM, "WIDESPECTRUM");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetBoolValueXML(pRoot, GZK, "GZK");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetBoolValueXML(pRoot, FANFLUX, "FANFLUX");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+ 
+  ErrorStat = SetBoolValueXML(pRoot, SIGNAL_FLUCT, "SIGNAL_FLUCT");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetBoolValueXML(pRoot, TAUREGENERATION, "TAUREGENERATION");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetBoolValueXML(pRoot, SHADOWING, "SHADOWING");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetBoolValueXML(pRoot, DEPTH_DEPENDENT_N, "DEPTH_DEPENDENT_N");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetBoolValueXML(pRoot, FIRN, "FIRN");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetBoolValueXML(pRoot, CONST_ATTENLENGTH, "CONST_ATTENLENGTH");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetBoolValueXML(pRoot, HEXAGONAL, "HEXAGONAL");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  //The next few parameters are obsolete and should be removed 
+  ErrorStat = SetBoolValueXML(pRoot, SCATTER, "SCATTER");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetBoolValueXML(pRoot, DIPOLE, "DIPOLE");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+
+  //Int parameters can go here
+  ErrorStat = SetIntValueXML(pRoot, NNU, "NNU");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetIntValueXML(pRoot, seed, "seed");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetIntValueXML(pRoot, NROWS, "NROWS");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetIntValueXML(pRoot, NCOLS, "NCOLS");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetIntValueXML(pRoot, ST_TYPE, "ST_TYPE");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetIntValueXML(pRoot, N_Ant_perST, "N_Ant_perST");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetIntValueXML(pRoot, N_Ant_Trigger, "N_Ant_Trigger");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  //Double parameters can go here
+  ErrorStat = SetDoubleValueXML(pRoot, EXPONENT, "EXPONENT");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetDoubleValueXML(pRoot, TNOISE, "TNOISE");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetDoubleValueXML(pRoot, ICETHICK, "ICETHICK");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetDoubleValueXML(pRoot, FIRNDEPTH, "FIRNDEPTH");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetDoubleValueXML(pRoot, NFIRN, "NFIRN");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetDoubleValueXML(pRoot, ATTEN_UP, "ATTEN_UP");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetDoubleValueXML(pRoot, ATTEN_DOWN, "ATTEN_DOWN");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetDoubleValueXML(pRoot, ATTEN_FACTOR, "ATTEN_FACTOR");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetDoubleValueXML(pRoot, REFLECT_RATE, "REFLECT_RATE");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetDoubleValueXML(pRoot, ATGap, "ATGap");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetDoubleValueXML(pRoot, ST4_R, "ST4_R");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetDoubleValueXML(pRoot, NSIGMA, "NSIGMA");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetDoubleValueXML(pRoot, gainv, "gainv");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetDoubleValueXML(pRoot, FREQ_LOW, "FREQ_LOW");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetDoubleValueXML(pRoot, FREQ_HIGH, "FREQ_HIGH");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  //The next few parameters are obsolete and should be removed
+   ErrorStat = SetDoubleValueXML(pRoot, SCATTER_WIDTH, "SCATTER_WIDTH");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetDoubleValueXML(pRoot, Z, "Z");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  //Text parameters (const char *) can go here
+  ErrorStat = SetTextValueXML(pRoot, GAINFILENAME, "GAINFILENAME");
+  if (ErrorStat) {printf("Error in ReadInputXML"); return 1;}
+
+  return ErrorStat;
+}

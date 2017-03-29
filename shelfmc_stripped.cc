@@ -33,6 +33,7 @@
 #include "TMath.h"
 #include "antennamodel_lpda.h"
 #include "antennamodel_ara.h"
+#include "tinyxml2.h"
 typedef unsigned int uint;
 using namespace std;
 
@@ -1092,10 +1093,6 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 
    printf("VNOISE=%g, NSIGMA=%g, NV=%g\n",
           VNOISE, NSIGMA, NV);
-
-   printf("GAINFILENAME=[%s]\n", GAINFILENAME.c_str());
-
-   ReadGains();
 
    // output<<"NNU="<<NNU<<endl;
    // output<<"ATGap="<<ATGap<<endl;

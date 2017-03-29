@@ -1,5 +1,6 @@
 // CJR 2015-07-15: add gain file as input.txt paramter
-std::string GAINFILENAME;
+# include "tinyxml2.h"
+const char * GAINFILENAME;
 
 //constant parameters
 const double C = 3.e8; //speed of light m/s
@@ -148,6 +149,12 @@ double viewangles[NVIEWANGLE] = {acos(1 / NICE),
                                  acos(1 / NICE) - 40.*DEG2RAD
                                 };
 
+struct AntennaPlacement{
+  int Type;
+  double position[3];
+  double n_boresight[3];
+  double n_eplane[3];
+};
 
 double GetNoise(double);
 double GetDecayLength(double EXPONENT); //CP 07/15
@@ -254,6 +261,15 @@ void GetMaxDis(double pnu, double& Max_distance);
 double GetLPM(double);
 double Gety();
 double fx(double x, double h1, double h2, double nconst, double deltax);
+
+//Fn's for reading in from XML
+int SetIntValueXML(tinyxml2::XMLNode * pRoot, int &IntParam, const char* ParamName);
+int SetBoolValueXML(tinyxml2::XMLNode * pRoot, int &BoolParam, const char* ParamName);
+int SetDoubleValueXML(tinyxml2::XMLNode * pRoot, double &DoubleParam, const char* ParamName);
+int SetTextValueXML(tinyxml2::XMLNode * pRoot, const char * TextParam, const char* ParamName);
+int ReadStnGeo(const char * infn, int &NAntPerStn, std::vector<AntennaPlacement> &VectAntennas);
+int ReadInputXML(const char * infn);
+
 
 //some const parameters of VmMHz1m
 double freq0 = 1150.; //MHz
