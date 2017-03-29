@@ -82,8 +82,12 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
    }
    cout << "Using output tag [" << outTag.c_str() << "]" << endl;
 
-   string input = workDir + "/input.txt";
-   inputfile.open(input.c_str());
+   //Old input method
+   //   string input = workDir + "/input.txt";
+   //   inputfile.open(input.c_str());
+   //New input method
+   string input = workDir + "/input.xml";
+   const char * infn = input.c_str();
 
    string outputfn = workDir + "/output" + outTag + ".txt";
    output.open(outputfn.c_str(), ios::app);
@@ -103,7 +107,10 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 
    //Rand3.SetSeed((unsigned)time(NULL));  // CJR: never use time as seed!!
 
-   ReadInput();
+   //Old Input Method
+   //   ReadInput();
+   //New Input Method
+   ReadInputXML(infn);
 
    //assigning some globals
    BW = FREQ_HIGH - FREQ_LOW; //MHz
