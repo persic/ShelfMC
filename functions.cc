@@ -2519,6 +2519,100 @@ int SetTextValueXML(tinyxml2::XMLNode * pRoot, const char * TextParam, const cha
   return 0;
 }
 
+int SetElementXML(tinyxml2::XMLNode * pRoot, tinyxml2::XMLElement * &Element, const char* ParamName){
+
+  Element = pRoot->FirstChildElement(ParamName);
+  if (!Element) {printf("Could not find %s. tintXML Parsing Error: %i\n",ParamName,tinyxml2::XML_ERROR_PARSING_ELEMENT); return tinyxml2::XML_ERROR_PARSING_ELEMENT;}
+  printf("Set pointer for %s= %s\n",ParamName,Element);
+
+  return 0;
+}
+
+int SetElementXML(tinyxml2::XMLElement * Element, tinyxml2::XMLElement * &SubElement, const char* ParamName){
+  SubElement = Element->FirstChildElement(ParamName);
+  if (!SubElement) {printf("Could not find %s. tintXML Parsing Error: %i\n",ParamName,tinyxml2::XML_ERROR_PARSING_ELEMENT); return tinyxml2::XML_ERROR_PARSING_ELEMENT;}
+  printf("Set pointer for %s= %s\n",ParamName,SubElement);
+
+  return 0;
+}
+
+int ReadStnGeo(const char * infn, int &NAntPerStn, vector<AntennaPlacement> &VectAntennas){
+  //This follows closely the  structure of the tinyxml2 tutorial found at shilohjames.wordpress.com/2014/04/27/tinyxml2-tutorial/
+  //Sets NAntPerStn and VectAntennas from xml file
+
+  tinyxml2::XMLDocument xmlDoc;
+  tinyxml2::XMLError eResult = xmlDoc.LoadFile(infn);
+  if (eResult != tinyxml2::XML_SUCCESS) { printf("Error loading Stn Geometry file, tinyXML Error: %i\n", eResult); return eResult; }
+
+  tinyxml2::XMLNode * pRoot = xmlDoc.FirstChild();
+  if (!pRoot) { printf("tinyXML Error reading input file: %i\n", tinyxml2::XML_ERROR_FILE_READ_ERROR); return tinyxml2::XML_ERROR_FILE_READ_ERROR; }
+
+  int ErrorStat = 0;
+  const char* ErrMesg = "Error in ReadStnGeo\n";
+
+  ErrorStat = SetIntValueXML(pRoot, NAntPerStn, "N_Ant_perST");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  tinyxml2::XMLElement * pElement;
+  ErrorStat = SetElementXML(pRoot,pElement,"Antennas");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  tinyxml2::XMLElement * pListElement;
+  ErrorStat = SetElementXML(pElement,pListElement,"Antenna");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  while (pListElement){
+    AntennaPlacement iAntenna;
+
+    ErrorStat = SetIntValueXML(pListElement, iAntenna.Type, "AntType");
+    if (ErrorStat) {printf(ErrMesg); return 1;}
+
+    tinyxml2::XMLElement * pSubElement;
+    ErrorStat = SetElementXML(pListElement,pSubElement,"position");
+    if (ErrorStat) {printf(ErrMesg); return 1;}    
+
+    tinyxml2::XMLElement * pValue;
+    ErrorStat = SetElementXML(pSubElement,pValue,"value");
+    if (ErrorStat) {printf(ErrMesg); return 1;} 
+
+    for (int i =0; i<3; i++){
+      eResult = pValue->QueryDoubleText(&iAntenna.position[i]);
+      if (eResult != tinyxml2::XML_SUCCESS) { printf("Error reading position value. tinyXML Error: %i\n", eResult); return eResult; }
+      pValue = pValue->NextSiblingElement("value");
+    }
+
+    ErrorStat = SetElementXML(pListElement,pSubElement,"n_boresight");
+    if (ErrorStat) {printf(ErrMesg); return 1;} 
+
+    ErrorStat = SetElementXML(pSubElement,pValue,"value");
+    if (ErrorStat) {printf(ErrMesg); return 1;} 
+
+    for (int i =0; i<3; i++){
+      eResult = pValue->QueryDoubleText(&iAntenna.n_boresight[i]);
+      if (eResult != tinyxml2::XML_SUCCESS) { printf("Error reading n_boresight value. tinyXML Error: %i\n", eResult); return eResult; }
+      pValue = pValue->NextSiblingElement("value");
+    }
+
+    ErrorStat = SetElementXML(pListElement,pSubElement,"n_eplane");
+    if (ErrorStat) {printf(ErrMesg); return 1;} 
+
+    ErrorStat = SetElementXML(pSubElement,pValue,"value");
+    if (ErrorStat) {printf(ErrMesg); return 1;} 
+
+    for (int i =0; i<3; i++){
+      eResult = pValue->QueryDoubleText(&iAntenna.n_eplane[i]);
+      if (eResult != tinyxml2::XML_SUCCESS) { printf("Error reading n_eplane value. tinyXML Error: %i\n", eResult); return eResult; }
+      pValue = pValue->NextSiblingElement("value");
+    }
+
+    VectAntennas.push_back(iAntenna);
+    pListElement = pListElement->NextSiblingElement("Antenna");
+  }
+
+
+  return 0;
+}
+
 int ReadInputXML(const char * infn){
   //This follows closely the  structure of the tinyxml2 tutorial found at shilohjames.wordpress.com/2014/04/27/tinyxml2-tutorial/
   //Since this is ShelfMC, all of these parameters should be declaired at global scope ('cause that's the way we do things 'round here, apparently)
@@ -2591,8 +2685,9 @@ int ReadInputXML(const char * infn){
   ErrorStat = SetIntValueXML(pRoot, ST_TYPE, "ST_TYPE");
   if (ErrorStat) {printf(ErrMesg); return 1;}
 
-  ErrorStat = SetIntValueXML(pRoot, N_Ant_perST, "N_Ant_perST");
-  if (ErrorStat) {printf(ErrMesg); return 1;}
+  //N_Ant_perST is now set in the Stn Geometry File
+  //  ErrorStat = SetIntValueXML(pRoot, N_Ant_perST, "N_Ant_perST");
+  //  if (ErrorStat) {printf(ErrMesg); return 1;}
 
   ErrorStat = SetIntValueXML(pRoot, N_Ant_Trigger, "N_Ant_Trigger");
   if (ErrorStat) {printf(ErrMesg); return 1;}
@@ -2652,6 +2747,9 @@ int ReadInputXML(const char * infn){
 
   //Text parameters (const char *) can go here
   ErrorStat = SetTextValueXML(pRoot, GAINFILENAME, "GAINFILENAME");
+  if (ErrorStat) {printf("Error in ReadInputXML"); return 1;}
+
+  ErrorStat = SetTextValueXML(pRoot, StnGeoFN, "StnGeoFN");
   if (ErrorStat) {printf("Error in ReadInputXML"); return 1;}
 
   return ErrorStat;

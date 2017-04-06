@@ -25,9 +25,9 @@
   <NROWS>36</NROWS> <!--set to 3 for HEXAGONAL-->
   <NCOLS>36</NCOLS> <!--set to 5 for HEXAGONAL-->
   <HEXAGONAL>0</HEXAGONAL> <!--Use hexagonal array of stations-->
+  <StnGeoFN>StnGeoFiles/ST2.xml</StnGeoFN>
   <ST_TYPE>0</ST_TYPE> <!--See ReadMe for definitions. Soon to be replaced-->
   <ST4_R>3.5</ST4_R> <!--radius in meters between center of station and antenna. Obsolete Param soon-->
-  <N_Ant_perST>4</N_Ant_perST> <!-- not to be confused with ST_TYPE above-->
   <N_Ant_Trigger>2</N_Ant_Trigger> <!--this is the minimum number of AT to trigger-->
   <NSIGMA>4.0</NSIGMA> <!--threshold of trigger-->
   <gainv>4.0</gainv> <!--gain dependency used only on parametrized antenna model-->

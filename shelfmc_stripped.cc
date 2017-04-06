@@ -66,6 +66,9 @@ TRandom3 Rand3;
 LPDA* Create100 = new LPDA((char *)"WIPLD_antennamodel_firn_v2.root"); 
 ARA_Ant* ARA_Bicone = new ARA_Ant((char *)"ARA_antennamodel_bicone.root");
 
+//Declare a Vector of AntennaPlacements which defines the station geometry
+vector<AntennaPlacement> StationGeometry;
+
 int main(int argc, char** argv) //MC IceShelf 09/01/2005
 {
    string workDir;
@@ -85,6 +88,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
    //Old input method
    //   string input = workDir + "/input.txt";
    //   inputfile.open(input.c_str());
+
    //New input method
    string input = workDir + "/input.xml";
    const char * infn = input.c_str();
@@ -118,6 +122,9 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 
    //adding flexability to get away from global variables
    const int StationType = ST_TYPE;
+
+   //read in Stn Geometry from file
+   ReadStnGeo(StnGeoFN,N_Ant_perST,StationGeometry);
 
    int N_ST_required = 1;
    double Max_distance;
@@ -1769,7 +1776,14 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
             */
 
             //Set Antenna Positions
-            double ATCoordinates8[N_Ant_perST][3];//the detailed position of the center of each LPA in a station                        
+            double ATCoordinates8[N_Ant_perST][3];//the detailed position of the center of each LPA in a station
+
+	    for  (int i = 0; i < N_Ant_perST; i++) {
+	      for (int j = 0; j<3; j++){
+		ATCoordinates8[i][j] = ATCoordinate[j] + StationGeometry[j].position[0];
+		  }
+	    }
+	    /* Don't need this special case stuff any more. Delete after confirm new method works                    
             if (StationType == 0 || StationType == 1 || StationType == 2 || StationType == 5){ //All antennas pointing down, equally spaced around station center
                 for (int i = 0; i < N_Ant_perST; i++) {
                    double phi = (2. / N_Ant_perST) * PI * i; //the phi angle of each LPA's center
@@ -1825,12 +1839,18 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
             else {
                 cout<<"Invalid Station type "<<StationType<<endl;
             }
+	    */
             
             //Set Antenna Types
             int AntType[N_Ant_perST];
 	    //type 0 = Isotropic antenna response
             //type 1 = 100MHz theoretical LPDA (original ShelfMC model)
             //type 2 = 100MHz Create LPDA, Anna's WhippleD model
+            //type 3 = Ara Dipole
+	    for (int i = 0; i < N_Ant_perST; i++) {
+	      AntType[i]=StationGeometry[i].Type;
+	    }
+	    /*Don't need this special case stuff any more. Delete after confifming new method works
             if (StationType == 0){
                 for (int i = 0; i < N_Ant_perST; i++) {
                     AntType[i]=0;
@@ -1864,11 +1884,18 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
             else {
                 cout<<"Invalid Station type "<<StationType<<endl;
             }
-
+	    */
             //Set Antenna Orientation
             double Ant_n_boresight[N_Ant_perST][3];
             double Ant_n_eplane[N_Ant_perST][3];
 
+	    for (int i = 0; i < N_Ant_perST; i++) {
+	      for (int j = 0; j<3; j++){
+		Ant_n_eplane[i][j]=StationGeometry[i].n_eplane[j];
+		Ant_n_boresight[i][j]=StationGeometry[i].n_boresight[j];
+	      }
+	    }
+	    /*Don't need this special case stuff any more. Delete when new method is confirmed
             if (StationType == 0 || StationType == 1 || StationType == 2 || StationType == 5) {
                 for (int i = 0; i < N_Ant_perST; i++) {
                     Ant_n_eplane[i][0] = cos((0.5 + i * (2. / N_Ant_perST))*PI);
@@ -2008,6 +2035,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
             else {
                 cout<<"Invalid Station Type"<<endl;
             }
+	    */
 
             //define some variables before going into the antenna loop of one station
 
@@ -2931,7 +2959,15 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 //-----------------------------------------------------------------------------------------------------------
 
             //Set Antenna Positions
-            double MirrorATCoordinates8[N_Ant_perST][3];//the detailed position of the center of each LPA in a station                        
+            double MirrorATCoordinates8[N_Ant_perST][3];//the detailed position of the center of each LPA in a station         
+
+	    for  (int i = 0; i < N_Ant_perST; i++) {
+	      for (int j = 0; j<3; j++){
+		MirrorATCoordinates8[i][j] = MirrorATCoordinate[j] + StationGeometry[i].position[j];
+		  }
+	      MirrorATCoordinates8[i][2] = MirrorATCoordinate[2] - StationGeometry[i].position[2];//'cause mirror
+	    }
+	    /*Don't need this special case stuff anymore               
             if (StationType == 0  || StationType == 1 || StationType == 2 || StationType == 5){ //All antennas pointing down (up), equally spaced around station center
                 for (int i = 0; i < N_Ant_perST; i++) {
                    double phi = (2. / N_Ant_perST) * PI * i; //the phi angle of each LPA's center
@@ -2986,12 +3022,18 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
             else {
                 cout<<"Invalid Station type "<<StationType<<endl;
             }
-            
+            */
             //Set Antenna Types (This better be the same as for the non-mirrored case)
             int AntType[N_Ant_perST];
 	    //type 0 = Isotropic antenna response
             //type 1 = 100MHz theoretical LPDA (original ShelfMC model)
             //type 2 = 100MHz Create LPDA, Anna's WhippleD model
+            //type 3 = Ara Dipole
+	    for (int i = 0; i < N_Ant_perST; i++) {
+	      AntType[i]=StationGeometry[i].Type;
+	    }
+
+	    /*Don't need this special case stuff anymore. Delete after checkig new method
             if (StationType == 0){
                 for (int i = 0; i < N_Ant_perST; i++) {
                     AntType[i]=0;
@@ -3025,11 +3067,20 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
             else {
                 cout<<"Invalid Station type "<<StationType<<endl;
             }
-
+	    */
             //Set Antenna Orientation (Flip z component WRT non-mirrored case)
             double MirrorAnt_n_boresight[N_Ant_perST][3];
             double MirrorAnt_n_eplane[N_Ant_perST][3];
 
+	    for (int i = 0; i < N_Ant_perST; i++) {
+	      for (int j = 0; j<3; j++){
+		MirrorAnt_n_eplane[i][j]=StationGeometry[i].n_eplane[j];
+		MirrorAnt_n_boresight[i][j]=StationGeometry[i].n_boresight[j];
+	      }
+	      MirrorAnt_n_eplane[i][2]=-StationGeometry[i].n_eplane[2];//'cause mirror
+	      MirrorAnt_n_boresight[i][2]=-StationGeometry[i].n_boresight[2];	      
+	    }
+	    /*Don't need this special case stuff anymore. Delete after confirming new method
             if (StationType == 0 || StationType == 1 || StationType == 2 || StationType == 5 ) {
                 for (int i = 0; i < N_Ant_perST; i++) {
                     MirrorAnt_n_eplane[i][0] = cos((0.5 + i * (2. / N_Ant_perST))*PI);
@@ -3169,7 +3220,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
             else {
                 cout<<"Invalid Station Type"<<endl;
             }
-
+	    */
             //define some variables before going into the antenna loop of one station
 
             //variables after antenna trigger(L1)

@@ -1,6 +1,7 @@
 // CJR 2015-07-15: add gain file as input.txt paramter
 # include "tinyxml2.h"
 const char * GAINFILENAME;
+const char * StnGeoFN;
 
 //constant parameters
 const double C = 3.e8; //speed of light m/s
@@ -267,6 +268,8 @@ int SetIntValueXML(tinyxml2::XMLNode * pRoot, int &IntParam, const char* ParamNa
 int SetBoolValueXML(tinyxml2::XMLNode * pRoot, int &BoolParam, const char* ParamName);
 int SetDoubleValueXML(tinyxml2::XMLNode * pRoot, double &DoubleParam, const char* ParamName);
 int SetTextValueXML(tinyxml2::XMLNode * pRoot, const char * TextParam, const char* ParamName);
+int SetElementXML(tinyxml2::XMLNode * pRoot, tinyxml2::XMLElement * &Element, const char* ParamName);
+int SetElementXML(tinyxml2::XMLElement * Element, tinyxml2::XMLElement * &SubElement, const char* ParamName);
 int ReadStnGeo(const char * infn, int &NAntPerStn, std::vector<AntennaPlacement> &VectAntennas);
 int ReadInputXML(const char * infn);
 
