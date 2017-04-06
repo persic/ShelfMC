@@ -1,6 +1,5 @@
 // CJR 2015-07-15: add gain file as input.txt paramter
 # include "tinyxml2.h"
-const char * GAINFILENAME;
 const char * StnGeoFN;
 
 //constant parameters
@@ -44,7 +43,6 @@ double SCATTER_WIDTH;
 int SPECTRUM;
 int WIDESPECTRUM;
 int DIPOLE;
-int ST_TYPE;//different station designs, ST0--only one seavey antenna with an optional dipole, ST1--2 Seaveys intercrossing each other, ST2--5 close Seaveys, ST3--5 separate Seaveys, ST4--8 LPA
 int N_Ant_perST = 0; //KD now input as part of input file
 int N_Ant_Trigger; //KD new majority logic variable
 int n_chan_perST;//the total number of channels each station
@@ -267,7 +265,7 @@ double fx(double x, double h1, double h2, double nconst, double deltax);
 int SetIntValueXML(tinyxml2::XMLNode * pRoot, int &IntParam, const char* ParamName);
 int SetBoolValueXML(tinyxml2::XMLNode * pRoot, int &BoolParam, const char* ParamName);
 int SetDoubleValueXML(tinyxml2::XMLNode * pRoot, double &DoubleParam, const char* ParamName);
-int SetTextValueXML(tinyxml2::XMLNode * pRoot, const char * TextParam, const char* ParamName);
+int SetTextValueXML(tinyxml2::XMLNode * pRoot, const char * &TextParam, const char* ParamName);
 int SetElementXML(tinyxml2::XMLNode * pRoot, tinyxml2::XMLElement * &Element, const char* ParamName);
 int SetElementXML(tinyxml2::XMLElement * Element, tinyxml2::XMLElement * &SubElement, const char* ParamName);
 int ReadStnGeo(const char * infn, int &NAntPerStn, std::vector<AntennaPlacement> &VectAntennas);

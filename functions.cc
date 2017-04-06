@@ -1927,143 +1927,6 @@ double fx(double x, double h1, double h2, double nconst, double deltax)
    return h1 / sqrt(1 / x - 1) + h2 / sqrt(nconst / x - 1) - deltax;
 }
 
-void ReadInput()
-{
-
-   string junk, number;
-   getline(inputfile, junk);
-
-   GetNextNumber(inputfile, number);
-   NNU = (int)atoi(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   seed = (int)atoi(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   EXPONENT = (double)atof(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   ATGap = (double)atof(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   ST_TYPE = (int)atoi(number.c_str());
-
-   GetNextNumber(inputfile, number); //KD: added to take number of antennas into account
-   N_Ant_perST = (int)atoi(number.c_str());
-
-   GetNextNumber(inputfile, number); //KD: added to take number of Trigger antennas into account
-   N_Ant_Trigger = (int)atoi(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   Z = DEG2RAD * (double)atof(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   ICETHICK = (double)atof(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   FIRN = (int)atoi(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   NFIRN = (double)atof(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   FIRNDEPTH = (double)atof(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   NROWS = (int)atoi(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   NCOLS = (int)atoi(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   SCATTER = (int)atoi(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   SCATTER_WIDTH = (double)atof(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   SPECTRUM = (int)atoi(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   DIPOLE = (int)atoi(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   CONST_ATTENLENGTH = (int)atoi(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   ATTEN_UP = (double)atof(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   ATTEN_DOWN = (double)atof(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   NSIGMA = (double)atoi(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   ATTEN_FACTOR = (double)atof(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   REFLECT_RATE = (double)atof(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   GZK = atoi(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   FANFLUX = atoi(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   WIDESPECTRUM = atoi(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   SHADOWING = atoi(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   DEPTH_DEPENDENT_N = atoi(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   HEXAGONAL = atoi(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   SIGNAL_FLUCT = atoi(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   gainv = atof(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   TAUREGENERATION = atoi(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   ST4_R = (double) atof(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   TNOISE = (double) atof(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   FREQ_LOW = (double) atof(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   FREQ_HIGH = (double) atof(number.c_str());
-
-   // CJR 2015-07-15: add gain file as input.txt paramter
-   /*
-   GetNextNumber(inputfile, number);
-   GAINFILENAME = number;
-   GAINFILENAME.erase(
-      std::remove(GAINFILENAME.begin(), GAINFILENAME.end(), ' '),
-      GAINFILENAME.end());
-   */
-}
-
-void GetNextNumber(ifstream& fin, string& number)
-{
-   string temp;
-   getline(fin, temp);
-   int place = 0;
-   place = temp.find_first_of(" \t");
-   number = temp.substr(0, place);
-
-}
-
 double GetVmMHz1m(double pnu, double freq, double X0DEPTH, double ECDEPTH, double NDEPTH, double AEXDEPTH)
 {
 
@@ -2507,7 +2370,7 @@ int SetDoubleValueXML(tinyxml2::XMLNode * pRoot, double &DoubleParam, const char
   return 0;
 }
 
-int SetTextValueXML(tinyxml2::XMLNode * pRoot, const char * TextParam, const char* ParamName){
+int SetTextValueXML(tinyxml2::XMLNode * pRoot, const char * &TextParam, const char* ParamName){
 
   tinyxml2::XMLElement * InputParam = pRoot->FirstChildElement(ParamName);
   if (!InputParam) {printf("Could not find %s. tintXML Parsing Error: %i\n",ParamName,tinyxml2::XML_ERROR_PARSING_ELEMENT); return tinyxml2::XML_ERROR_PARSING_ELEMENT;}
@@ -2523,7 +2386,7 @@ int SetElementXML(tinyxml2::XMLNode * pRoot, tinyxml2::XMLElement * &Element, co
 
   Element = pRoot->FirstChildElement(ParamName);
   if (!Element) {printf("Could not find %s. tintXML Parsing Error: %i\n",ParamName,tinyxml2::XML_ERROR_PARSING_ELEMENT); return tinyxml2::XML_ERROR_PARSING_ELEMENT;}
-  printf("Set pointer for %s= %s\n",ParamName,Element);
+  //  printf("Set pointer for %s= %s\n",ParamName,Element);
 
   return 0;
 }
@@ -2531,7 +2394,7 @@ int SetElementXML(tinyxml2::XMLNode * pRoot, tinyxml2::XMLElement * &Element, co
 int SetElementXML(tinyxml2::XMLElement * Element, tinyxml2::XMLElement * &SubElement, const char* ParamName){
   SubElement = Element->FirstChildElement(ParamName);
   if (!SubElement) {printf("Could not find %s. tintXML Parsing Error: %i\n",ParamName,tinyxml2::XML_ERROR_PARSING_ELEMENT); return tinyxml2::XML_ERROR_PARSING_ELEMENT;}
-  printf("Set pointer for %s= %s\n",ParamName,SubElement);
+  //  printf("Set pointer for %s= %s\n",ParamName,SubElement);
 
   return 0;
 }
@@ -2540,9 +2403,11 @@ int ReadStnGeo(const char * infn, int &NAntPerStn, vector<AntennaPlacement> &Vec
   //This follows closely the  structure of the tinyxml2 tutorial found at shilohjames.wordpress.com/2014/04/27/tinyxml2-tutorial/
   //Sets NAntPerStn and VectAntennas from xml file
 
+  cout<<"Reading Station Geometry from "<<infn<<"..."<<endl;
+
   tinyxml2::XMLDocument xmlDoc;
   tinyxml2::XMLError eResult = xmlDoc.LoadFile(infn);
-  if (eResult != tinyxml2::XML_SUCCESS) { printf("Error loading Stn Geometry file, tinyXML Error: %i\n", eResult); return eResult; }
+  if (eResult != tinyxml2::XML_SUCCESS) { printf("Error loading Stn Geometry file %s, tinyXML Error: %i\n",infn, eResult); return eResult; }
 
   tinyxml2::XMLNode * pRoot = xmlDoc.FirstChild();
   if (!pRoot) { printf("tinyXML Error reading input file: %i\n", tinyxml2::XML_ERROR_FILE_READ_ERROR); return tinyxml2::XML_ERROR_FILE_READ_ERROR; }
@@ -2617,6 +2482,8 @@ int ReadInputXML(const char * infn){
   //This follows closely the  structure of the tinyxml2 tutorial found at shilohjames.wordpress.com/2014/04/27/tinyxml2-tutorial/
   //Since this is ShelfMC, all of these parameters should be declaired at global scope ('cause that's the way we do things 'round here, apparently)
 
+  cout<<"Reading Input Parameters from "<<infn<<"..."<<endl;
+
   tinyxml2::XMLDocument xmlDoc;
   tinyxml2::XMLError eResult = xmlDoc.LoadFile(infn);
   if (eResult != tinyxml2::XML_SUCCESS) { printf("Error loading input file, tinyXML Error: %i\n", eResult); return eResult; }
@@ -2682,8 +2549,6 @@ int ReadInputXML(const char * infn){
   ErrorStat = SetIntValueXML(pRoot, NCOLS, "NCOLS");
   if (ErrorStat) {printf(ErrMesg); return 1;}
 
-  ErrorStat = SetIntValueXML(pRoot, ST_TYPE, "ST_TYPE");
-  if (ErrorStat) {printf(ErrMesg); return 1;}
 
   //N_Ant_perST is now set in the Stn Geometry File
   //  ErrorStat = SetIntValueXML(pRoot, N_Ant_perST, "N_Ant_perST");
@@ -2746,9 +2611,6 @@ int ReadInputXML(const char * infn){
   if (ErrorStat) {printf(ErrMesg); return 1;}
 
   //Text parameters (const char *) can go here
-  ErrorStat = SetTextValueXML(pRoot, GAINFILENAME, "GAINFILENAME");
-  if (ErrorStat) {printf("Error in ReadInputXML"); return 1;}
-
   ErrorStat = SetTextValueXML(pRoot, StnGeoFN, "StnGeoFN");
   if (ErrorStat) {printf("Error in ReadInputXML"); return 1;}
 

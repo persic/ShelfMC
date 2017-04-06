@@ -1,25 +1,25 @@
-<Station>
+<Station><!--Standard Station. Four 100MHz Create LPDA's pointing down in pairs-->
 
-  <N_Ant_perST>4</N_Ant_perST>
+  <N_Ant_perST>4</N_Ant_perST>  <!--Total number of antennas in the station.  Make sure it's consistent!-->
 
-  <Antennas>
+  <Antennas><!--This will be a vector of AntennaPlacement's-->
 
-    <Antenna>
-      <AntType>2</AntType>
-      <position>
-	<value>3.</value>
-	<value>0.</value>
-	<value>0.</value>
+    <Antenna><!--This will be an AntennaPlacemtent struct-->
+      <AntType>2</AntType>  <!--Type 2 is Create LPDA-->
+      <position>  <!--Position of antenna relative to station center-->
+	<value>3.</value>  <!--x-->
+	<value>0.</value>  <!--y-->
+	<value>0.</value>  <!--y-->
       </position>
-      <n_boresight>
-	<value>0.</value>
-	<value>0.</value>
-	<value>-1.</value>
+      <n_boresight>  <!--Direction the antenna is pointed.  Forward direction for LPDA's. Along axis for Dipoles. MUST BE NORMAL VECTOR-->
+	<value>0.</value>  <!--x-->
+	<value>0.</value>  <!--y-->
+	<value>-1.</value> <!--z-->
       </n_boresight>
-      <n_eplane>
-	<value>0.</value>
-	<value>1.</value>
-	<value>0.</value>
+      <n_eplane>  <!--Down the tines for LPDA. Irrelevant for Dipoles due to axial symmetry. MUST BE NORMAL VECTOR-->
+	<value>0.</value>  <!--x-->
+	<value>1.</value>  <!--y-->
+	<value>0.</value>  <!--z-->
       </n_eplane>
     </Antenna>
 

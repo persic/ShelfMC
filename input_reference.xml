@@ -1,8 +1,8 @@
 <inputs>
 
-  <NNU>10000000</NNU> <!--setting to 1 for unique neutrino-->
+  <NNU>1000000</NNU> <!--setting to 1 for unique neutrino-->
   <seed>42</seed> <!--Seed for Rand3-->
-  <EXPONENT>15.0</EXPONENT> <!--should be exclusive with SPECTRUM-->
+  <EXPONENT>18.0</EXPONENT> <!--should be exclusive with SPECTRUM-->
   <SPECTRUM>0</SPECTRUM> <!--use spectrum-->
   <WIDESPECTRUM>1</WIDESPECTRUM> <!--use 10^16 eV to 10^21.5 eV as the energy spectrum, otherwise use 17-20-->
   <GZK>0</GZK> <!--1 means using GZK flux, 0 means E-2 flux. Only used if SPECTRUM-->
@@ -22,12 +22,11 @@
   <ATTEN_FACTOR>1.0</ATTEN_FACTOR> <!--scale factor for attenuation length-->
   <REFLECT_RATE>0.9</REFLECT_RATE> <!--power reflection rate at the ice bottom-->
   <ATGap>1000.0</ATGap> <!--distance between stations in meters-->
-  <NROWS>36</NROWS> <!--set to 3 for HEXAGONAL-->
-  <NCOLS>36</NCOLS> <!--set to 5 for HEXAGONAL-->
+  <NROWS>1</NROWS> <!--set to 3 for HEXAGONAL-->
+  <NCOLS>1</NCOLS> <!--set to 5 for HEXAGONAL-->
   <HEXAGONAL>0</HEXAGONAL> <!--Use hexagonal array of stations-->
   <StnGeoFN>StnGeoFiles/ST2.xml</StnGeoFN>
-  <ST_TYPE>0</ST_TYPE> <!--See ReadMe for definitions. Soon to be replaced-->
-  <ST4_R>3.5</ST4_R> <!--radius in meters between center of station and antenna. Obsolete Param soon-->
+  <ST4_R>3.0</ST4_R> <!--radius in meters between center of station and antenna. Obsolete Param soon-->
   <N_Ant_Trigger>2</N_Ant_Trigger> <!--this is the minimum number of AT to trigger-->
   <NSIGMA>4.0</NSIGMA> <!--threshold of trigger-->
   <gainv>4.0</gainv> <!--gain dependency used only on parametrized antenna model-->
@@ -39,6 +38,5 @@
   <SCATTER_WIDTH>1.0</SCATTER_WIDTH> <!--how many times wider after scattering-->
   <Z>30.0</Z> <!--for ST_TYPE=2 (Ignore)-->
   <DIPOLE>0</DIPOLE> <!--add a dipole to the station, NO LONGER USED-->
-  <GAINFILENAME>/pub/cpersich/ShelfMCGit/ShelfMCUCIDev/GainFiles/LP_gain_manual.txt</GAINFILENAME> <!--Pretty Sure This Is Useless-->
 
 </inputs>

@@ -46,8 +46,6 @@ void GetCurrent(string& current);
 void GetEmHadFrac(string nuflavor, string current, double elast_y, double theta_nu, double L_TauDecay, double L_Ice, double& emfrac, double& hadfrac);
 double GetTauRegen(string current, double energy, double theta_nu, double L_TauDecay, double H); //CP 07/15
 void CloseTFile(TFile* hfile);
-void GetNextNumber(ifstream& in, string& number);
-void ReadInput();
 
 //input and output files
 //string sgain="/u/cosmic2/dookayka/minna/forLisa/50ohm_horn_gain_down100mhz.txt";
@@ -111,21 +109,17 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 
    //Rand3.SetSeed((unsigned)time(NULL));  // CJR: never use time as seed!!
 
-   //Old Input Method
-   //   ReadInput();
    //New Input Method
    ReadInputXML(infn);
+   cout<<"\n\n";
 
    //assigning some globals
    BW = FREQ_HIGH - FREQ_LOW; //MHz
    FREQ_BIN = BW / NFREQ;
 
-   //adding flexability to get away from global variables
-   const int StationType = ST_TYPE;
-
    //read in Stn Geometry from file
    ReadStnGeo(StnGeoFN,N_Ant_perST,StationGeometry);
-
+   cout<<"\n\n";
    int N_ST_required = 1;
    double Max_distance;
 
@@ -1775,267 +1769,24 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                                {ATCoordinate[0]-ST_DISTANCE, ATCoordinate[1],ATCoordinate[2]},{ATCoordinate[0],ATCoordinate[1]+ST_DISTANCE, ATCoordinate[2]}};
             */
 
-            //Set Antenna Positions
-            double ATCoordinates8[N_Ant_perST][3];//the detailed position of the center of each LPA in a station
-
-	    for  (int i = 0; i < N_Ant_perST; i++) {
-	      for (int j = 0; j<3; j++){
-		ATCoordinates8[i][j] = ATCoordinate[j] + StationGeometry[j].position[0];
-		  }
-	    }
-	    /* Don't need this special case stuff any more. Delete after confirm new method works                    
-            if (StationType == 0 || StationType == 1 || StationType == 2 || StationType == 5){ //All antennas pointing down, equally spaced around station center
-                for (int i = 0; i < N_Ant_perST; i++) {
-                   double phi = (2. / N_Ant_perST) * PI * i; //the phi angle of each LPA's center
-                   ATCoordinates8[i][0] = ATCoordinate[0] + ST4_R * cos(phi);
-                   ATCoordinates8[i][1] = ATCoordinate[1] + ST4_R * sin(phi);
-                   ATCoordinates8[i][2] = ATCoordinate[2];
-                }
-            }
-            else if (StationType == 3 || StationType ==4){ //8 Channel Outward Facing
-	      ATCoordinates8[0][0] = ATCoordinate[0] + ST4_R;
-	      ATCoordinates8[0][1] = ATCoordinate[1];
-	      ATCoordinates8[0][2] = ATCoordinate[2];
-	      ATCoordinates8[1][0] = ATCoordinate[0] + ST4_R;
-	      ATCoordinates8[1][1] = ATCoordinate[1];
-	      ATCoordinates8[1][2] = ATCoordinate[2];
-
-	      ATCoordinates8[2][0] = ATCoordinate[0];
-	      ATCoordinates8[2][1] = ATCoordinate[1] + ST4_R;
-	      ATCoordinates8[2][2] = ATCoordinate[2];
-	      ATCoordinates8[3][0] = ATCoordinate[0];
-	      ATCoordinates8[3][1] = ATCoordinate[1] + ST4_R;
-	      ATCoordinates8[3][2] = ATCoordinate[2];
-
-	      ATCoordinates8[4][0] = ATCoordinate[0] - ST4_R;
-	      ATCoordinates8[4][1] = ATCoordinate[1];
-	      ATCoordinates8[4][2] = ATCoordinate[2];
-	      ATCoordinates8[5][0] = ATCoordinate[0] - ST4_R;
-	      ATCoordinates8[5][1] = ATCoordinate[1];
-	      ATCoordinates8[5][2] = ATCoordinate[2];
-
-	      ATCoordinates8[6][0] = ATCoordinate[0];
-	      ATCoordinates8[6][1] = ATCoordinate[1] - ST4_R;
-	      ATCoordinates8[6][2] = ATCoordinate[2];
-	      ATCoordinates8[7][0] = ATCoordinate[0];
-	      ATCoordinates8[7][1] = ATCoordinate[1] - ST4_R;
-	      ATCoordinates8[7][2] = ATCoordinate[2];
-            }
-            else if (StationType == 6){ //4 LPDA's and 2 dipoles
-                for (int i = 0; i < 4; i++) {
-		  double phi = 0.5 * PI * i; //the phi angle of each LPA's center
-                   ATCoordinates8[i][0] = ATCoordinate[0] + ST4_R * cos(phi);
-                   ATCoordinates8[i][1] = ATCoordinate[1] + ST4_R * sin(phi);
-                   ATCoordinates8[i][2] = ATCoordinate[2];
-                }
-		ATCoordinates8[4][0] = ATCoordinate[0] + ST4_R/2.0;
-		ATCoordinates8[4][1] = ATCoordinate[1];
-		ATCoordinates8[4][2] = ATCoordinate[2];
-		ATCoordinates8[5][0] = ATCoordinate[0] - ST4_R/2.0;
-		ATCoordinates8[5][1] = ATCoordinate[1];
-		ATCoordinates8[5][2] = ATCoordinate[2];
-
-            }
-            else {
-                cout<<"Invalid Station type "<<StationType<<endl;
-            }
-	    */
-            
-            //Set Antenna Types
-            int AntType[N_Ant_perST];
+            //Set Antenna Positions, types, orientations
 	    //type 0 = Isotropic antenna response
             //type 1 = 100MHz theoretical LPDA (original ShelfMC model)
             //type 2 = 100MHz Create LPDA, Anna's WhippleD model
             //type 3 = Ara Dipole
-	    for (int i = 0; i < N_Ant_perST; i++) {
-	      AntType[i]=StationGeometry[i].Type;
-	    }
-	    /*Don't need this special case stuff any more. Delete after confifming new method works
-            if (StationType == 0){
-                for (int i = 0; i < N_Ant_perST; i++) {
-                    AntType[i]=0;
-                }
-            }
-            else if (StationType == 1){
-                for (int i = 0; i < N_Ant_perST; i++) {
-                    AntType[i]=1;
-                }
-            }
-            else if (StationType == 2 || StationType == 3 || StationType == 4){
-                for (int i = 0; i < N_Ant_perST; i++) {
-                    AntType[i]=2;
-                }
-            }
-            else if (StationType == 5){
-                for (int i = 0; i < N_Ant_perST; i++) {
-                    AntType[i]=3;
-                }
-            }
-            else if (StationType == 6){
-                for (int i = 0; i < N_Ant_perST; i++) {
-		  if (i < 4){ 
-		    AntType[i]=2;
-		  }
-		  else{
-		    AntType[i]=3;
-		  }
-                }
-            }
-            else {
-                cout<<"Invalid Station type "<<StationType<<endl;
-            }
-	    */
-            //Set Antenna Orientation
+            double ATCoordinates8[N_Ant_perST][3];//the detailed position of the center of each LPA in a station
+            int AntType[N_Ant_perST];
             double Ant_n_boresight[N_Ant_perST][3];
             double Ant_n_eplane[N_Ant_perST][3];
 
-	    for (int i = 0; i < N_Ant_perST; i++) {
+	    for  (int i = 0; i < N_Ant_perST; i++) {
+	      AntType[i]=StationGeometry[i].Type;
 	      for (int j = 0; j<3; j++){
+		ATCoordinates8[i][j] = ATCoordinate[j] + StationGeometry[j].position[0];
 		Ant_n_eplane[i][j]=StationGeometry[i].n_eplane[j];
 		Ant_n_boresight[i][j]=StationGeometry[i].n_boresight[j];
-	      }
+		  }
 	    }
-	    /*Don't need this special case stuff any more. Delete when new method is confirmed
-            if (StationType == 0 || StationType == 1 || StationType == 2 || StationType == 5) {
-                for (int i = 0; i < N_Ant_perST; i++) {
-                    Ant_n_eplane[i][0] = cos((0.5 + i * (2. / N_Ant_perST))*PI);
-                    Ant_n_eplane[i][1] = sin((0.5 + i * (2. / N_Ant_perST))*PI);
-                    Ant_n_eplane[i][2] = 0.;
-                    Ant_n_boresight[i][0] = 0.;
-                    Ant_n_boresight[i][1] = 0.;
-                    Ant_n_boresight[i][2] = -1.;
-                }
-            }
-            else if (StationType == 3) {
-	      Ant_n_eplane[0][0] = 0.;
-	      Ant_n_eplane[0][1] = 1.;
-	      Ant_n_eplane[0][2] = 0.;
-	      Ant_n_eplane[1][0] = 0.;
-	      Ant_n_eplane[1][1] = -1.;
-	      Ant_n_eplane[1][2] = 0.;
-
-	      Ant_n_eplane[2][0] = -1.;
-	      Ant_n_eplane[2][1] = 0.;
-	      Ant_n_eplane[2][2] = 0.;
-	      Ant_n_eplane[3][0] = 1.;
-	      Ant_n_eplane[3][1] = 0.;
-	      Ant_n_eplane[3][2] = 0.;
-
-	      Ant_n_eplane[4][0] = 0.;
-	      Ant_n_eplane[4][1] = 1.;
-	      Ant_n_eplane[4][2] = 0.;
-	      Ant_n_eplane[5][0] = 0.;
-	      Ant_n_eplane[5][1] = -1.;
-	      Ant_n_eplane[5][2] = 0.;
-
-	      Ant_n_eplane[6][0] = -1.;
-	      Ant_n_eplane[6][1] = 0.;
-	      Ant_n_eplane[6][2] = 0.;
-	      Ant_n_eplane[7][0] = 1.;
-	      Ant_n_eplane[7][1] = 0.;
-	      Ant_n_eplane[7][2] = 0.;
-
-
-	      Ant_n_boresight[0][0] = 1.;
-	      Ant_n_boresight[0][1] = 0.;
-	      Ant_n_boresight[0][2] = 0.;
-	      Ant_n_boresight[1][0] = -1.;
-	      Ant_n_boresight[1][1] = 0.;
-	      Ant_n_boresight[1][2] = 0.;
-
-	      Ant_n_boresight[2][0] = 0.;
-	      Ant_n_boresight[2][1] = 1.;
-	      Ant_n_boresight[2][2] = 0.;
-	      Ant_n_boresight[3][0] = 0.;
-	      Ant_n_boresight[3][1] = -1.;
-	      Ant_n_boresight[3][2] = 0.;
-
-	      Ant_n_boresight[4][0] = 1.;
-	      Ant_n_boresight[4][1] = 0.;
-	      Ant_n_boresight[4][2] = 0.;
-	      Ant_n_boresight[5][0] = -1.;
-	      Ant_n_boresight[5][1] = 0.;
-	      Ant_n_boresight[5][2] = 0.;
-
-	      Ant_n_boresight[6][0] = 0.;
-	      Ant_n_boresight[6][1] = 1.;
-	      Ant_n_boresight[6][2] = 0.;
-	      Ant_n_boresight[7][0] = 0.;
-	      Ant_n_boresight[7][1] = -1.;
-	      Ant_n_boresight[7][2] = 0.;
-            }
-            else if (StationType == 4) {
-	      Ant_n_eplane[0][0] = 0.;
-	      Ant_n_eplane[0][1] = 0.;
-	      Ant_n_eplane[0][2] = 1.;
-	      Ant_n_eplane[1][0] = 0.;
-	      Ant_n_eplane[1][1] = 0.;
-	      Ant_n_eplane[1][2] = -1.;
-
-	      Ant_n_eplane[2][0] = 0.;
-	      Ant_n_eplane[2][1] = 0.;
-	      Ant_n_eplane[2][2] = 1.;
-	      Ant_n_eplane[3][0] = 0.;
-	      Ant_n_eplane[3][1] = 0.;
-	      Ant_n_eplane[3][2] = -1.;
-
-	      Ant_n_eplane[4][0] = 0.;
-	      Ant_n_eplane[4][1] = 0.;
-	      Ant_n_eplane[4][2] = 1.;
-	      Ant_n_eplane[5][0] = 0.;
-	      Ant_n_eplane[5][1] = 0.;
-	      Ant_n_eplane[5][2] = -1.;
-
-	      Ant_n_eplane[6][0] = 0.;
-	      Ant_n_eplane[6][1] = 0.;
-	      Ant_n_eplane[6][2] = 1.;
-	      Ant_n_eplane[7][0] = 0.;
-	      Ant_n_eplane[7][1] = 0.;
-	      Ant_n_eplane[7][2] = -1.;
-
-
-	      Ant_n_boresight[0][0] = 1.;
-	      Ant_n_boresight[0][1] = 0.;
-	      Ant_n_boresight[0][2] = 0.;
-	      Ant_n_boresight[1][0] = -1.;
-	      Ant_n_boresight[1][1] = 0.;
-	      Ant_n_boresight[1][2] = 0.;
-
-	      Ant_n_boresight[2][0] = 0.;
-	      Ant_n_boresight[2][1] = 1.;
-	      Ant_n_boresight[2][2] = 0.;
-	      Ant_n_boresight[3][0] = 0.;
-	      Ant_n_boresight[3][1] = -1.;
-	      Ant_n_boresight[3][2] = 0.;
-
-	      Ant_n_boresight[4][0] = 1.;
-	      Ant_n_boresight[4][1] = 0.;
-	      Ant_n_boresight[4][2] = 0.;
-	      Ant_n_boresight[5][0] = -1.;
-	      Ant_n_boresight[5][1] = 0.;
-	      Ant_n_boresight[5][2] = 0.;
-
-	      Ant_n_boresight[6][0] = 0.;
-	      Ant_n_boresight[6][1] = 1.;
-	      Ant_n_boresight[6][2] = 0.;
-	      Ant_n_boresight[7][0] = 0.;
-	      Ant_n_boresight[7][1] = -1.;
-	      Ant_n_boresight[7][2] = 0.;
-            }
-            else if (StationType == 6) {
-	      for (int i = 0; i < N_Ant_perST; i++) {//this is ok because the eplane vector doesn't matter for dipoles
-                    Ant_n_eplane[i][0] = cos((0.5 + i * 0.5)*PI);
-                    Ant_n_eplane[i][1] = sin((0.5 + i * 0.5)*PI);
-                    Ant_n_eplane[i][2] = 0.;
-                    Ant_n_boresight[i][0] = 0.;
-                    Ant_n_boresight[i][1] = 0.;
-                    Ant_n_boresight[i][2] = -1.;
-                }
-            }
-            else {
-                cout<<"Invalid Station Type"<<endl;
-            }
-	    */
 
             //define some variables before going into the antenna loop of one station
 
@@ -2511,10 +2262,10 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 		    n_arrival[i]=-nsignal_atAT[i];
 		  }
 		  
-		  if (StationType == 2 || StationType == 4 || StationType == 3 || StationType == 6)//don't bother if we aren't using this antenna model
+		  if (AntType[WhichAntenna]==2)//don't bother if we aren't using this antenna model
 		    Create100->LoadGain(n_boresight, n_eplane, n_arrival);
 
-		  if (StationType == 5 || StationType ==6)
+		  else if (AntType[WhichAntenna]==3)
 		    ARA_Bicone->LoadGain(n_boresight,n_arrival);
 
                   for (int i = 0; i < NFREQ; i++) { //here needs to be modified
@@ -2958,269 +2709,28 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 //cout<<inu<<"(REF):"<<iRow_oncone_mirror.at(WhichMirrorStation)<<","<<iCol_oncone_mirror.at(WhichMirrorStation)<<","<<NV;
 //-----------------------------------------------------------------------------------------------------------
 
-            //Set Antenna Positions
-            double MirrorATCoordinates8[N_Ant_perST][3];//the detailed position of the center of each LPA in a station         
-
-	    for  (int i = 0; i < N_Ant_perST; i++) {
-	      for (int j = 0; j<3; j++){
-		MirrorATCoordinates8[i][j] = MirrorATCoordinate[j] + StationGeometry[i].position[j];
-		  }
-	      MirrorATCoordinates8[i][2] = MirrorATCoordinate[2] - StationGeometry[i].position[2];//'cause mirror
-	    }
-	    /*Don't need this special case stuff anymore               
-            if (StationType == 0  || StationType == 1 || StationType == 2 || StationType == 5){ //All antennas pointing down (up), equally spaced around station center
-                for (int i = 0; i < N_Ant_perST; i++) {
-                   double phi = (2. / N_Ant_perST) * PI * i; //the phi angle of each LPA's center
-                   MirrorATCoordinates8[i][0] = MirrorATCoordinate[0] + ST4_R * cos(phi);
-                   MirrorATCoordinates8[i][1] = MirrorATCoordinate[1] + ST4_R * sin(phi);
-                   MirrorATCoordinates8[i][2] = MirrorATCoordinate[2];
-                }
-            }
-            else if (StationType == 3 || StationType ==4){ //8 Channel Outward Facing
-	      MirrorATCoordinates8[0][0] = MirrorATCoordinate[0] + ST4_R;
-	      MirrorATCoordinates8[0][1] = MirrorATCoordinate[1];
-	      MirrorATCoordinates8[0][2] = MirrorATCoordinate[2];
-	      MirrorATCoordinates8[1][0] = MirrorATCoordinate[0] + ST4_R;
-	      MirrorATCoordinates8[1][1] = MirrorATCoordinate[1];
-	      MirrorATCoordinates8[1][2] = MirrorATCoordinate[2];
-
-	      MirrorATCoordinates8[2][0] = MirrorATCoordinate[0];
-	      MirrorATCoordinates8[2][1] = MirrorATCoordinate[1] + ST4_R;
-	      MirrorATCoordinates8[2][2] = MirrorATCoordinate[2];
-	      MirrorATCoordinates8[3][0] = MirrorATCoordinate[0];
-	      MirrorATCoordinates8[3][1] = MirrorATCoordinate[1] + ST4_R;
-	      MirrorATCoordinates8[3][2] = MirrorATCoordinate[2];
-
-	      MirrorATCoordinates8[4][0] = MirrorATCoordinate[0] - ST4_R;
-	      MirrorATCoordinates8[4][1] = MirrorATCoordinate[1];
-	      MirrorATCoordinates8[4][2] = MirrorATCoordinate[2];
-	      MirrorATCoordinates8[5][0] = MirrorATCoordinate[0] - ST4_R;
-	      MirrorATCoordinates8[5][1] = MirrorATCoordinate[1];
-	      MirrorATCoordinates8[5][2] = MirrorATCoordinate[2];
-
-	      MirrorATCoordinates8[6][0] = MirrorATCoordinate[0];
-	      MirrorATCoordinates8[6][1] = MirrorATCoordinate[1] - ST4_R;
-	      MirrorATCoordinates8[6][2] = MirrorATCoordinate[2];
-	      MirrorATCoordinates8[7][0] = MirrorATCoordinate[0];
-	      MirrorATCoordinates8[7][1] = MirrorATCoordinate[1] - ST4_R;
-	      MirrorATCoordinates8[7][2] = MirrorATCoordinate[2];
-            }
-            else if (StationType == 6){ //4 LPDA's and 2 dipoles
-                for (int i = 0; i < 4; i++) {
-		  double phi = 0.5 * PI * i; //the phi angle of each LPA's center
-                   MirrorATCoordinates8[i][0] = MirrorATCoordinate[0] + ST4_R * cos(phi);
-                   MirrorATCoordinates8[i][1] = MirrorATCoordinate[1] + ST4_R * sin(phi);
-                   MirrorATCoordinates8[i][2] = MirrorATCoordinate[2];
-                }
-		MirrorATCoordinates8[4][0] = MirrorATCoordinate[0] + ST4_R/2.0;
-		MirrorATCoordinates8[4][1] = MirrorATCoordinate[1];
-		MirrorATCoordinates8[4][2] = MirrorATCoordinate[2];
-		MirrorATCoordinates8[5][0] = MirrorATCoordinate[0] - ST4_R/2.0;
-		MirrorATCoordinates8[5][1] = MirrorATCoordinate[1];
-		MirrorATCoordinates8[5][2] = MirrorATCoordinate[2];
-            }
-            else {
-                cout<<"Invalid Station type "<<StationType<<endl;
-            }
-            */
-            //Set Antenna Types (This better be the same as for the non-mirrored case)
-            int AntType[N_Ant_perST];
+            //Set Antenna Positions, type and orientation
 	    //type 0 = Isotropic antenna response
             //type 1 = 100MHz theoretical LPDA (original ShelfMC model)
             //type 2 = 100MHz Create LPDA, Anna's WhippleD model
             //type 3 = Ara Dipole
-	    for (int i = 0; i < N_Ant_perST; i++) {
-	      AntType[i]=StationGeometry[i].Type;
-	    }
-
-	    /*Don't need this special case stuff anymore. Delete after checkig new method
-            if (StationType == 0){
-                for (int i = 0; i < N_Ant_perST; i++) {
-                    AntType[i]=0;
-                }
-            }
-            else if (StationType == 1){
-                for (int i = 0; i < N_Ant_perST; i++) {
-                    AntType[i]=1;
-                }
-            }
-            else if (StationType == 2 || StationType == 3 || StationType == 4){
-                for (int i = 0; i < N_Ant_perST; i++) {
-                    AntType[i]=2;
-                }
-            }
-            else if (StationType == 5){
-                for (int i = 0; i < N_Ant_perST; i++) {
-                    AntType[i]=3;
-                }
-            }
-            else if (StationType == 6){
-                for (int i = 0; i < N_Ant_perST; i++) {
-		  if (i < 4){ 
-		    AntType[i]=2;
-		  }
-		  else{
-		    AntType[i]=3;
-		  }
-                }
-            }
-            else {
-                cout<<"Invalid Station type "<<StationType<<endl;
-            }
-	    */
-            //Set Antenna Orientation (Flip z component WRT non-mirrored case)
+            double MirrorATCoordinates8[N_Ant_perST][3];//the detailed position of the center of each LPA in a station         
+            int AntType[N_Ant_perST];
             double MirrorAnt_n_boresight[N_Ant_perST][3];
             double MirrorAnt_n_eplane[N_Ant_perST][3];
 
-	    for (int i = 0; i < N_Ant_perST; i++) {
+	    for  (int i = 0; i < N_Ant_perST; i++) {
+	      AntType[i]=StationGeometry[i].Type;
 	      for (int j = 0; j<3; j++){
+		MirrorATCoordinates8[i][j] = MirrorATCoordinate[j] + StationGeometry[i].position[j];
 		MirrorAnt_n_eplane[i][j]=StationGeometry[i].n_eplane[j];
 		MirrorAnt_n_boresight[i][j]=StationGeometry[i].n_boresight[j];
-	      }
+		  }
+	      MirrorATCoordinates8[i][2] = MirrorATCoordinate[2] - StationGeometry[i].position[2];//'cause mirror
 	      MirrorAnt_n_eplane[i][2]=-StationGeometry[i].n_eplane[2];//'cause mirror
-	      MirrorAnt_n_boresight[i][2]=-StationGeometry[i].n_boresight[2];	      
+	      MirrorAnt_n_boresight[i][2]=-StationGeometry[i].n_boresight[2];//'cause mirror	    	      
 	    }
-	    /*Don't need this special case stuff anymore. Delete after confirming new method
-            if (StationType == 0 || StationType == 1 || StationType == 2 || StationType == 5 ) {
-                for (int i = 0; i < N_Ant_perST; i++) {
-                    MirrorAnt_n_eplane[i][0] = cos((0.5 + i * (2. / N_Ant_perST))*PI);
-                    MirrorAnt_n_eplane[i][1] = sin((0.5 + i * (2. / N_Ant_perST))*PI);
-                    MirrorAnt_n_eplane[i][2] = 0.;
-                    MirrorAnt_n_boresight[i][0] = 0.;
-                    MirrorAnt_n_boresight[i][1] = 0.;
-                    MirrorAnt_n_boresight[i][2] = 1.; //facing up now, since Stn is mirrored
-                }
-            }
-            else if (StationType == 3) {
-	      MirrorAnt_n_eplane[0][0] = 0.;
-	      MirrorAnt_n_eplane[0][1] = 1.;
-	      MirrorAnt_n_eplane[0][2] = 0.;
-	      MirrorAnt_n_eplane[1][0] = 0.;
-	      MirrorAnt_n_eplane[1][1] = -1.;
-	      MirrorAnt_n_eplane[1][2] = 0.;
 
-	      MirrorAnt_n_eplane[2][0] = -1.;
-	      MirrorAnt_n_eplane[2][1] = 0.;
-	      MirrorAnt_n_eplane[2][2] = 0.;
-	      MirrorAnt_n_eplane[3][0] = 1.;
-	      MirrorAnt_n_eplane[3][1] = 0.;
-	      MirrorAnt_n_eplane[3][2] = 0.;
-
-	      MirrorAnt_n_eplane[4][0] = 0.;
-	      MirrorAnt_n_eplane[4][1] = 1.;
-	      MirrorAnt_n_eplane[4][2] = 0.;
-	      MirrorAnt_n_eplane[5][0] = 0.;
-	      MirrorAnt_n_eplane[5][1] = -1.;
-	      MirrorAnt_n_eplane[5][2] = 0.;
-
-	      MirrorAnt_n_eplane[6][0] = -1.;
-	      MirrorAnt_n_eplane[6][1] = 0.;
-	      MirrorAnt_n_eplane[6][2] = 0.;
-	      MirrorAnt_n_eplane[7][0] = 1.;
-	      MirrorAnt_n_eplane[7][1] = 0.;
-	      MirrorAnt_n_eplane[7][2] = 0.;
-
-
-	      MirrorAnt_n_boresight[0][0] = 1.;
-	      MirrorAnt_n_boresight[0][1] = 0.;
-	      MirrorAnt_n_boresight[0][2] = 0.;
-	      MirrorAnt_n_boresight[1][0] = -1.;
-	      MirrorAnt_n_boresight[1][1] = 0.;
-	      MirrorAnt_n_boresight[1][2] = 0.;
-
-	      MirrorAnt_n_boresight[2][0] = 0.;
-	      MirrorAnt_n_boresight[2][1] = 1.;
-	      MirrorAnt_n_boresight[2][2] = 0.;
-	      MirrorAnt_n_boresight[3][0] = 0.;
-	      MirrorAnt_n_boresight[3][1] = -1.;
-	      MirrorAnt_n_boresight[3][2] = 0.;
-
-	      MirrorAnt_n_boresight[4][0] = 1.;
-	      MirrorAnt_n_boresight[4][1] = 0.;
-	      MirrorAnt_n_boresight[4][2] = 0.;
-	      MirrorAnt_n_boresight[5][0] = -1.;
-	      MirrorAnt_n_boresight[5][1] = 0.;
-	      MirrorAnt_n_boresight[5][2] = 0.;
-
-	      MirrorAnt_n_boresight[6][0] = 0.;
-	      MirrorAnt_n_boresight[6][1] = 1.;
-	      MirrorAnt_n_boresight[6][2] = 0.;
-	      MirrorAnt_n_boresight[7][0] = 0.;
-	      MirrorAnt_n_boresight[7][1] = -1.;
-	      MirrorAnt_n_boresight[7][2] = 0.;
-            }
-            else if (StationType == 4) {
-	      MirrorAnt_n_eplane[0][0] = 0.;
-	      MirrorAnt_n_eplane[0][1] = 0.;
-	      MirrorAnt_n_eplane[0][2] = -1.;
-	      MirrorAnt_n_eplane[1][0] = 0.;
-	      MirrorAnt_n_eplane[1][1] = 0.;
-	      MirrorAnt_n_eplane[1][2] = 1.;
-
-	      MirrorAnt_n_eplane[2][0] = 0.;
-	      MirrorAnt_n_eplane[2][1] = 0.;
-	      MirrorAnt_n_eplane[2][2] = -1.;
-	      MirrorAnt_n_eplane[3][0] = 0.;
-	      MirrorAnt_n_eplane[3][1] = 0.;
-	      MirrorAnt_n_eplane[3][2] = 1.;
-
-	      MirrorAnt_n_eplane[4][0] = 0.;
-	      MirrorAnt_n_eplane[4][1] = 0.;
-	      MirrorAnt_n_eplane[4][2] = -1.;
-	      MirrorAnt_n_eplane[5][0] = 0.;
-	      MirrorAnt_n_eplane[5][1] = 0.;
-	      MirrorAnt_n_eplane[5][2] = 1.;
-
-	      MirrorAnt_n_eplane[6][0] = 0.;
-	      MirrorAnt_n_eplane[6][1] = 0.;
-	      MirrorAnt_n_eplane[6][2] = -1.;
-	      MirrorAnt_n_eplane[7][0] = 0.;
-	      MirrorAnt_n_eplane[7][1] = 0.;
-	      MirrorAnt_n_eplane[7][2] = 1.;
-
-
-	      MirrorAnt_n_boresight[0][0] = 1.;
-	      MirrorAnt_n_boresight[0][1] = 0.;
-	      MirrorAnt_n_boresight[0][2] = 0.;
-	      MirrorAnt_n_boresight[1][0] = -1.;
-	      MirrorAnt_n_boresight[1][1] = 0.;
-	      MirrorAnt_n_boresight[1][2] = 0.;
-
-	      MirrorAnt_n_boresight[2][0] = 0.;
-	      MirrorAnt_n_boresight[2][1] = 1.;
-	      MirrorAnt_n_boresight[2][2] = 0.;
-	      MirrorAnt_n_boresight[3][0] = 0.;
-	      MirrorAnt_n_boresight[3][1] = -1.;
-	      MirrorAnt_n_boresight[3][2] = 0.;
-
-	      MirrorAnt_n_boresight[4][0] = 1.;
-	      MirrorAnt_n_boresight[4][1] = 0.;
-	      MirrorAnt_n_boresight[4][2] = 0.;
-	      MirrorAnt_n_boresight[5][0] = -1.;
-	      MirrorAnt_n_boresight[5][1] = 0.;
-	      MirrorAnt_n_boresight[5][2] = 0.;
-
-	      MirrorAnt_n_boresight[6][0] = 0.;
-	      MirrorAnt_n_boresight[6][1] = 1.;
-	      MirrorAnt_n_boresight[6][2] = 0.;
-	      MirrorAnt_n_boresight[7][0] = 0.;
-	      MirrorAnt_n_boresight[7][1] = -1.;
-	      MirrorAnt_n_boresight[7][2] = 0.;
-            }
-            else if (StationType == 6) {
-	      for (int i = 0; i < N_Ant_perST; i++) {//this is ok because the eplane vector doesn't matter for dipoles
-                    MirrorAnt_n_eplane[i][0] = cos((0.5 + i * 0.5)*PI);
-                    MirrorAnt_n_eplane[i][1] = sin((0.5 + i * 0.5)*PI);
-                    MirrorAnt_n_eplane[i][2] = 0.;
-                    MirrorAnt_n_boresight[i][0] = 0.;
-                    MirrorAnt_n_boresight[i][1] = 0.;
-                    MirrorAnt_n_boresight[i][2] = 1.;//facing up not, since station is mirrored
-                }
-            }
-            else {
-                cout<<"Invalid Station Type"<<endl;
-            }
-	    */
             //define some variables before going into the antenna loop of one station
 
             //variables after antenna trigger(L1)
@@ -3834,10 +3344,10 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 		    n_arrival_mirror[i]=-nsignal_mirror_atAT[i];
 		  }
 
-		  if (StationType == 2 || StationType == 4 || StationType == 3 || StationType == 6)//don't bother loading if not using antenna type
+		  if (AntType[WhichMirrorAntenna]==2)//don't bother loading if not using antenna type
 		    Create100->LoadGain(n_boresight_mirror, n_eplane_mirror, n_arrival_mirror);
 
-		  if (StationType == 5 || StationType == 6)
+		  if (AntType[WhichMirrorAntenna]==3)
 		    ARA_Bicone->LoadGain(n_boresight_mirror,n_arrival_mirror);
 		  
 
