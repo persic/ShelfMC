@@ -2516,6 +2516,9 @@ int ReadInputXML(const char * infn){
   ErrorStat = SetBoolValueXML(pRoot, SHADOWING, "SHADOWING");
   if (ErrorStat) {printf(ErrMesg); return 1;}
 
+  ErrorStat = SetBoolValueXML(pRoot, H_PROP, "H_PROP");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
   ErrorStat = SetBoolValueXML(pRoot, DEPTH_DEPENDENT_N, "DEPTH_DEPENDENT_N");
   if (ErrorStat) {printf(ErrMesg); return 1;}
 
@@ -2577,6 +2580,9 @@ int ReadInputXML(const char * infn){
   if (ErrorStat) {printf(ErrMesg); return 1;}
 
   ErrorStat = SetDoubleValueXML(pRoot, ATTEN_DOWN, "ATTEN_DOWN");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetDoubleValueXML(pRoot, ATTEN_H, "ATTEN_H");
   if (ErrorStat) {printf(ErrMesg); return 1;}
 
   ErrorStat = SetDoubleValueXML(pRoot, ATTEN_FACTOR, "ATTEN_FACTOR");

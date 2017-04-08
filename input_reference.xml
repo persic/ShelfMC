@@ -11,6 +11,7 @@
   <TNOISE>350.0</TNOISE> <!--noise temperature in Kelvin-->
   <TAUREGENERATION>1</TAUREGENERATION> <!--if 1=tau regeneration effect, if 0=original-->
   <SHADOWING>1</SHADOWING> <!-- Apply the Shadow Zone Veto--> 
+  <H_PROP>0</H_PROP> <!-- Use an effective attenuation length model for horizontal propigation.  Only use if SHADOWING==0--> 
   <DEPTH_DEPENDENT_N>1</DEPTH_DEPENDENT_N> <!--0 means uniform firn, 1 means n_firn is a function of depth-->
   <FIRN>1</FIRN> <!--KD: ensure DEPTH_DEPENDENT is off if FIRN is 0-->
   <ICETHICK>575.0</ICETHICK> <!--thickness of ice including firn, 575m at Moore's Bay-->
@@ -19,6 +20,7 @@
   <CONST_ATTENLENGTH>0</CONST_ATTENLENGTH> <!--use constant attenuation length if ==1-->
   <ATTEN_UP>500.0</ATTEN_UP> <!--Average Attenuation Length of the ice-->
   <ATTEN_DOWN>250.0</ATTEN_DOWN> <!--not used anymore except for CONST_ATTENLENGTH-->
+  <ATTEN_H>400.0</ATTEN_H> <!--Effective Attenuation Length for horizontal propagation.  Needs H_PROP==1-->
   <ATTEN_FACTOR>1.0</ATTEN_FACTOR> <!--scale factor for attenuation length-->
   <REFLECT_RATE>0.9</REFLECT_RATE> <!--power reflection rate at the ice bottom-->
   <ATGap>1000.0</ATGap> <!--distance between stations in meters-->

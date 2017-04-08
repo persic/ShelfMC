@@ -1039,7 +1039,9 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
    double abs_time;//absolute time the signal uses to reach the antenna
    double abs_time_mirror;
    double hy1 = 0, hy2 = 0; //the real path in each layer for direct events, h1--path in ice, h2--path in firn
+   double hy3 = 0; //horizontal distance traveled for H_PROP effect
    double hy1_mirror = 0, hy2_mirror = 0; //the real path in each layer for reflected events
+   double hy3_mirror = 0; //horizontal distance traveled for H_PROP effect
    //for dipole
    double wavelength[NFREQ];
    double heff_dipole[NFREQ];//effective height of the dipole antenna
@@ -1360,7 +1362,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                      hy1 = 0; //nothing in bulk ice, KD
                   }
 
-                  else {
+                  else 
                      double x1 = 1.e-100;
                      double x3 = 0.;
                      double h1 = ICETHICK - FIRNDEPTH - posnu[2];
@@ -2139,7 +2141,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 
                   if (ATTEN_FREQ) {
 //                     if (ST_TYPE == 4) {
-                        if (vmmhz_max_freq[0]*heff_max_LPA * BW < NV)
+		    if (vmmhz_max_freq[0]*heff_max_LPA * BW < NV)//there should be a safety factor here, since there are more antenna types
                            continue;
 //                     }
                      GetVmMHz_freq(vmmhz_max_freq, vmmhz1m_max, pnu, vmmhz);
@@ -2147,7 +2149,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 
                   else {
 //                     if (ST_TYPE == 4) {
-                        if (vmmhz_max * heff_max_LPA * BW < NV)
+                        if (vmmhz_max * heff_max_LPA * BW < NV)//there should be a safety factor here, since there are more antenna types
                            continue;
 //                     }
                      //    cout<<"I'm here 2"<<endl;

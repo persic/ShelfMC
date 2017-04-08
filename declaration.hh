@@ -35,6 +35,7 @@ int ATTEN_EXP = 1; //use the data from Minna Bluff measurement
 int ATTEN_FREQ = 0; //let attenuation length be a function of frequency when f<122MHz
 double ATTEN_UP;
 double ATTEN_DOWN;
+double ATTEN_H; //Effective attenuation length for horizontal propagation
 int SIGNAL_FLUCT = 0; //1=add noise fluctuation to signal or 0=do not
 double ICETHICK; //575 for Moore's Bay
 int FIRN;//0 means only uniform ice, 1 means ice and firn 2 uniform layers.
@@ -61,8 +62,8 @@ double n1 = 1.78; //ice refraction index at the interaction position
 
 int TAUREGENERATION = 1; //KD: if 1=tau regeneration effect, if 0=original
 int PLANEWAVE = 1; //KD: if 1: plane wave calculations is on //check code for multistation
-//int SHADOWING = 0; //if FIRN is 0, it automatically doesn't apply
 int SHADOWING; //now shifted to steering file 11/17/11
+int H_PROP; //Use Chris' horizontal propagation model with effective attenuation length
 int HEXAGONAL = 0; //note changes in row,col(input file) and ATGAPs(function file) (500m, 866m), works for 7 stations
 double HRAfactor = 1; //sets the spacing scale wrt to 1km
 double FIRNfactor = 1;
