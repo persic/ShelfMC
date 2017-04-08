@@ -61,7 +61,7 @@ ofstream outantposall;
 TRandom3 Rand3;
 
 //Initialize classes for antenna model framework
-LPDA* Create100 = new LPDA((char *)"WIPLD_antennamodel_firn_v2.root"); 
+LPDA* Create100 = new LPDA((char *)"WIPLD_antennamodel_firn_v2.root");
 ARA_Ant* ARA_Bicone = new ARA_Ant((char *)"ARA_antennamodel_bicone.root");
 
 //Declare a Vector of AntennaPlacements which defines the station geometry
@@ -1066,6 +1066,9 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
    double phi_nposnu2ST = 0, phi_nposnu2MirrorST = 0;
    double nsignal_atST[3], nsignal_atMirrorST[3]; //KD
 
+   bool shadowed = false;
+   bool shadowed_mirror = false;
+
    GetMaxDis(pnu, Max_distance);
    Max_distance = 4000.; //KD Max_distance=10000.;
    EDGE = Max_distance / 2.;
@@ -1138,11 +1141,11 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 
 
    for (int inu = 0; inu < NNU; inu++) {
-      
+
       if ( (inu%10000)==0 ) {
          fprintf(stderr, "Processing %d / %d...            \r", inu, NNU);
       }
-      
+
 
       if (SPECTRUM) {
          if (WIDESPECTRUM) {
@@ -1900,6 +1903,22 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                " n_pol "<<sphangles[0]*RAD2DEG<<"deg, "<<sphangles[1]*RAD2DEG<<"deg"<<endl;
                }
                */
+
+               //SHADOWING ONLY OCCURS FOR FIRN PRESENCE
+               shadowed = false;
+               hy3=0;
+               if (FIRN) {
+               //KD adding shadowing cut only for direct
+                   hy3 = (sqrt((posnu[0] - ATCoordinate[0]) * (posnu[0] - ATCoordinate[0]) + (posnu[1] - ATCoordinate[1]) * (posnu[1] - ATCoordinate[1])) - (GetRange(posnu[2]) + 20.4)); //adding 25.7 or 20.4 to allow for further bending up to -2m. Also making it with ref to station center coord, for multi station simulation.
+
+                   if (hy3 > 0){
+                       shadowed = true;
+                   }
+                   if (SHADOWING && shadowed){
+                       continue;
+                   }
+                 }//end FIRN for SHADOWING
+
                double theta1 = theta2;
                hy1 = d_posnu2AT;
                hy2 = 0.; //if no firn
@@ -2228,7 +2247,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                abs_time = (hy1 * NICE + hy2 * NFIRN) / C;
 
 //Replace with new antenna model               if (ST_TYPE == 4) {
-/* //OldShelfMC                 
+/* //OldShelfMC
 		  if (FIRN)
                      GetHitAngle_LPA(WhichAntenna, N_Ant_perST, nsignal_atAT, n_pol, hitangle_e_LPA, hitangle_h_LPA, e_component_LPA, h_component_LPA); //KD:added N_Ant_perST
                   else
@@ -2247,7 +2266,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 		    GetHitAngle(n_boresight, n_eplane, nsignal_atAT, n_pol, hitangle_e_LPA, hitangle_h_LPA, e_component_LPA, h_component_LPA);
                   else
 		    GetHitAngle(n_boresight, n_eplane, nposnu2AT, n_pol, hitangle_e_LPA, hitangle_h_LPA, e_component_LPA, h_component_LPA);
-		  
+
                   double volt_LPA = 0; //volts of log periodic antenna
                   double volt_LPA_preNoise = 0;
                   term_LPA = 0; //zero term_LPA
@@ -2263,7 +2282,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 		  for (int i = 0;i<3;i++){
 		    n_arrival[i]=-nsignal_atAT[i];
 		  }
-		  
+
 		  if (AntType[WhichAntenna]==2)//don't bother if we aren't using this antenna model
 		    Create100->LoadGain(n_boresight, n_eplane, n_arrival);
 
@@ -2280,7 +2299,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 		    /* //2-13-2017 Moved to GetHeff()
                      term_LPA = vmmhz[i] * FREQ_BIN * 0.5 * GaintoHeight(gainv, freq[i] * 1.E6) *
                                 sqrt((pow(e_component_LPA * exp(-2 * ALOG2 * (hitangle_e_LPA / flare[0][i]) * (hitangle_e_LPA / flare[0][i])), 2)  +   pow(e_component_LPA * exp(-2 * ALOG2 * (hitangle_h_LPA / flare[1][i]) * (hitangle_h_LPA / flare[1][i])), 2)) / 2);
-		    */		    
+		    */
 		    if (FIRN)
 		      term_LPA = vmmhz[i] * FREQ_BIN * 0.5 * GetHeff(AntType[WhichAntenna], freq[i],n_boresight,n_eplane, nsignal_atAT, n_pol);
 		    else
@@ -2356,21 +2375,6 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 //cout<<inu<<" " <<Rand3.Gaus(0.,VNOISE)<<endl;
                      abs_time += Rand3.Gaus(0., TIMEPRECISION);
                   }
-
-                  if (FIRN) {
-                  //KD adding shadowing cut only for direct
-
-                      bool shadowed = false; 
-                      
-                      double h_prop_dist = (sqrt((posnu[0] - ATCoordinate[0]) * (posnu[0] - ATCoordinate[0]) + (posnu[1] - ATCoordinate[1]) * (posnu[1] - ATCoordinate[1])) - (GetRange(posnu[2]) + 20.4)); //adding 25.7 or 20.4 to allow for further bending up to -2m. Also making it with ref to station center coord, for multi station simulation.
-                      
-                      if (h_prop_dist > 0){
-                          shadowed = true;
-                      }
-                      if (SHADOWING && shadowed){
-                          continue;
-                      }
-                    }
 
 //cout<<"||"<<inu<<"(DIR):"<<iRow_oncone.at(WhichStation)<<","<<iCol_oncone.at(WhichStation)<<","<<NV<<endl;
 
@@ -2711,7 +2715,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
             //type 1 = 100MHz theoretical LPDA (original ShelfMC model)
             //type 2 = 100MHz Create LPDA, Anna's WhippleD model
             //type 3 = Ara Dipole
-            double MirrorATCoordinates8[N_Ant_perST][3];//the detailed position of the center of each LPA in a station         
+            double MirrorATCoordinates8[N_Ant_perST][3];//the detailed position of the center of each LPA in a station
             int AntType[N_Ant_perST];
             double MirrorAnt_n_boresight[N_Ant_perST][3];
             double MirrorAnt_n_eplane[N_Ant_perST][3];
@@ -2725,7 +2729,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 		  }
 	      MirrorATCoordinates8[i][2] = MirrorATCoordinate[2] - StationGeometry[i].position[2];//'cause mirror
 	      MirrorAnt_n_eplane[i][2]=-StationGeometry[i].n_eplane[2];//'cause mirror
-	      MirrorAnt_n_boresight[i][2]=-StationGeometry[i].n_boresight[2];//'cause mirror	    	      
+	      MirrorAnt_n_boresight[i][2]=-StationGeometry[i].n_boresight[2];//'cause mirror
 	    }
 
             //define some variables before going into the antenna loop of one station
@@ -2830,18 +2834,20 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 
 //SHADOWING ONLY OCCURS FOR FIRN PRESENCE
 
+               shadowed_mirror = false;
+               hy3_mirror = 0;
                if (FIRN) {
                //KD adding shadowing cut only for reflected
                    bool shadowed_mirror = false;
-                   double h_prop_dist_mirror = (sqrt((posnu[0] - MirrorATCoordinate[0]) * (posnu[0] - MirrorATCoordinate[0]) + (posnu[1] -  MirrorATCoordinate[1]) * (posnu[1] - MirrorATCoordinate[1])) - (GetRange(-posnu[2]) + 20.4 ));
+                   hy3_mirror = (sqrt((posnu[0] - MirrorATCoordinate[0]) * (posnu[0] - MirrorATCoordinate[0]) + (posnu[1] -  MirrorATCoordinate[1]) * (posnu[1] - MirrorATCoordinate[1])) - (GetRange(-posnu[2]) + 20.4 ));
 
-                   if (h_prop_dist_mirror > 0){
+                   if (hy3_mirror > 0){
                           shadowed_mirror = true;
                       }
                       if (SHADOWING && shadowed_mirror){
                           continue;
                       }
-                   
+
                }//FIRN within SHADOWING
 
 
@@ -3313,7 +3319,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 		    GetHitAngle(n_boresight_mirror, n_eplane_mirror, nsignal_mirror_atAT, n_pol, hitangle_e_LPA, hitangle_h_LPA, e_component_LPA, h_component_LPA);
                   else
 		    GetHitAngle(n_boresight_mirror, n_eplane_mirror, nposnu2MirrorAT, n_pol, hitangle_e_LPA, hitangle_h_LPA, e_component_LPA, h_component_LPA);
-		  
+
                   double volt_LPA_mirror = 0; //volts of log periodic antenna
                   double volt_LPA_mirror_preNoise = 0;
                   term_LPA = 0; //zero term_LPA
@@ -3338,7 +3344,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 
 		  if (AntType[WhichMirrorAntenna]==3)
 		    ARA_Bicone->LoadGain(n_boresight_mirror,n_arrival_mirror);
-		  
+
 
                   for (int i = 0; i < NFREQ; i++) {
 
@@ -4105,13 +4111,13 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 
 //   output << "Veff= " << Veff << " km3sr  " << "NNU= " << NNU << " volume=" << volume << " seed= " << seed << " AT/ST= " << N_Ant_Trigger << "/" << N_Ant_perST << " integ_weight= " << integ_weight << " " << "  NSIGMA=" << NSIGMA << " gainv=" << gainv << " " << " array=" << NROWS << "x" << NCOLS << " R=" << REFLECT_RATE << " ATTEN_UP=" << ATTEN_UP;
 
-   output << "Veff=" << Veff << " km3sr; integ_weight=" 
-          << integ_weight << " NNU=" << NNU << " volume=" << volume 
-          << " seed=" << seed << "  AT/ST= " << N_Ant_Trigger << "/" 
-          << N_Ant_perST << "  NSIGMA=" << NSIGMA << " gainv=" 
-          << gainv << " " << "array=" << NROWS << "x" << NCOLS 
-          << " E2dNdE=" << E2dNdE << " ST4_R=" << ST4_R 
-          << " R=" << REFLECT_RATE 
+   output << "Veff=" << Veff << " km3sr; integ_weight="
+          << integ_weight << " NNU=" << NNU << " volume=" << volume
+          << " seed=" << seed << "  AT/ST= " << N_Ant_Trigger << "/"
+          << N_Ant_perST << "  NSIGMA=" << NSIGMA << " gainv="
+          << gainv << " " << "array=" << NROWS << "x" << NCOLS
+          << " E2dNdE=" << E2dNdE << " ST4_R=" << ST4_R
+          << " R=" << REFLECT_RATE
           <<" ATTEN_UP=" << ATTEN_UP<< endl;
 
 //" ICETHICK="<<ICETHICK;
@@ -4200,4 +4206,3 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
    return 0;
 
 }
-
