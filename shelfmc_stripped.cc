@@ -1362,7 +1362,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                      hy1 = 0; //nothing in bulk ice, KD
                   }
 
-                  else 
+                  else {
                      double x1 = 1.e-100;
                      double x3 = 0.;
                      double h1 = ICETHICK - FIRNDEPTH - posnu[2];
@@ -2357,25 +2357,20 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                      abs_time += Rand3.Gaus(0., TIMEPRECISION);
                   }
 
-                  if (SHADOWING) {
-                     if (FIRN) {
-                        //KD adding shadowing cut only for direct
-                        if (posnu[2] > (ICETHICK - FIRNDEPTH)) { //here means it's in firn
+                  if (FIRN) {
+                  //KD adding shadowing cut only for direct
 
-                           if (sqrt((posnu[0] - ATCoordinate[0]) * (posnu[0] - ATCoordinate[0]) + (posnu[1] - ATCoordinate[1]) * (posnu[1] - ATCoordinate[1])) > (GetRange(posnu[2]) + 20.4)) //adding 25.7 or 20.4 to allow for further bending up to -2m. Also making it with ref to station center coord, for multi station simulation.
-                              continue;
-                        }
-
-                        if (posnu[2] < (ICETHICK - FIRNDEPTH)) { //here in ice layer
-//making ice-firn boundary ray more dynamic 11/27/11
-                           if (sqrt((posnu[0] - ATCoordinate[0]) * (posnu[0] - ATCoordinate[0]) + (posnu[1] - ATCoordinate[1]) * (posnu[1] - ATCoordinate[1])) > (GetRange(ICETHICK - FIRNDEPTH) + 20.4 + (ICETHICK - FIRNDEPTH - posnu[2])))
-
-                              //if (sqrt((posnu[0]- ATCoordinate[0])*(posnu[0]- ATCoordinate[0]) + (posnu[1]- ATCoordinate[1])*(posnu[1]- ATCoordinate[1])) > (175.9 + 20.4 + (ICETHICK-FIRNDEPTH-posnu[2])))
-                              // we took radial distance as [firn distance + the distance below firn] as we approximated 45degrees for shadowing, as this is nearly the TIR angle from 1.8 to 1.3
-                              continue;
-                        }
-                     }
-                  }
+                      bool shadowed = false; 
+                      
+                      double h_prop_dist = (sqrt((posnu[0] - ATCoordinate[0]) * (posnu[0] - ATCoordinate[0]) + (posnu[1] - ATCoordinate[1]) * (posnu[1] - ATCoordinate[1])) - (GetRange(posnu[2]) + 20.4)); //adding 25.7 or 20.4 to allow for further bending up to -2m. Also making it with ref to station center coord, for multi station simulation.
+                      
+                      if (h_prop_dist > 0){
+                          shadowed = true;
+                      }
+                      if (SHADOWING && shadowed){
+                          continue;
+                      }
+                    }
 
 //cout<<"||"<<inu<<"(DIR):"<<iRow_oncone.at(WhichStation)<<","<<iCol_oncone.at(WhichStation)<<","<<NV<<endl;
 
@@ -2834,28 +2829,20 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 
 
 //SHADOWING ONLY OCCURS FOR FIRN PRESENCE
-               if (SHADOWING) {
-                  if (FIRN) {
-                     //KD adding shadowing cut only for reflected
 
-                     /* //HAVE TO THINK HOW TO INSTATE THIS FIRN MODIFIED THETA
-                     if(posnu[2]>(ICETHICK-FIRNDEPTH)){ //here means it's in firn
-                        if (sqrt((posnu[0] - ATCoordinate[0])*(posnu[0]-ATCoordinate[0]) + (posnu[1]-ATCoordinate[1])*(posnu[1]-ATCoordinate[1])) > (GetRange(posnu[2])+20.4)) //adding 25.7 or 20.4 to allow for further bending up to -2m. Also making it with ref to station center coordinates with ATCoordinate, for multi station simulation.
-                        continue;
-                              }
-                            */
+               if (FIRN) {
+               //KD adding shadowing cut only for reflected
+                   bool shadowed_mirror = false;
+                   double h_prop_dist_mirror = (sqrt((posnu[0] - MirrorATCoordinate[0]) * (posnu[0] - MirrorATCoordinate[0]) + (posnu[1] -  MirrorATCoordinate[1]) * (posnu[1] - MirrorATCoordinate[1])) - (GetRange(-posnu[2]) + 20.4 ));
 
-
-//if(posnu[2]<(ICETHICK-FIRNDEPTH)){ //here in ice layer
-
-                     if (sqrt((bounce[0] - MirrorATCoordinate[0]) * (bounce[0] - MirrorATCoordinate[0]) + (bounce[1] - MirrorATCoordinate[1]) * (bounce[1] - MirrorATCoordinate[1])) > (GetRange(ICETHICK - FIRNDEPTH) + 20.4 + (ICETHICK - FIRNDEPTH - bounce[2])))
-//if (sqrt((bounce[0]- MirrorATCoordinate[0])*(bounce[0]- MirrorATCoordinate[0]) + (bounce[1]- MirrorATCoordinate[1])*(bounce[1]- MirrorATCoordinate[1])) > (175.9 + 20.4 + (ICETHICK-FIRNDEPTH-bounce[2])))
-// we took radial distance as [firn distance + the distance below firn] as we approximated 45degrees for shadowing, as this is nearly the TIR angle from 1.8 to 1.3. hence horizontal range is same as depth.
-                        continue;
-                     //      }
-                  }//FIRN within SHADOWING
-               } // SHADOWING
-
+                   if (h_prop_dist_mirror > 0){
+                          shadowed_mirror = true;
+                      }
+                      if (SHADOWING && shadowed_mirror){
+                          continue;
+                      }
+                   
+               }//FIRN within SHADOWING
 
 
                if (FIRN) {

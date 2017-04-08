@@ -1896,18 +1896,19 @@ double GetN(double* posnu)
 }
 
 
-double GetRange(double firndepth)//NOTE: THIS VARIABLE firndepth not to be confused with FIRNDEPTH. this is local and a bit of a misnomer
+double GetRange(double height)//NOTE: THIS VARIABLE firndepth not to be confused with FIRNDEPTH. this is local and a bit of a misnomer
 //KD: 9/23/2010 introducing a variable horizontal range due to shadowing
 //KD need to have this activated only if FIRN present
-// only valid within FIRN
-
 {
-//return 24.4*pow((ICETHICK-firndepth),0.48) - 8.7;
-   return 13.09 * pow((ICETHICK - firndepth), 0.56) - 0.74; //fit to range integration
+    double depth = ICETHICK - height;
+    if (depth<=FIRNDEPTH){
+        return 13.09 * pow(depth, 0.56) - 0.74; //fit to range integration
+    }
+    else{
+        return 13.09 * pow(FIRNDEPTH, 0.56) - 0.74 + (depth-FIRNDEPTH); //below firn, extend at 45 degrees
+    }
+        
 }
-
-
-
 
 void Zero(double* array, int i)
 {
