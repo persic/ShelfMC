@@ -107,7 +107,7 @@ const double CONEWIDTH = 20.*DEG2RAD;
 const int NFREQ = 95; //number of frequency bins 95//380
 const int NVIEWANGLE = 7; //number of viewing angles to look at the signal,on Seckel's request
 //const double FREQ_LOW=10;//MHz
-//const double FREQ_HIGH=5000;//MHz Assigned in input.txt 
+//const double FREQ_HIGH=5000;//MHz Assigned in input.txt
 //const double FREQ_LOW = 100; //MHz
 //const double FREQ_HIGH = 1000; //MHz;
 //const double BW = FREQ_HIGH - FREQ_LOW; //MHz Now Declaired in shelfmc_stripped.cc
@@ -261,6 +261,7 @@ void GetMaxDis(double pnu, double& Max_distance);
 double GetLPM(double);
 double Gety();
 double fx(double x, double h1, double h2, double nconst, double deltax);
+void Refract(double deltax, double yIce, double yFirn, double nVertex, double nSurface, double &dIce, double &dFirn, double &theta1, double &theta2);
 
 //Fn's for reading in from XML
 int SetIntValueXML(tinyxml2::XMLNode * pRoot, int &IntParam, const char* ParamName);

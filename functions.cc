@@ -226,7 +226,7 @@ void GetAttenlength(double* posnu, double& attenlength_up, double& attenlength_d
 	  sum_down += dx * AttenLengthAtDepth(dx * bin + dx2 + effectivedepth); //down to the ice bottom
 	 xtot += dx;
 	}
-      
+
 
       dx = effectivemaxdepth * 0.005;
       if (dx < 1.e-5)
@@ -1294,7 +1294,7 @@ double GetHeff(int AntType, double freq, double* n_boresight, double* n_eplane, 
 
     double hitangle_e, hitangle_h, e_component, h_component;
     GetHitAngle(n_boresight, n_eplane, n_prop, n_pol, hitangle_e, hitangle_h, e_component, h_component);
-    
+
     double flare_i[4];
     GetFlare(freq, flare_i);
 
@@ -1302,7 +1302,7 @@ double GetHeff(int AntType, double freq, double* n_boresight, double* n_eplane, 
            sqrt((pow(e_component * exp(-2 * ALOG2 * (hitangle_e / flare_i[0]) * (hitangle_e / flare_i[0])), 2)  +   pow(e_component * exp(-2 * ALOG2 * (hitangle_h / flare_i[1]) * (hitangle_h / flare_i[1])), 2)) / 2);
 
     //    cout<<"AntType = "<<AntType<<", freq = "<<freq<<", Heff = "<<Heff<<endl;
-    
+
     return Heff;
   }
   else if (AntType==2){//100MHz Create LPDA with Anna's Antenna Model Framework
@@ -1907,7 +1907,7 @@ double GetRange(double height)//NOTE: THIS VARIABLE firndepth not to be confused
     else{
         return 13.09 * pow(FIRNDEPTH, 0.56) - 0.74 + (depth-FIRNDEPTH); //below firn, extend at 45 degrees
     }
-        
+
 }
 
 void Zero(double* array, int i)
@@ -1926,6 +1926,36 @@ void Zero(int* array, int i)
 double fx(double x, double h1, double h2, double nconst, double deltax)
 {
    return h1 / sqrt(1 / x - 1) + h2 / sqrt(nconst / x - 1) - deltax;
+}
+
+void Refract(double deltax, double yIce, double yFirn, double nVertex, double nSurface, double &dIce, double &dFirn, double &theta1, double &theta2)
+{
+  double x1 = 1.e-100;
+  double x3 = 0.;
+  double nconst = nSurface * nSurface / nVertex / nVertex; //here nSurface=NFIRN, nVertex=NICE
+  double x2 = nconst; // x2 is not angle. x2=sin(theta)^2
+
+  if (deltax == 0) {
+     theta1 = 0.;
+     theta2 = 0.;
+     dIce = yIce;
+     dFirn = yFirn;
+  }
+
+  else {
+     do {
+        x3 = (x1 + x2) / 2.;
+        if (fx(x1, yIce, yFirn, nconst, deltax)*fx(x3, yIce, yFirn, nconst, deltax) < 0)
+           x2 = x3;
+        else x1 = x3;
+     }while (fabs(fx(x3, yIce, yFirn, nconst, deltax)) > 0.00001);
+
+     theta1 = asin(sqrt(x3));
+     theta2 = asin(nVertex * sin(theta1) / nSurface);
+     dIce = yIce / cos(theta1);
+     dFirn = yFirn / cos(theta2);
+  }
+
 }
 
 double GetVmMHz1m(double pnu, double freq, double X0DEPTH, double ECDEPTH, double NDEPTH, double AEXDEPTH)
@@ -2435,11 +2465,11 @@ int ReadStnGeo(const char * infn, int &NAntPerStn, vector<AntennaPlacement> &Vec
 
     tinyxml2::XMLElement * pSubElement;
     ErrorStat = SetElementXML(pListElement,pSubElement,"position");
-    if (ErrorStat) {printf(ErrMesg); return 1;}    
+    if (ErrorStat) {printf(ErrMesg); return 1;}
 
     tinyxml2::XMLElement * pValue;
     ErrorStat = SetElementXML(pSubElement,pValue,"value");
-    if (ErrorStat) {printf(ErrMesg); return 1;} 
+    if (ErrorStat) {printf(ErrMesg); return 1;}
 
     for (int i =0; i<3; i++){
       eResult = pValue->QueryDoubleText(&iAntenna.position[i]);
@@ -2448,10 +2478,10 @@ int ReadStnGeo(const char * infn, int &NAntPerStn, vector<AntennaPlacement> &Vec
     }
 
     ErrorStat = SetElementXML(pListElement,pSubElement,"n_boresight");
-    if (ErrorStat) {printf(ErrMesg); return 1;} 
+    if (ErrorStat) {printf(ErrMesg); return 1;}
 
     ErrorStat = SetElementXML(pSubElement,pValue,"value");
-    if (ErrorStat) {printf(ErrMesg); return 1;} 
+    if (ErrorStat) {printf(ErrMesg); return 1;}
 
     for (int i =0; i<3; i++){
       eResult = pValue->QueryDoubleText(&iAntenna.n_boresight[i]);
@@ -2460,10 +2490,10 @@ int ReadStnGeo(const char * infn, int &NAntPerStn, vector<AntennaPlacement> &Vec
     }
 
     ErrorStat = SetElementXML(pListElement,pSubElement,"n_eplane");
-    if (ErrorStat) {printf(ErrMesg); return 1;} 
+    if (ErrorStat) {printf(ErrMesg); return 1;}
 
     ErrorStat = SetElementXML(pSubElement,pValue,"value");
-    if (ErrorStat) {printf(ErrMesg); return 1;} 
+    if (ErrorStat) {printf(ErrMesg); return 1;}
 
     for (int i =0; i<3; i++){
       eResult = pValue->QueryDoubleText(&iAntenna.n_eplane[i]);
@@ -2507,7 +2537,7 @@ int ReadInputXML(const char * infn){
 
   ErrorStat = SetBoolValueXML(pRoot, FANFLUX, "FANFLUX");
   if (ErrorStat) {printf(ErrMesg); return 1;}
- 
+
   ErrorStat = SetBoolValueXML(pRoot, SIGNAL_FLUCT, "SIGNAL_FLUCT");
   if (ErrorStat) {printf(ErrMesg); return 1;}
 
@@ -2532,7 +2562,7 @@ int ReadInputXML(const char * infn){
   ErrorStat = SetBoolValueXML(pRoot, HEXAGONAL, "HEXAGONAL");
   if (ErrorStat) {printf(ErrMesg); return 1;}
 
-  //The next few parameters are obsolete and should be removed 
+  //The next few parameters are obsolete and should be removed
   ErrorStat = SetBoolValueXML(pRoot, SCATTER, "SCATTER");
   if (ErrorStat) {printf(ErrMesg); return 1;}
 

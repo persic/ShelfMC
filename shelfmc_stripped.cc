@@ -1366,7 +1366,12 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                   }
 
                   else {
-                     double x1 = 1.e-100;
+                    double h1 = ICETHICK - FIRNDEPTH - posnu[2];
+                    double h2 = FIRNDEPTH;
+                    double deltax = sqrt(Square(posnu[0] - ATCoordinate[0]) + Square(posnu[1] - ATCoordinate[1])); //KD only xyplane distance
+                    Refract(deltax, h1, h2, n1, n2, hy1, hy2, theta1, theta2);
+//replace with an actual function above
+/*                     double x1 = 1.e-100;
                      double x3 = 0.;
                      double h1 = ICETHICK - FIRNDEPTH - posnu[2];
                      double h2 = FIRNDEPTH;
@@ -1395,7 +1400,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                         hy1 = h1 / cos(theta1);
                         hy2 = h2 / cos(theta2);
                      }
-
+*/
                      theta_nposnu2ST = theta1; //theta of the signal close to the interaction point
                      d_posnu2ST = hy1 + hy2;
                   }
@@ -1454,7 +1459,12 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                if (FIRN) {
 
                   if (posnu[2] < (ICETHICK - FIRNDEPTH)) { //interact in the ice
-                     double x1_mirror = 1.e-100;
+                    double h1_mirror = (ICETHICK - FIRNDEPTH) + posnu[2];
+                    double h2_mirror = FIRNDEPTH;
+                    double deltax_mirror = sqrt(Square(posnu[0] - MirrorATCoordinate[0]) + Square(posnu[1] - MirrorATCoordinate[1]));
+                    Refract(deltax_mirror,h1_mirror,h2_mirror,n1,n2,hy1_mirror,hy2_mirror,theta1_mirror,theta2_mirror);
+                    //replace with function above
+/*                     double x1_mirror = 1.e-100;
                      double x3_mirror = 0.;
                      double h1_mirror = (ICETHICK - FIRNDEPTH) + posnu[2];
                      double h2_mirror = FIRNDEPTH;
@@ -1479,12 +1489,19 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                         hy1_mirror = h1_mirror / cos(theta1_mirror);
                         hy2_mirror = h2_mirror / cos(theta2_mirror);
                      }
-
+*/
                      theta_nposnu2MirrorST = PI - theta1_mirror; //interacting in the ice, the theta angle close to the interaction point
                      d_posnu2MirrorST = hy1_mirror + hy2_mirror;
                   }//end of if(<400m), interact in the ice
 
                   else { //reflected events happen in the firn
+                    double h1_mirror = 2 * (ICETHICK - FIRNDEPTH);
+                    double h2_mirror = FIRNDEPTH + (posnu[2] - (ICETHICK - FIRNDEPTH));
+                    double deltax_mirror = sqrt(Square(posnu[0] - MirrorATCoordinate[0]) + Square(posnu[1] - MirrorATCoordinate[1]));
+                    Refract(deltax_mirror,h1_mirror,h2_mirror,NICE,NFIRN,hy1_mirror,hy2_mirror,theta1_mirror,theta2_mirror);
+
+//replace with function above
+/*
                      double x1_mirror = 1.e-100;
                      double x3_mirror = 0.;
                      double h1_mirror = 2 * (ICETHICK - FIRNDEPTH);
@@ -1511,6 +1528,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                         hy1_mirror = h1_mirror / cos(theta1_mirror);
                         hy2_mirror = h2_mirror / cos(theta2_mirror);
                      }
+*/
                      theta_nposnu2MirrorST = PI - theta2_mirror; //the theta angle at the mirror antennas, also the theta angle of the signal at the interaction point since interating in the firn
                      d_posnu2MirrorST = hy1_mirror + hy2_mirror;
                   }
@@ -1936,6 +1954,12 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                   }
 
                   else { //if direct events interact in the ice
+                    double h1 = ICETHICK - FIRNDEPTH - posnu[2];
+                    double h2 = FIRNDEPTH;
+                    double deltax = sqrt(Square(posnu[0] - ATCoordinates8[WhichAntenna][0]) + Square(posnu[1] - ATCoordinates8[WhichAntenna][1]));
+                    Refract(deltax,h1,h2,n1,n2,hy1,hy2,theta1,theta2);
+//replace with function above
+/*
                      double x1 = 1.e-100;
                      double x3 = 0.;
                      double h1 = ICETHICK - FIRNDEPTH - posnu[2];
@@ -1946,14 +1970,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                      double deltax;
 //                     if (ST_TYPE == 4)
                         deltax = sqrt(Square(posnu[0] - ATCoordinates8[WhichAntenna][0]) + Square(posnu[1] - ATCoordinates8[WhichAntenna][1]));
-                     /* //COMMENTED OUT 5/9/11
-                     else if(ST_TYPE==3)
-                       deltax=sqrt(Square(posnu[0]-ATCoordinates5[WhichAntenna][0])+Square(posnu[1]-ATCoordinates5[WhichAntenna][1]));
-                       */
-//                     else {
-//                        deltax = 0;
-//                        cout << "Wrong ST_TYPE value" << endl;
-//                     }
+
                      if (deltax == 0) {
                         theta1 = 0.;
                         theta2 = 0.;
@@ -1976,9 +1993,9 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                         hy2 = h2 / cos(theta2);
 
                      }
+*/
 
                      theta_nposnu2AT = theta1; //theta of the signal close to the interaction point
-
                      d_posnu2AT = hy1 + hy2;
 
                      double original_nsignal[3];
@@ -2854,7 +2871,14 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                if (FIRN) {
 
                   //NOTE: order of firn calculation is reversed as compared to direct
+
                   if (posnu[2] < (ICETHICK - FIRNDEPTH)) { //interact in the ice
+                    double h1_mirror = (ICETHICK - FIRNDEPTH) + posnu[2];
+                    double h2_mirror = FIRNDEPTH;
+                    double deltax_mirror = sqrt(Square(posnu[0] - MirrorATCoordinates8[WhichMirrorAntenna][0]) + Square(posnu[1] - MirrorATCoordinates8[WhichMirrorAntenna][1]));
+                    Refract(deltax_mirror,h1_mirror,h2_mirror,n1,n2,hy1_mirror,hy2_mirror,theta1_mirror,theta2_mirror);
+//replace with function above
+/*
                      double x1_mirror = 1.e-100;
                      double x3_mirror = 0.;
                      double h1_mirror = (ICETHICK - FIRNDEPTH) + posnu[2];
@@ -2889,6 +2913,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                         hy1_mirror = h1_mirror / cos(theta1_mirror);
                         hy2_mirror = h2_mirror / cos(theta2_mirror);
                      }
+*/
 
                      theta_nposnu2MirrorAT = PI - theta1_mirror; //interacting in the ice, the theta angle close to the interaction point
                      d_posnu2MirrorAT = hy1_mirror + hy2_mirror;
@@ -2980,6 +3005,13 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 
 
                   else { //reflected events happen in the firn
+                    double h1_mirror = 2 * (ICETHICK - FIRNDEPTH);
+                    double h2_mirror = FIRNDEPTH + (posnu[2] - (ICETHICK - FIRNDEPTH));
+                    double deltax_mirror = sqrt(Square(posnu[0] - MirrorATCoordinates8[WhichMirrorAntenna][0]) + Square(posnu[1] - MirrorATCoordinates8[WhichMirrorAntenna][1]));
+                    Refract(deltax_mirror,h1_mirror,h2_mirror,NICE,NFIRN,hy1_mirror,hy2_mirror,theta1_mirror,theta2_mirror);
+
+//replace with function above
+/*
                      double x1_mirror = 1.e-100;
                      double x3_mirror = 0.;
                      double h1_mirror = 2 * (ICETHICK - FIRNDEPTH);
@@ -3020,6 +3052,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                         // cout<<hy1_mirror<<" "<<hy2_mirror<<endl;
 
                      }
+*/
                      theta_nposnu2MirrorAT = PI - theta2_mirror; //the theta angle at the mirror antennas, also the theta angle of the signal at the interaction point since interating in the firn
                      d_posnu2MirrorAT = hy1_mirror + hy2_mirror;
 
