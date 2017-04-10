@@ -1346,6 +1346,18 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 //b1.nposnu2ST_j=  posnu2ST[1];
 //b1.nposnu2ST_k=  posnu2ST[2];
 
+              shadowed = false;
+              hy3=0;
+              if (FIRN) {
+              //KD adding shadowing cut only for direct
+                  hy3 = (sqrt((posnu[0] - ATCoordinate[0]) * (posnu[0] - ATCoordinate[0]) + (posnu[1] - ATCoordinate[1]) * (posnu[1] - ATCoordinate[1])) - (GetRange(posnu[2]) + 20.4)); //adding 25.7 or 20.4 to allow for further bending up to -2m. Also making it with ref to station center coord, for multi station simulation.
+
+                  if (hy3 > 0){
+                      shadowed = true;
+                  }
+
+                }//end FIRN for SHADOWING
+
                theta2 = theta_nposnu2ST;
 
                double theta1 = theta2;
@@ -1369,7 +1381,13 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                     double h1 = ICETHICK - FIRNDEPTH - posnu[2];
                     double h2 = FIRNDEPTH;
                     double deltax = sqrt(Square(posnu[0] - ATCoordinate[0]) + Square(posnu[1] - ATCoordinate[1])); //KD only xyplane distance
+                    if (H_PROP && shadowed) {
+                      deltax-=hy3;
+                    }
                     Refract(deltax, h1, h2, n1, n2, hy1, hy2, theta1, theta2);
+                    if (H_PROP && shadowed) {
+                      theta2=PI/2.0;
+                    }
 //replace with an actual function above
 /*                     double x1 = 1.e-100;
                      double x3 = 0.;
@@ -1458,11 +1476,27 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 
                if (FIRN) {
 
+                 shadowed_mirror = false;
+                 hy3_mirror = 0;
+
+             //KD adding shadowing cut only for reflected
+                 hy3_mirror = (sqrt((posnu[0] - MirrorATCoordinate[0]) * (posnu[0] - MirrorATCoordinate[0]) + (posnu[1] -  MirrorATCoordinate[1]) * (posnu[1] - MirrorATCoordinate[1])) - (GetRange(-posnu[2]) + 20.4 ));
+
+                 if (hy3_mirror > 0){
+                        shadowed_mirror = true;
+                    }
+
                   if (posnu[2] < (ICETHICK - FIRNDEPTH)) { //interact in the ice
                     double h1_mirror = (ICETHICK - FIRNDEPTH) + posnu[2];
                     double h2_mirror = FIRNDEPTH;
                     double deltax_mirror = sqrt(Square(posnu[0] - MirrorATCoordinate[0]) + Square(posnu[1] - MirrorATCoordinate[1]));
+                    if (H_PROP  && shadowed_mirror) {
+                      deltax_mirror -= hy3_mirror;
+                    }
                     Refract(deltax_mirror,h1_mirror,h2_mirror,n1,n2,hy1_mirror,hy2_mirror,theta1_mirror,theta2_mirror);
+                    if (H_PROP && shadowed_mirror) {
+                      theta2_mirror=PI/2.0;
+                    }
                     //replace with function above
 /*                     double x1_mirror = 1.e-100;
                      double x3_mirror = 0.;
@@ -1498,7 +1532,13 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                     double h1_mirror = 2 * (ICETHICK - FIRNDEPTH);
                     double h2_mirror = FIRNDEPTH + (posnu[2] - (ICETHICK - FIRNDEPTH));
                     double deltax_mirror = sqrt(Square(posnu[0] - MirrorATCoordinate[0]) + Square(posnu[1] - MirrorATCoordinate[1]));
+                    if (H_PROP && shadowed_mirror) {
+                      deltax_mirror -= hy3_mirror;
+                    }
                     Refract(deltax_mirror,h1_mirror,h2_mirror,NICE,NFIRN,hy1_mirror,hy2_mirror,theta1_mirror,theta2_mirror);
+                    if (H_PROP && shadowed_mirror) {
+                      theta2_mirror=PI/2.0;
+                    }
 
 //replace with function above
 /*
@@ -1957,7 +1997,13 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                     double h1 = ICETHICK - FIRNDEPTH - posnu[2];
                     double h2 = FIRNDEPTH;
                     double deltax = sqrt(Square(posnu[0] - ATCoordinates8[WhichAntenna][0]) + Square(posnu[1] - ATCoordinates8[WhichAntenna][1]));
+                    if (H_PROP && shadowed) {
+                      deltax-=hy3;
+                    }
                     Refract(deltax,h1,h2,n1,n2,hy1,hy2,theta1,theta2);
+                    if (H_PROP && shadowed) {
+                      theta2=PI/2.0;
+                    }
 //replace with function above
 /*
                      double x1 = 1.e-100;
@@ -2161,7 +2207,12 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 
 
                if (SECKEL == 0) {
+                  if (H_PROP && shadowed) {
+                    vmmhz_max = VmMHz(vmmhz1m_max, d_posnu2AT+hy3);
+                  }
+                  else {
                   vmmhz_max = VmMHz(vmmhz1m_max, d_posnu2AT);
+                  }
 
                   if (ATTEN_FREQ) { //if attenuation length is a function of frequency
                      for (int i = 0; i < NFREQ; i++) {
@@ -2174,6 +2225,9 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                   }
 
                   vmmhz_max = VmMHz_attenuated(d_posnu2AT, vmmhz_max, attenlength_up);
+                  if (H_PROP && shadowed) {
+                    vmmhz_max = VmMHz_attenuated(hy3, vmmhz_max, ATTEN_H);
+                  }
 
                   if (ATTEN_FREQ) {
 //                     if (ST_TYPE == 4) {
@@ -2855,7 +2909,6 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                hy3_mirror = 0;
                if (FIRN) {
                //KD adding shadowing cut only for reflected
-                   bool shadowed_mirror = false;
                    hy3_mirror = (sqrt((posnu[0] - MirrorATCoordinate[0]) * (posnu[0] - MirrorATCoordinate[0]) + (posnu[1] -  MirrorATCoordinate[1]) * (posnu[1] - MirrorATCoordinate[1])) - (GetRange(-posnu[2]) + 20.4 ));
 
                    if (hy3_mirror > 0){
@@ -2876,7 +2929,13 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                     double h1_mirror = (ICETHICK - FIRNDEPTH) + posnu[2];
                     double h2_mirror = FIRNDEPTH;
                     double deltax_mirror = sqrt(Square(posnu[0] - MirrorATCoordinates8[WhichMirrorAntenna][0]) + Square(posnu[1] - MirrorATCoordinates8[WhichMirrorAntenna][1]));
+                    if (H_PROP && shadowed_mirror) {
+                      deltax_mirror -= hy3_mirror;
+                    }
                     Refract(deltax_mirror,h1_mirror,h2_mirror,n1,n2,hy1_mirror,hy2_mirror,theta1_mirror,theta2_mirror);
+                    if (H_PROP && shadowed_mirror) {
+                      theta2_mirror=PI/2.0;
+                    }
 //replace with function above
 /*
                      double x1_mirror = 1.e-100;
@@ -3008,7 +3067,13 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                     double h1_mirror = 2 * (ICETHICK - FIRNDEPTH);
                     double h2_mirror = FIRNDEPTH + (posnu[2] - (ICETHICK - FIRNDEPTH));
                     double deltax_mirror = sqrt(Square(posnu[0] - MirrorATCoordinates8[WhichMirrorAntenna][0]) + Square(posnu[1] - MirrorATCoordinates8[WhichMirrorAntenna][1]));
+                    if (H_PROP && shadowed_mirror) {
+                      deltax_mirror -= hy3_mirror;
+                    }
                     Refract(deltax_mirror,h1_mirror,h2_mirror,NICE,NFIRN,hy1_mirror,hy2_mirror,theta1_mirror,theta2_mirror);
+                    if (H_PROP && shadowed_mirror) {
+                      theta2_mirror=PI/2.0;
+                    }
 
 //replace with function above
 /*
@@ -3211,7 +3276,14 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 //-------------------------------
 
                if (SECKEL == 0) {
+
+                  if (H_PROP && shadowed_mirror) {
+                    vmmhz_max = VmMHz(vmmhz1m_max, d_posnu2MirrorAT+hy3_mirror);
+                  }
+                  else {
                   vmmhz_max = VmMHz(vmmhz1m_max, d_posnu2MirrorAT);
+                  }
+
                   if (ATTEN_FREQ) {
                      for (int i = 0; i < NFREQ; i++) {
                         if (freq[i] <= 122) {
@@ -3227,6 +3299,10 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                   }
 
                   vmmhz_max = VmMHz_attenuated(d_posnu2MirrorAT, vmmhz_max, attenlength_down);
+                  if (H_PROP && shadowed_mirror) {
+                    vmmhz_max = VmMHz_attenuated(hy3_mirror, vmmhz_max, ATTEN_H);
+                  }
+
                   if (ATTEN_FREQ) {
 //                     if (ST_TYPE == 4) {
                         if (vmmhz_max_freq[0]*heff_max_LPA * BW < NV) {
