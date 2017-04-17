@@ -2446,8 +2446,9 @@ int ReadStnGeo(const char * infn, int &NAntPerStn, vector<AntennaPlacement> &Vec
   int ErrorStat = 0;
   const char* ErrMesg = "Error in ReadStnGeo\n";
 
-  ErrorStat = SetIntValueXML(pRoot, NAntPerStn, "N_Ant_perST");
-  if (ErrorStat) {printf(ErrMesg); return 1;}
+  //Now we just measure the size of VectAntennas, so remove a human derp point
+  //ErrorStat = SetIntValueXML(pRoot, NAntPerStn, "N_Ant_perST");
+  //if (ErrorStat) {printf(ErrMesg); return 1;}
 
   tinyxml2::XMLElement * pElement;
   ErrorStat = SetElementXML(pRoot,pElement,"Antennas");
@@ -2505,6 +2506,9 @@ int ReadStnGeo(const char * infn, int &NAntPerStn, vector<AntennaPlacement> &Vec
     pListElement = pListElement->NextSiblingElement("Antenna");
   }
 
+  //Measure the size of VectAntennas to set NAntPerStn
+  NAntPerStn = VectAntennas.size();
+  printf("NAntPerStn = %s\n",NAntPerStn);
 
   return 0;
 }

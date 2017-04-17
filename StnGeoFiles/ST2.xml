@@ -1,7 +1,4 @@
 <Station><!--Standard Station. Four 100MHz Create LPDA's pointing down in pairs-->
-
-  <N_Ant_perST>4</N_Ant_perST>  <!--Total number of antennas in the station.  Make sure it's consistent!-->
-
   <Antennas><!--This will be a vector of AntennaPlacement's-->
 
     <Antenna><!--This will be an AntennaPlacemtent struct-->
@@ -79,5 +76,6 @@
 	<value>0.</value>
       </n_eplane>
     </Antenna>
+
   </Antennas>
 </Station>
