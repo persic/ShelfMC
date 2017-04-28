@@ -2508,7 +2508,7 @@ int ReadStnGeo(const char * infn, int &NAntPerStn, vector<AntennaPlacement> &Vec
 
   //Measure the size of VectAntennas to set NAntPerStn
   NAntPerStn = VectAntennas.size();
-  printf("NAntPerStn = %s\n",NAntPerStn);
+  printf("NAntPerStn = %i\n",NAntPerStn);
 
   return 0;
 }

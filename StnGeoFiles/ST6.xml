@@ -60,44 +60,6 @@
     </Antenna>
 
     <Antenna>
-      <AntType>3</AntType>
-      <position>
-	<value>0.</value>
-	<value>1.</value>
-	<value>0.</value>
-      </position>
-      <n_boresight>
-	<value>0.</value>
-	<value>0.</value>
-	<value>-1.</value>
-      </n_boresight>
-      <n_eplane>
-	<value>1.</value>
-	<value>0.</value>
-	<value>0.</value>
-      </n_eplane>
-    </Antenna>
-
-    <Antenna>
-      <AntType>3</AntType>
-      <position>
-	<value>0.</value>
-	<value>-1.</value>
-	<value>0.</value>
-      </position>
-      <n_boresight>
-	<value>0.</value>
-	<value>0.</value>
-	<value>-1.</value>
-      </n_boresight>
-      <n_eplane>
-	<value>1.</value>
-	<value>0.</value>
-	<value>0.</value>
-      </n_eplane>
-    </Antenna>
-
-    <Antenna>
       <AntType>2</AntType>
       <position>
 	<value>0.</value>
@@ -115,5 +77,44 @@
 	<value>0.</value>
       </n_eplane>
     </Antenna>
+
+    <Antenna>
+      <AntType>3</AntType>
+      <position>
+	<value>0.</value>
+	<value>1.</value>
+	<value>0.</value>
+      </position>
+      <n_boresight>
+	<value>0.</value>
+	<value>0.</value>
+	<value>-1.</value>
+      </n_boresight>
+      <n_eplane>
+	<value>1.</value>
+	<value>0.</value>
+	<value>0.</value>
+      </n_eplane>
+    </Antenna>
+
+    <Antenna>
+      <AntType>3</AntType>
+      <position>
+	<value>0.</value>
+	<value>-1.</value>
+	<value>0.</value>
+      </position>
+      <n_boresight>
+	<value>0.</value>
+	<value>0.</value>
+	<value>-1.</value>
+      </n_boresight>
+      <n_eplane>
+	<value>1.</value>
+	<value>0.</value>
+	<value>0.</value>
+      </n_eplane>
+    </Antenna>
+
   </Antennas>
 </Station>

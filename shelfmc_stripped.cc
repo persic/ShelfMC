@@ -121,7 +121,6 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
    ReadStnGeo(StnGeoFN,N_Ant_perST,StationGeometry);
    cout<<"\n\n";
    int N_ST_required = 1;
-   double MAX_DISTANCE;
 
    //ATTEN_UP=(double)atof(argv[1]);
    //REFLECT_RATE=(double)atof(argv[7]);
