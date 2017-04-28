@@ -108,8 +108,8 @@ void GetInteractionPoint(double* posnu)
 {
 
    if (HEXAGONAL) {
-      posnu[0] = Rand3.Rndm() * ((2) * 1000. + 2 * EDGE) - EDGE;
-      posnu[1] = Rand3.Rndm() * ((2) * 1000. + 2 * EDGE) - EDGE;
+      posnu[0] = Rand3.Rndm() * ((2) * 1000. + 2 * MAX_DISTANCE) - MAX_DISTANCE;
+      posnu[1] = Rand3.Rndm() * ((2) * 1000. + 2 * MAX_DISTANCE) - MAX_DISTANCE;
       posnu[2] = Rand3.Rndm() * ICETHICK; //postive
    }
 
@@ -124,10 +124,10 @@ void GetInteractionPoint(double* posnu)
 
       //  posnu[0]=Random(0.,101*ATGap );
       // posnu[0]=Random(-4000.,NROWS*ATGap+4000. );
-      posnu[0] = Rand3.Rndm() * ((NROWS - 1) * ATGap + 2 * EDGE) - EDGE;
+      posnu[0] = Rand3.Rndm() * ((NROWS - 1) * ATGap + 2 * MAX_DISTANCE) - MAX_DISTANCE;
       // cout<<posnu[0]/101./ATGap<<endl;
       // posnu[1]=Random(-4000.,NCOLS*ATGap+4000. );
-      posnu[1] = Rand3.Rndm() * ((NCOLS - 1) * ATGap + 2 * EDGE) - EDGE;
+      posnu[1] = Rand3.Rndm() * ((NCOLS - 1) * ATGap + 2 * MAX_DISTANCE) - MAX_DISTANCE;
       // cout<<posnu[1]/101./ATGap<<endl;
       posnu[2] = Rand3.Rndm() * ICETHICK; //postive
       // cout<<posnu[2]/ICETHICK<<endl;
@@ -2642,6 +2642,9 @@ int ReadInputXML(const char * infn){
   if (ErrorStat) {printf(ErrMesg); return 1;}
 
   ErrorStat = SetDoubleValueXML(pRoot, FREQ_HIGH, "FREQ_HIGH");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetDoubleValueXML(pRoot, MAX_DISTANCE, "MAX_DISTANCE");
   if (ErrorStat) {printf(ErrMesg); return 1;}
 
   //The next few parameters are obsolete and should be removed

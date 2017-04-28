@@ -3,6 +3,7 @@
   <NNU>1000000</NNU> <!--setting to 1 for unique neutrino-->
   <seed>42</seed> <!--Seed for Rand3-->
   <EXPONENT>18.0</EXPONENT> <!--should be exclusive with SPECTRUM-->
+  <MAX_DISTANCE>4000.0</MAX_DISTANCE> <!--Farthest Distance from a station that a neutrino will be considered for a trigger in meters-->
   <SPECTRUM>0</SPECTRUM> <!--use spectrum-->
   <WIDESPECTRUM>1</WIDESPECTRUM> <!--use 10^16 eV to 10^21.5 eV as the energy spectrum, otherwise use 17-20-->
   <GZK>0</GZK> <!--1 means using GZK flux, 0 means E-2 flux. Only used if SPECTRUM-->
@@ -10,8 +11,8 @@
   <SIGNAL_FLUCT>1</SIGNAL_FLUCT> <!--1=add noise fluctuation to signal or 0=do not-->
   <TNOISE>350.0</TNOISE> <!--noise temperature in Kelvin-->
   <TAUREGENERATION>1</TAUREGENERATION> <!--if 1=tau regeneration effect, if 0=original-->
-  <SHADOWING>1</SHADOWING> <!-- Apply the Shadow Zone Veto--> 
-  <H_PROP>0</H_PROP> <!-- Use an effective attenuation length model for horizontal propigation.  Only use if SHADOWING==0--> 
+  <SHADOWING>1</SHADOWING> <!-- Apply the Shadow Zone Veto-->
+  <H_PROP>0</H_PROP> <!-- Use an effective attenuation length model for horizontal propigation.  Only use if SHADOWING==0-->
   <DEPTH_DEPENDENT_N>1</DEPTH_DEPENDENT_N> <!--0 means uniform firn, 1 means n_firn is a function of depth-->
   <FIRN>1</FIRN> <!--KD: ensure DEPTH_DEPENDENT is off if FIRN is 0-->
   <ICETHICK>575.0</ICETHICK> <!--thickness of ice including firn, 575m at Moore's Bay-->

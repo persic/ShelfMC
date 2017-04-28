@@ -121,7 +121,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
    ReadStnGeo(StnGeoFN,N_Ant_perST,StationGeometry);
    cout<<"\n\n";
    int N_ST_required = 1;
-   double Max_distance;
+   double MAX_DISTANCE;
 
    //ATTEN_UP=(double)atof(argv[1]);
    //REFLECT_RATE=(double)atof(argv[7]);
@@ -1069,18 +1069,18 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
    bool shadowed = false;
    bool shadowed_mirror = false;
 
-   GetMaxDis(pnu, Max_distance);
-   Max_distance = 4000.; //KD Max_distance=10000.;
-   EDGE = Max_distance / 2.;
-   double VOLUME = ICETHICK * pow((NCOLS - 1) * 300 + 2 * EDGE, 2.); //used as a scaling with 300m separation as benchmark, see NNU below
+   //GetMaxDis(pnu, MAX_DISTANCE);
+   //MAX_DISTANCE = 4000.; //KD MAX_DISTANCE=10000.;
+   //EDGE = MAX_DISTANCE / 2.;
+   double VOLUME = ICETHICK * ((NCOLS - 1) * 300 + 2 * MAX_DISTANCE) * ((NROWS - 1) * 300 + 2 * MAX_DISTANCE); //used as a scaling with 300m separation as benchmark, see NNU below
 
    double volume;
    if (HEXAGONAL)
 // volume=ICETHICK*((NCOLS-1)*500+2*EDGE)*((NROWS-1)*866+2*EDGE); //total volume m^3
-      volume = ICETHICK * ((2) * (1000.*HRAfactor) + 2 * EDGE) * ((2) * (1000.*HRAfactor) + 2 * EDGE);
+      volume = ICETHICK * ((2) * (1000.*HRAfactor) + 2 * MAX_DISTANCE) * ((2) * (1000.*HRAfactor) + 2 * MAX_DISTANCE);
 
    else
-      volume = ICETHICK * pow((NCOLS - 1) * ATGap + 2 * EDGE, 2.); //total volume m^3
+      volume = ICETHICK * ((NCOLS - 1) * ATGap + 2 * MAX_DISTANCE) * ((NROWS - 1) * ATGap + 2 * MAX_DISTANCE); //total volume m^3
 
 //  NNU=(int)(NNU*volume/VOLUME);
 // 05/09/2011 KD: leaving NNU as absolute given number for the moment for multi-station
@@ -1288,15 +1288,15 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 
       GetPosnuBin(posnu, posnu_iRow, posnu_iCol);
       int iRow_min, iRow_max, iCol_min, iCol_max; //the possible block where antennas might be triggered
-      iRow_min = posnu_iRow - (int)(Max_distance / ATGap);
+      iRow_min = posnu_iRow - (int)(MAX_DISTANCE / ATGap);
       if (iRow_min < 0)
          iRow_min = 0;
-      iRow_max = posnu_iRow + (int)(Max_distance / ATGap);
+      iRow_max = posnu_iRow + (int)(MAX_DISTANCE / ATGap);
       if (iRow_max > NROWS)
          iRow_max = NROWS;
 
-      iCol_min = posnu_iCol - (int)(Max_distance / ATGap);
-      iCol_max = posnu_iCol + (int)(Max_distance / ATGap);
+      iCol_min = posnu_iCol - (int)(MAX_DISTANCE / ATGap);
+      iCol_max = posnu_iCol + (int)(MAX_DISTANCE / ATGap);
       if (iCol_min < 0)
          iCol_min = 0;
       if (iCol_max > NCOLS)
@@ -1322,7 +1322,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 
             GetBothLocation(iRow, iCol, ATCoordinate, MirrorATCoordinate);
 
-            if (Distance(ATCoordinate, posnu) > Max_distance)
+            if (Distance(ATCoordinate, posnu) > MAX_DISTANCE)
                continue;
 
             VectorMinus(ATCoordinate, posnu, posnu2AT);
@@ -1447,7 +1447,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 
 //QUICK CHECKS FOR MIRROR NOW
             //GetMirrorATLocation(iRow,iCol,MirrorATCoordinate);
-            if (Distance(MirrorATCoordinate, posnu) > Max_distance)
+            if (Distance(MirrorATCoordinate, posnu) > MAX_DISTANCE)
                continue;
 
             // h_distance=sqrt(Square(posnu[0]-MirrorATCoordinate[0])+Square(posnu[1]-MirrorATCoordinate[1]));

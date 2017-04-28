@@ -83,7 +83,7 @@ double FREQ_LOW; //MHz
 double FREQ_HIGH; //MHz;
 double BW; //MHz Now Declaired in shelfmc_stripped.cc
 double FREQ_BIN;
-double EDGE;//m
+double MAX_DISTANCE;//m
 //const double ICETHICK = 575.; //m //FW:624 //double ICETHICK=575.; //Moved to input.txt
 const double ATDepth = 0.; //put the antennas at the mirror surface of the real ice surface taking the ice bottom as a mirror.
 
