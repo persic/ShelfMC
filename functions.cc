@@ -1346,6 +1346,23 @@ double GetHeff(int AntType, double freq, double* n_boresight, double* n_eplane, 
     return Heff;
 
     }
+    else if (AntType==4){//50MHz Create LPDA with Anna's Antenna Model Framework
+
+      int NC = Create50->N[0];
+
+      freq = freq/1.30; //since this antenna model is in the firn, frequencies should be shifted
+
+      double hitangle_e, hitangle_h, e_component, h_component;
+      GetHitAngle(n_boresight, n_eplane, n_prop, n_pol, hitangle_e, hitangle_h, e_component, h_component);//should use arrival direction, but it doesn't matter since we only use abs(e_component)
+
+      double Re_Z = Create50->InterpolateToSingleFrequency(freq,  NC, Create50->frequencies, Create50->Re_Z);
+
+      double gain = Create50->InterpolateToSingleFrequency(freq,  NC, Create50->frequencies, Create50->gains);
+
+      double Heff =  Create50->GetEffectiveHeight(gain,freq,Re_Z,C,119.99169*PI) * abs( e_component);
+
+      return Heff;
+    }
   else {
     cout<<"invalid Antenna Type!"<<endl;
     return -1;

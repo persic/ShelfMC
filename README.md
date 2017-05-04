@@ -48,7 +48,8 @@ Currently, the various antenna types that you can use in ShelfMC are defined in 
   0. Totally isotropic antenna.  No direction, polarization, or frequency dependence on gain.
   1. Pre-2017 Theoretical LPDA model.  Gaussian directional response.
   2. 100MHz Create LPDA model from WIPL-D simulations.
-  3. Simulated ARA Bicone dipole antenna
+  3. Simulated ARA Bicone dipole antenna.
+  4. 50MHz Create LPDA model from WIPL-D simulations.
 
 ### Station Geometry
 
