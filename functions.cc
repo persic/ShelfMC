@@ -653,160 +653,253 @@ double GetTauRegen(string current, double energy, double theta_nu, double L_TauD
 // KD 10/2010
 {
    double tauweight = 0;
+   int NEbins = 0;
 // data below for GZK spectrum
 //if (GZK){ JET:  If TauRegeneration is on, we want GZK table to be used
 // regardless of wether or not GZK is toggled on.
    double tautable[10][9];
-
-// energy 15.0-15.5
-   tautable[0][0] = 3.58 ;
-   tautable[0][1] = 3.01 ;
-   tautable[0][2] = 2.38 ;
-   tautable[0][3] = 1.94 ;
-   tautable[0][4] = 1.63 ;
-   tautable[0][5] = 1.43 ;
-   tautable[0][6] = 1.29 ;
-   tautable[0][7] = 1.16 ;
-   tautable[0][8] = 1.05 ;
-
-// energy 15.5-16.0
-   tautable[1][0] = 2.92;
-   tautable[1][1] = 2.94;
-   tautable[1][2] = 2.65;
-   tautable[1][3] = 2.28;
-   tautable[1][4] = 1.87;
-   tautable[1][5] = 1.74 ;
-   tautable[1][6] = 1.47;
-   tautable[1][7] = 1.27;
-   tautable[1][8] = 1.07;
-
-// energy 16.0-16.5
-   tautable[2][0] = 1.33;
-   tautable[2][1] = 1.89;
-   tautable[2][2] = 2.23;
-   tautable[2][3] = 2.22;
-   tautable[2][4] = 2.11;
-   tautable[2][5] = 1.89;
-   tautable[2][6] = 1.69;
-   tautable[2][7] = 1.42;
-   tautable[2][8] = 1.13;
-
-// energy 16.5-17.0
-   tautable[3][0] = 0.26;
-   tautable[3][1] = 0.57;
-   tautable[3][2] = 0.97;
-   tautable[3][3] = 1.27;
-   tautable[3][4] = 1.46;
-   tautable[3][5] = 1.51;
-   tautable[3][6] = 1.48;
-   tautable[3][7] = 1.37;
-   tautable[3][8] = 1.14;
-
-// energy 17.0-17.5
-   tautable[4][0] = 0.02;
-   tautable[4][1] = 0.06;
-   tautable[4][2] = 0.17;
-   tautable[4][3] = 0.34;
-   tautable[4][4] = 0.52;
-   tautable[4][5] = 0.65;
-   tautable[4][6] = 0.80;
-   tautable[4][7] = 0.92;
-   tautable[4][8] = 0.98;
-
-// energy 17.5-18.0
-   tautable[5][0] = 0.00;
-   tautable[5][1] = 0.00;
-   tautable[5][2] = 0.02;
-   tautable[5][3] = 0.08;
-   tautable[5][4] = 0.17;
-   tautable[5][5] = 0.28;
-   tautable[5][6] = 0.43;
-   tautable[5][7] = 0.64;
-   tautable[5][8] = 0.87;
-
-// energy 18.0-18.5
-   tautable[6][0] = 0.00;
-   tautable[6][1] = 0.00;
-   tautable[6][2] = 0.00;
-   tautable[6][3] = 0.01;
-   tautable[6][4] = 0.03;
-   tautable[6][5] = 0.07;
-   tautable[6][6] = 0.17;
-   tautable[6][7] = 0.36;
-   tautable[6][8] = 0.77;
-
-// energy 18.5-19.0
-   tautable[7][0] = 0.00;
-   tautable[7][1] = 0.00;
-   tautable[7][2] = 0.00;
-   tautable[7][3] = 0.00;
-   tautable[7][4] = 0.00;
-   tautable[7][5] = 0.01;
-   tautable[7][6] = 0.05;
-   tautable[7][7] = 0.22;
-   tautable[7][8] = 0.74;
-
-// energy 19.0-19.5
-   tautable[8][0] = 0.00;
-   tautable[8][1] = 0.00;
-   tautable[8][2] = 0.00;
-   tautable[8][3] = 0.00;
-   tautable[8][4] = 0.00;
-   tautable[8][5] = 0.00;
-   tautable[8][6] = 0.01;
-   tautable[8][7] = 0.15;
-   tautable[8][8] = 0.73;
-
-// energy 19.5-20.0
-   tautable[9][0] = 0.00;
-   tautable[9][1] = 0.00;
-   tautable[9][2] = 0.00;
-   tautable[9][3] = 0.00;
-   tautable[9][4] = 0.00;
-   tautable[9][5] = 0.00;
-   tautable[9][6] = 0.02;
-   tautable[9][7] = 0.13;
-   tautable[9][8] = 0.67;
-// end of GZK
-
-
    double angle_range[10];
-   angle_range[0] = 60.;
-   angle_range[1] = 65.;
-   angle_range[2] = 70.;
-   angle_range[3] = 75.;
-   angle_range[4] = 80.;
-   angle_range[5] = 82.;
-   angle_range[6] = 84.;
-   angle_range[7] = 86.;
-   angle_range[8] = 88.;
-   angle_range[9] = 90.;
-
    double energy_range[11];
-   energy_range[0] = 15.0 ;
-   energy_range[1] = 15.5 ;
-   energy_range[2] = 16.0 ;
-   energy_range[3] = 16.5 ;
-   energy_range[4] = 17.0 ;
-   energy_range[5] = 17.5 ;
-   energy_range[6] = 18.0 ;
-   energy_range[7] = 18.5 ;
-   energy_range[8] = 19.0 ;
-   energy_range[9] = 19.5 ;
-   energy_range[10] = 20.0;
 
    double theta_nu_deg = theta_nu * RAD2DEG;
    double D = ICETHICK - H;
    double GeoFactor = 1.0;
-
    //Add to effective volume for upward going Tau, since original interaction can occur below the ice
    if (current == "cc" && (L_TauDecay*cos(theta_nu) + D) > ICETHICK){
       GeoFactor = (L_TauDecay*cos(theta_nu) + D)/ICETHICK;
    }
 
+   if (GZK){ //GZK Spectrum
+     NEbins=10;
+  // energy 15.0-15.5
+     tautable[0][0] = 3.58 ;
+     tautable[0][1] = 3.01 ;
+     tautable[0][2] = 2.38 ;
+     tautable[0][3] = 1.94 ;
+     tautable[0][4] = 1.63 ;
+     tautable[0][5] = 1.43 ;
+     tautable[0][6] = 1.29 ;
+     tautable[0][7] = 1.16 ;
+     tautable[0][8] = 1.05 ;
+
+  // energy 15.5-16.0
+     tautable[1][0] = 2.92;
+     tautable[1][1] = 2.94;
+     tautable[1][2] = 2.65;
+     tautable[1][3] = 2.28;
+     tautable[1][4] = 1.87;
+     tautable[1][5] = 1.74 ;
+     tautable[1][6] = 1.47;
+     tautable[1][7] = 1.27;
+     tautable[1][8] = 1.07;
+
+  // energy 16.0-16.5
+     tautable[2][0] = 1.33;
+     tautable[2][1] = 1.89;
+     tautable[2][2] = 2.23;
+     tautable[2][3] = 2.22;
+     tautable[2][4] = 2.11;
+     tautable[2][5] = 1.89;
+     tautable[2][6] = 1.69;
+     tautable[2][7] = 1.42;
+     tautable[2][8] = 1.13;
+
+  // energy 16.5-17.0
+     tautable[3][0] = 0.26;
+     tautable[3][1] = 0.57;
+     tautable[3][2] = 0.97;
+     tautable[3][3] = 1.27;
+     tautable[3][4] = 1.46;
+     tautable[3][5] = 1.51;
+     tautable[3][6] = 1.48;
+     tautable[3][7] = 1.37;
+     tautable[3][8] = 1.14;
+
+  // energy 17.0-17.5
+     tautable[4][0] = 0.02;
+     tautable[4][1] = 0.06;
+     tautable[4][2] = 0.17;
+     tautable[4][3] = 0.34;
+     tautable[4][4] = 0.52;
+     tautable[4][5] = 0.65;
+     tautable[4][6] = 0.80;
+     tautable[4][7] = 0.92;
+     tautable[4][8] = 0.98;
+
+  // energy 17.5-18.0
+     tautable[5][0] = 0.00;
+     tautable[5][1] = 0.00;
+     tautable[5][2] = 0.02;
+     tautable[5][3] = 0.08;
+     tautable[5][4] = 0.17;
+     tautable[5][5] = 0.28;
+     tautable[5][6] = 0.43;
+     tautable[5][7] = 0.64;
+     tautable[5][8] = 0.87;
+
+  // energy 18.0-18.5
+     tautable[6][0] = 0.00;
+     tautable[6][1] = 0.00;
+     tautable[6][2] = 0.00;
+     tautable[6][3] = 0.01;
+     tautable[6][4] = 0.03;
+     tautable[6][5] = 0.07;
+     tautable[6][6] = 0.17;
+     tautable[6][7] = 0.36;
+     tautable[6][8] = 0.77;
+
+  // energy 18.5-19.0
+     tautable[7][0] = 0.00;
+     tautable[7][1] = 0.00;
+     tautable[7][2] = 0.00;
+     tautable[7][3] = 0.00;
+     tautable[7][4] = 0.00;
+     tautable[7][5] = 0.01;
+     tautable[7][6] = 0.05;
+     tautable[7][7] = 0.22;
+     tautable[7][8] = 0.74;
+
+  // energy 19.0-19.5
+     tautable[8][0] = 0.00;
+     tautable[8][1] = 0.00;
+     tautable[8][2] = 0.00;
+     tautable[8][3] = 0.00;
+     tautable[8][4] = 0.00;
+     tautable[8][5] = 0.00;
+     tautable[8][6] = 0.01;
+     tautable[8][7] = 0.15;
+     tautable[8][8] = 0.73;
+
+  // energy 19.5-20.0
+     tautable[9][0] = 0.00;
+     tautable[9][1] = 0.00;
+     tautable[9][2] = 0.00;
+     tautable[9][3] = 0.00;
+     tautable[9][4] = 0.00;
+     tautable[9][5] = 0.00;
+     tautable[9][6] = 0.02;
+     tautable[9][7] = 0.13;
+     tautable[9][8] = 0.67;
+
+     //angle Range
+     angle_range[0] = 60.;
+     angle_range[1] = 65.;
+     angle_range[2] = 70.;
+     angle_range[3] = 75.;
+     angle_range[4] = 80.;
+     angle_range[5] = 82.;
+     angle_range[6] = 84.;
+     angle_range[7] = 86.;
+     angle_range[8] = 88.;
+     angle_range[9] = 90.;
+
+     //energy_range
+     energy_range[0] = 15.0 ;
+     energy_range[1] = 15.5 ;
+     energy_range[2] = 16.0 ;
+     energy_range[3] = 16.5 ;
+     energy_range[4] = 17.0 ;
+     energy_range[5] = 17.5 ;
+     energy_range[6] = 18.0 ;
+     energy_range[7] = 18.5 ;
+     energy_range[8] = 19.0 ;
+     energy_range[9] = 19.5 ;
+     energy_range[10] = 20.0;
+  }// end of if GZK
+  else{ //E^2 Spectrum
+     NEbins=6;
+    // energy 15.0-16.0
+     tautable[0][0]=0.59 ;
+     tautable[0][1]=0.69 ;
+     tautable[0][2]=0.78 ;
+     tautable[0][3]=0.84 ;
+     tautable[0][4]=0.89 ;
+     tautable[0][5]=0.90 ;
+     tautable[0][6]=0.93 ;
+     tautable[0][7]=0.96 ;
+     tautable[0][8]=0.99 ;
+
+    // energy 16.0-17.0
+     tautable[1][0]=0.19;
+     tautable[1][1]=0.33;
+     tautable[1][2]=0.49;
+     tautable[1][3]=0.60;
+     tautable[1][4]=0.70;
+     tautable[1][5]=0.79;
+     tautable[1][6]=0.84;
+     tautable[1][7]=0.91;
+     tautable[1][8]=0.97;
+
+    // energy 17.0-18.0
+     tautable[2][0]=0.01;
+     tautable[2][1]=0.03;
+     tautable[2][2]=0.08;
+     tautable[2][3]=0.22;
+     tautable[2][4]=0.35;
+     tautable[2][5]=0.39;
+     tautable[2][6]=0.66;
+     tautable[2][7]=0.75;
+     tautable[2][8]=0.93;
+
+    // energy 18.0-19.0
+     tautable[3][0]=0.00;
+     tautable[3][1]=0.00;
+     tautable[3][2]=0.00;
+     tautable[3][3]=0.01;
+     tautable[3][4]=0.04;
+     tautable[3][5]=0.07;
+     tautable[3][6]=0.15;
+     tautable[3][7]=0.36;
+     tautable[3][8]=0.77;
+
+    // energy 19.0-20.0
+     tautable[4][0]=0.00;
+     tautable[4][1]=0.00;
+     tautable[4][2]=0.00;
+     tautable[4][3]=0.00;
+     tautable[4][4]=0.00;
+     tautable[4][5]=0.00;
+     tautable[4][6]=0.01;
+     tautable[4][7]=0.21;
+     tautable[4][8]=0.73;
+
+    // energy 20.0-21.5
+     tautable[5][0]=0.00;
+     tautable[5][1]=0.00;
+     tautable[5][2]=0.00;
+     tautable[5][3]=0.00;
+     tautable[5][4]=0.00;
+     tautable[5][5]=0.00;
+     tautable[5][6]=0.00;
+     tautable[5][7]=0.35;
+     tautable[5][8]=0.90;
+
+     //angle range
+     angle_range[0]=60.;
+     angle_range[1]=65.;
+     angle_range[2]=70.;
+     angle_range[3]=75.;
+     angle_range[4]=80.;
+     angle_range[5]=82.;
+     angle_range[6]=84.;
+     angle_range[7]=86.;
+     angle_range[8]=88.;
+     angle_range[9]=90.;
+
+     //energy range
+     energy_range[0]=15.0 ;
+     energy_range[1]=16.0 ;
+     energy_range[2]=17.0 ;
+     energy_range[3]=18.0 ;
+     energy_range[4]=19.0 ;
+     energy_range[5]=20.0 ;
+     energy_range[6]=21.5 ;
+
+  }//end else
+
 //double tauweight=0;
 
-   for (int j = 0; j < 10; j++) {
+   for (int j = 0; j < NEbins; j++) {
       if (log10(energy) >= energy_range[j] && log10(energy) < energy_range[j + 1]) {
          for (int i = 0; i < 9; i++) {
             if (theta_nu_deg >= angle_range[i] && theta_nu_deg < angle_range[i + 1]) {
@@ -815,62 +908,6 @@ double GetTauRegen(string current, double energy, double theta_nu, double L_TauD
          }
       }
    }
-
-   /* }
-    If tau regeneration is turned on, we always want to use the GZK table
-       for tau regeneration instead of the E-2 spectrum.
-
-   // data below for E2 spectrum
-   if (GZK==0){
-   double tautable[6][9];
-
-   // energy 15.0-16.0
-   tautable[0][0]=0.59 ; tautable[0][1]=0.69 ; tautable[0][2]=0.78 ; tautable[0][3]=0.84 ; tautable[0][4]=0.89 ; tautable[0][5]=0.90 ; tautable[0][6]=0.93 ; tautable[0][7]=0.96 ; tautable[0][8]=0.99 ;
-
-   // energy 16.0-17.0
-   tautable[1][0]=0.19; tautable[1][1]=0.33; tautable[1][2]=0.49; tautable[1][3]=0.60; tautable[1][4]=0.70; tautable[1][5]=0.79; tautable[1][6]=0.84; tautable[1][7]=0.91; tautable[1][8]=0.97;
-
-   // energy 17.0-18.0
-   tautable[2][0]=0.01; tautable[2][1]=0.03; tautable[2][2]=0.08; tautable[2][3]=0.22; tautable[2][4]=0.35; tautable[2][5]=0.39; tautable[2][6]=0.66; tautable[2][7]=0.75; tautable[2][8]=0.93;
-
-   // energy 18.0-19.0
-   tautable[3][0]=0.00; tautable[3][1]=0.00; tautable[3][2]=0.00; tautable[3][3]=0.01; tautable[3][4]=0.04; tautable[3][5]=0.07; tautable[3][6]=0.15; tautable[3][7]=0.36; tautable[3][8]=0.77;
-
-   // energy 19.0-20.0
-   tautable[4][0]=0.00; tautable[4][1]=0.00; tautable[4][2]=0.00; tautable[4][3]=0.00; tautable[4][4]=0.00; tautable[4][5]=0.00; tautable[4][6]=0.01; tautable[4][7]=0.21; tautable[4][8]=0.73;
-
-   // energy 20.0-21.5
-   tautable[5][0]=0.00; tautable[5][1]=0.00; tautable[5][2]=0.00; tautable[5][3]=0.00; tautable[5][4]=0.00; tautable[5][5]=0.00; tautable[5][6]=0.00; tautable[5][7]=0.35; tautable[5][8]=0.90;
-
-
-   // end of E2
-
-
-   double angle_range[10];
-   angle_range[0]=60.; angle_range[1]=65.; angle_range[2]=70.; angle_range[3]=75.; angle_range[4]=80.; angle_range[5]=82.;
-   angle_range[6]=84.; angle_range[7]=86.; angle_range[8]=88.;
-   angle_range[9]=90.;
-
-   double energy_range[7];
-   energy_range[0]=15.0 ; energy_range[1]=16.0 ; energy_range[2]=17.0 ; energy_range[3]=18.0 ; energy_range[4]=19.0 ; energy_range[5]=20.0 ;
-   energy_range[6]=21.5 ;
-
-
-   double theta_nu_deg = theta_nu*RAD2DEG;
-   //double tauweight=0;
-
-    for (int j=0;j<6;j++) {
-         if (log10(energy)>=energy_range[j] && log10(energy)<energy_range[j+1]){
-               for (int i=0;i<9;i++) {
-            if (theta_nu_deg>=angle_range[i] && theta_nu_deg<angle_range[i+1]){
-               tauweight = tautable[j][i];
-            }
-         }
-      }
-     }
-
-    }
-    */
 
    return tauweight;
 }

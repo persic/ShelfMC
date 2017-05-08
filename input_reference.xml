@@ -6,7 +6,7 @@
   <MAX_DISTANCE>4000.0</MAX_DISTANCE> <!--Farthest Distance from a station that a neutrino will be considered for a trigger in meters-->
   <SPECTRUM>0</SPECTRUM> <!--use spectrum-->
   <WIDESPECTRUM>1</WIDESPECTRUM> <!--use 10^16 eV to 10^21.5 eV as the energy spectrum, otherwise use 17-20-->
-  <GZK>0</GZK> <!--1 means using GZK flux, 0 means E-2 flux. Only used if SPECTRUM-->
+  <GZK>1</GZK> <!--1 means using GZK flux, 0 means E-2 flux. Used only in TAUREGENERATION unless SPECTRUM is set-->
   <FANFLUX>0</FANFLUX> <!--use fenfang's flux which only covers from 10^17 eV to 10^20 eV.-->
   <SIGNAL_FLUCT>1</SIGNAL_FLUCT> <!--1=add noise fluctuation to signal or 0=do not-->
   <TNOISE>350.0</TNOISE> <!--noise temperature in Kelvin-->
