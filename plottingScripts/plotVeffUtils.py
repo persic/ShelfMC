@@ -99,7 +99,7 @@ def GetColumn(DataArray,name):
 	return Column
 
 def RatiosWithErrors(Numerator,Denominator,nError,dError):
-	Ratio=Numerator/d_AT2ST_denominator
+	Ratio=Numerator/Denominator
 	RatioErrHi=(Numerator+nError)/(Denominator-dError) - Ratio
 	RatioErrLo=Ratio - (Numerator-nError)/(Denominator+dError)
 	return Ratio, RatioErrHi, RatioErrLo
