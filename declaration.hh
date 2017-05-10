@@ -153,7 +153,7 @@ struct AntennaPlacement{
   int Type;
   double position[3];
   double n_boresight[3];
-  double n_eplane[3];
+  double n_epol[3];
 };
 
 double GetNoise(double);

@@ -13,11 +13,11 @@
 	<value>0.</value>  <!--y-->
 	<value>-1.</value> <!--z-->
       </n_boresight>
-      <n_eplane>  <!--Down the tines for LPDA. Irrelevant for Dipoles due to axial symmetry. MUST BE NORMAL VECTOR-->
+      <n_epol>  <!--Down the tines for LPDA. Irrelevant for Dipoles due to axial symmetry. MUST BE NORMAL VECTOR-->
 	<value>0.</value>  <!--x-->
 	<value>1.</value>  <!--y-->
 	<value>0.</value>  <!--z-->
-      </n_eplane>
+      </n_epol>
     </Antenna>
 
     <Antenna>
@@ -32,11 +32,11 @@
 	<value>0.</value>
 	<value>-1.</value>
       </n_boresight>
-      <n_eplane>
+      <n_epol>
 	<value>-1.</value>
 	<value>0.</value>
 	<value>0.</value>
-      </n_eplane>
+      </n_epol>
     </Antenna>
 
     <Antenna>
@@ -51,11 +51,11 @@
 	<value>0.</value>
 	<value>-1.</value>
       </n_boresight>
-      <n_eplane>
+      <n_epol>
 	<value>0.</value>
 	<value>-1.</value>
 	<value>0.</value>
-      </n_eplane>
+      </n_epol>
     </Antenna>
 
     <Antenna>
@@ -70,11 +70,11 @@
 	<value>0.</value>
 	<value>-1.</value>
       </n_boresight>
-      <n_eplane>
+      <n_epol>
 	<value>1.</value>
 	<value>0.</value>
 	<value>0.</value>
-      </n_eplane>
+      </n_epol>
     </Antenna>
 
   </Antennas>

@@ -1317,7 +1317,7 @@ double GaintoHeight(double gain, double freq)
    return 2.0*sqrt(gain / 4 / PI * C * C / (freq * freq) * Zr / Z0 * NICE);
 } //GaintoHeight
 
-double GetHeff(int AntType, double freq, double* n_boresight, double* n_eplane, double* n_prop, double* n_pol)
+double GetHeff(int AntType, double freq, double* n_boresight, double* n_epol, double* n_prop, double* n_pol)
 {
 
   if (AntType==0){//Isotropic Antenne
@@ -1330,7 +1330,7 @@ double GetHeff(int AntType, double freq, double* n_boresight, double* n_eplane, 
   else if (AntType==1){//Old SHelfMC LPDA
 
     double hitangle_e, hitangle_h, e_component, h_component;
-    GetHitAngle(n_boresight, n_eplane, n_prop, n_pol, hitangle_e, hitangle_h, e_component, h_component);
+    GetHitAngle(n_boresight, n_epol, n_prop, n_pol, hitangle_e, hitangle_h, e_component, h_component);
 
     double flare_i[4];
     GetFlare(freq, flare_i);
@@ -1349,7 +1349,7 @@ double GetHeff(int AntType, double freq, double* n_boresight, double* n_eplane, 
     freq = freq/1.30; //since this antenna model is in the firn, frequencies should be shifted
 
     double hitangle_e, hitangle_h, e_component, h_component;
-    GetHitAngle(n_boresight, n_eplane, n_prop, n_pol, hitangle_e, hitangle_h, e_component, h_component);//should use arrival direction, but it doesn't matter since we only use abs(e_component)
+    GetHitAngle(n_boresight, n_epol, n_prop, n_pol, hitangle_e, hitangle_h, e_component, h_component);//should use arrival direction, but it doesn't matter since we only use abs(e_component)
 
     double Re_Z = Create100->InterpolateToSingleFrequency(freq,  NC, Create100->frequencies, Create100->Re_Z);
 
@@ -1378,7 +1378,7 @@ double GetHeff(int AntType, double freq, double* n_boresight, double* n_eplane, 
 
     double gain = ARA_Bicone->InterpolateToSingleFrequency(freq,  NC, ARA_Bicone->frequencies, ARA_Bicone->gains);
 
-    double Heff =  ARA_Bicone->GetEffectiveHeight(gain,freq,Re_Z,C,119.99169*PI) * abs(Dot(n_pol,n_boresight));
+    double Heff =  ARA_Bicone->GetEffectiveHeight(gain,freq,Re_Z,C,119.99169*PI) * abs(Dot(n_pol,n_epol));
 
     return Heff;
 
@@ -1390,7 +1390,7 @@ double GetHeff(int AntType, double freq, double* n_boresight, double* n_eplane, 
       freq = freq/1.30; //since this antenna model is in the firn, frequencies should be shifted
 
       double hitangle_e, hitangle_h, e_component, h_component;
-      GetHitAngle(n_boresight, n_eplane, n_prop, n_pol, hitangle_e, hitangle_h, e_component, h_component);//should use arrival direction, but it doesn't matter since we only use abs(e_component)
+      GetHitAngle(n_boresight, n_epol, n_prop, n_pol, hitangle_e, hitangle_h, e_component, h_component);//should use arrival direction, but it doesn't matter since we only use abs(e_component)
 
       double Re_Z = Create50->InterpolateToSingleFrequency(freq,  NC, Create50->frequencies, Create50->Re_Z);
 
@@ -1550,15 +1550,15 @@ void GetFresnel(//const Vector &surface_normal,
 } //GetFresnel
 
 
-void GetHitAngle(double* n_boresight, double* n_eplane, double* n_prop, double* n_pol, double& hitangle_e, double& hitangle_h, double& e_component,
+void GetHitAngle(double* n_boresight, double* n_epol, double* n_prop, double* n_pol, double& hitangle_e, double& hitangle_h, double& e_component,
                      double& h_component)
 {
 
    double n_hplane[3];
-   Cross(n_boresight,n_eplane,n_hplane);
+   Cross(n_boresight,n_epol,n_hplane);
 
    //these are the components of the propagation vector in the e and h plane.  They are overwritten later in the function
-   e_component = -Dot(n_prop, n_eplane);
+   e_component = -Dot(n_prop, n_epol);
    h_component = -Dot(n_prop, n_hplane);
    double n_component = -Dot(n_prop, n_boresight);
 
@@ -1575,7 +1575,7 @@ void GetHitAngle(double* n_boresight, double* n_eplane, double* n_prop, double* 
       hitangle_h += PI;
 
    //NOTE: this is a re-evaluated e_component and h_component that goes into term_LPA calculation
-   e_component = Dot(n_pol, n_eplane);
+   e_component = Dot(n_pol, n_epol);
    h_component = Dot(n_pol, n_hplane);
 
 }
@@ -1588,9 +1588,9 @@ void GetHitAngle_ST0(double* nposnu2AT, double* n_pol, double& hitangle_e, doubl
 
    double n_normal[3] = {0, 0, -1};
    double n_hplane[3] = {1, 0, 0};
-   double n_eplane[3] = {0, 1, 0};
+   double n_epol[3] = {0, 1, 0};
    double n_component;
-   e_component = -Dot(nposnu2AT, n_eplane);
+   e_component = -Dot(nposnu2AT, n_epol);
    h_component = -Dot(nposnu2AT, n_hplane);
    n_component = -Dot(nposnu2AT, n_normal);
    hitangle_e = atan(h_component / n_component);
@@ -1603,7 +1603,7 @@ void GetHitAngle_ST0(double* nposnu2AT, double* n_pol, double& hitangle_e, doubl
       hitangle_h -= PI;
    if (n_component < 0 && e_component > 0)
       hitangle_h += PI;
-   e_component = Dot(n_pol, n_eplane);
+   e_component = Dot(n_pol, n_epol);
    h_component = Dot(n_pol, n_hplane);
 
 }
@@ -1614,7 +1614,7 @@ void GetHitAngle_ST2(double* nposnu2AT, double* n_pol, double* hitangle_e, doubl
 //KD: Z is downward angle specified in input file
 {
 
-   double  n_normal[5][3], n_hplane[5][3], n_eplane[5][3];
+   double  n_normal[5][3], n_hplane[5][3], n_epol[5][3];
    double tempn[5][3] = {{0, 0, -1}, {cos(Z), 0, -sin(Z)}, {0, -cos(Z), -sin(Z)}, { -cos(Z), 0, -sin(Z)}, {0, cos(Z), -sin(Z)}};
    double temph[5][3] = {{1, 0, 0}, {0, -1, 0}, { -1, 0, 0}, {0, 1, 0}, {1, 0, 0}};
    double tempe[5][3] = {{0, 1, 0}, {sin(Z), 0, cos(Z)}, {0, -sin(Z), cos(Z)}, { -sin(Z), 0, cos(Z)}, {0, sin(Z), cos(Z)}};
@@ -1622,7 +1622,7 @@ void GetHitAngle_ST2(double* nposnu2AT, double* n_pol, double* hitangle_e, doubl
       for (int j = 0; j < 3; j++) {
          n_normal[i][j] = tempn[i][j];
          n_hplane[i][j] = temph[i][j];
-         n_eplane[i][j] = tempe[i][j];
+         n_epol[i][j] = tempe[i][j];
       }
    }
 
@@ -1631,7 +1631,7 @@ void GetHitAngle_ST2(double* nposnu2AT, double* n_pol, double* hitangle_e, doubl
    double n_component[5];
 
    for (int i = 0; i < 5; i++) {
-      e_component[i] = -Dot(nposnu2AT, n_eplane[i]); //use the antenna as the tail of a vector
+      e_component[i] = -Dot(nposnu2AT, n_epol[i]); //use the antenna as the tail of a vector
       h_component[i] = -Dot(nposnu2AT, n_hplane[i]);
       n_component[i] = -Dot(nposnu2AT, n_normal[i]);
       hitangle_e[i] = atan(h_component[i] / n_component[i]);
@@ -1645,7 +1645,7 @@ void GetHitAngle_ST2(double* nposnu2AT, double* n_pol, double* hitangle_e, doubl
          hitangle_h[i] -= PI;
       if (n_component[i] < 0 && e_component[i] > 0)
          hitangle_h[i] += PI;
-      e_component[i] = Dot(n_pol, n_eplane[i]);
+      e_component[i] = Dot(n_pol, n_epol[i]);
       h_component[i] = Dot(n_pol, n_hplane[i]);
    }
 
@@ -1654,17 +1654,17 @@ void GetHitAngle_ST2(double* nposnu2AT, double* n_pol, double* hitangle_e, doubl
 void GetHitAngle_ST1(double* nposnu2AT, double* n_pol, double& hitangle_e, double& hitangle_h, double& e_component,
                      double& h_component, double& hitangle_e2, double& hitangle_h2, double& e2_component, double& h2_component)
 {
-   double n_eplane[3] = {0, 1, 0}; //y direction,unit vector in e plane
+   double n_epol[3] = {0, 1, 0}; //y direction,unit vector in e plane
    double n_hplane[3] = {1, 0, 0}; //x direction, unit vector in h plane
    double n_normal[3] = {0, 0, -1}; //-z direction, normal direction which is perpendicular to the face of an antenna
-   double n_eplane2[3] = {0.707, 0.707, 0};
+   double n_epol2[3] = {0.707, 0.707, 0};
    double n_hplane2[3] = {0.707, -0.707, 0};
    double n_normal2[3] = {0, 0, -1};
    //double mag_posnu2AT=Mag(posnu2AT);
    double n_component = 0;
    double n2_component = 0;
-   e_component = -Dot(nposnu2AT, n_eplane);
-   e2_component = -Dot(nposnu2AT, n_eplane2);
+   e_component = -Dot(nposnu2AT, n_epol);
+   e2_component = -Dot(nposnu2AT, n_epol2);
    h_component = -Dot(nposnu2AT, n_hplane);
    h2_component = -Dot(nposnu2AT, n_hplane2);
    n_component = -Dot(nposnu2AT, n_normal);
@@ -1695,9 +1695,9 @@ void GetHitAngle_ST1(double* nposnu2AT, double* n_pol, double& hitangle_e, doubl
    if (n2_component < 0 && e2_component > 0)
       hitangle_h2 += PI;
 
-   e2_component = Dot(n_pol, n_eplane2);
+   e2_component = Dot(n_pol, n_epol2);
    h2_component = Dot(n_pol, n_hplane2);
-   e_component = Dot(n_pol, n_eplane);
+   e_component = Dot(n_pol, n_epol);
    h_component = Dot(n_pol, n_hplane);
 
 
@@ -1709,13 +1709,13 @@ void GetHitAngle_LPA(int NofAT, int N_Ant_perST, double* nposnu2AT, double* n_po
    //hitangle_h is the angle between the signal and the H-plane of LPA(which is perpendicular to the dipole array plane)
    //pol_component is the polarization component in the dipole's polarization direction
    double n_normal[3] = {0, 0, -1}; //vertically downward
-   double n_eplane[3] = {cos((0.5 + NofAT * (2. / N_Ant_perST))*PI), sin((0.5 + NofAT * (2. / N_Ant_perST))*PI), 0.};
-   //FW n_eplane[3]={cos((2.+NofAT)*0.25*PI),sin((2.+NofAT)*0.25*PI),0.};
+   double n_epol[3] = {cos((0.5 + NofAT * (2. / N_Ant_perST))*PI), sin((0.5 + NofAT * (2. / N_Ant_perST))*PI), 0.};
+   //FW n_epol[3]={cos((2.+NofAT)*0.25*PI),sin((2.+NofAT)*0.25*PI),0.};
    //the unit vector in the e-plane(also called the array plane)
    double n_hplane[3] = {cos((2. / N_Ant_perST)*PI * NofAT), sin((2. / N_Ant_perST)*PI * NofAT), 0.};
    //FW       n_hplane[3]={cos(0.25*PI*NofAT),sin(0.25*PI*NofAT),0.};
    //perpendicular to the array plane,point outward from the center of the station
-   e_component = -Dot(nposnu2AT, n_eplane);
+   e_component = -Dot(nposnu2AT, n_epol);
    h_component = -Dot(nposnu2AT, n_hplane);
    double n_component = -Dot(nposnu2AT, n_normal);
 
@@ -1734,7 +1734,7 @@ void GetHitAngle_LPA(int NofAT, int N_Ant_perST, double* nposnu2AT, double* n_po
       hitangle_h += PI;
 
    //NOTE: this is a re-evaluated e_component and h_component that goes into term_LPA calculation
-   e_component = Dot(n_pol, n_eplane);
+   e_component = Dot(n_pol, n_epol);
    h_component = Dot(n_pol, n_hplane);
 
 //cout<<"KDAb: "<<"e,h,n components:"<<"["<<e_component<<" , "<<h_component<<" , "<<n_component<<"]"<<endl;
@@ -1748,17 +1748,17 @@ void GetMirrorHitAngle_LPA(int NofAT, int N_Ant_perST, double* nposnu2MirrorAT, 
    //pol_component is the polarization component in the dipole's polarization direction
    double n_normal[3] = {0, 0, 1}; //vertically upward
 //FW------------------------------------------------------
-//  double n_eplane[3]={cos((2.+NofAT)*0.25*PI),sin((2.+NofAT)*0.25*PI),0.};
+//  double n_epol[3]={cos((2.+NofAT)*0.25*PI),sin((2.+NofAT)*0.25*PI),0.};
    //the unit vector in the e-plane(also called the array plane)
 //  double n_hplane[3]={cos(0.25*PI*NofAT),sin(0.25*PI*NofAT),0.};
    //perpendicular to the array plane,point outward from the center of the station
 //--------------------------------------------------------
-   double n_eplane[3] = {cos((0.5 + NofAT * (2. / N_Ant_perST))*PI), sin((0.5 + NofAT * (2. / N_Ant_perST))*PI), 0.};
+   double n_epol[3] = {cos((0.5 + NofAT * (2. / N_Ant_perST))*PI), sin((0.5 + NofAT * (2. / N_Ant_perST))*PI), 0.};
    //the unit vector in the e-plane(also called the array plane)
    double n_hplane[3] = {cos((2. / N_Ant_perST)*PI * NofAT), sin((2. / N_Ant_perST)*PI * NofAT), 0.};
    //perpendicular to the array plane,point outward from the center of the station
 
-   e_component = -Dot(nposnu2MirrorAT, n_eplane);
+   e_component = -Dot(nposnu2MirrorAT, n_epol);
    h_component = -Dot(nposnu2MirrorAT, n_hplane);
    double n_component = -Dot(nposnu2MirrorAT, n_normal);
    hitangle_e = atan(h_component / n_component);
@@ -1772,7 +1772,7 @@ void GetMirrorHitAngle_LPA(int NofAT, int N_Ant_perST, double* nposnu2MirrorAT, 
    if (n_component < 0 && e_component > 0)
       hitangle_h += PI;
 
-   e_component = Dot(n_pol, n_eplane);
+   e_component = Dot(n_pol, n_epol);
    h_component = Dot(n_pol, n_hplane);
 }
 
@@ -1780,9 +1780,9 @@ void GetMirrorHitAngle_ST0(double* n_posnu2MirrorAT, double* n_pol, double& hita
 {
    double n_normal[3] = {0, 0, 1};
    double n_hplane[3] = {1, 0, 0};
-   double n_eplane[3] = {0, 1, 0};
+   double n_epol[3] = {0, 1, 0};
    double n_component;
-   e_component = -Dot(n_posnu2MirrorAT, n_eplane);
+   e_component = -Dot(n_posnu2MirrorAT, n_epol);
    h_component = -Dot(n_posnu2MirrorAT, n_hplane);
    n_component = -Dot(n_posnu2MirrorAT, n_normal);
    hitangle_e = atan(h_component / n_component);
@@ -1795,14 +1795,14 @@ void GetMirrorHitAngle_ST0(double* n_posnu2MirrorAT, double* n_pol, double& hita
       hitangle_h -= PI;
    if (n_component < 0 && e_component > 0)
       hitangle_h += PI;
-   e_component = Dot(n_pol, n_eplane);
+   e_component = Dot(n_pol, n_epol);
    h_component = Dot(n_pol, n_hplane);
 }
 
 void GetMirrorHitAngle_ST2(double* n_posnu2MirrorAT, double* n_pol, double* hitangle_e, double* hitangle_h, double* e_component, double* h_component)
 {
 
-   double n_normal[5][3], n_hplane[5][3], n_eplane[5][3];
+   double n_normal[5][3], n_hplane[5][3], n_epol[5][3];
    double tempn[5][3] = {{0, 0, 1}, {cos(Z), 0, sin(Z)}, {0, -cos(Z), sin(Z)}, { -cos(Z), 0, sin(Z)}, {0, cos(Z), sin(Z)}}; //all the z components of n turn to negative of the original
    double temph[5][3] = {{1, 0, 0}, {0, -1, 0}, { -1, 0, 0}, {0, 1, 0}, {1, 0, 0}}; //horizontal component doesn't change
    double tempe[5][3] = {{0, 1, 0}, {sin(Z), 0, -cos(Z)}, {0, -sin(Z), -cos(Z)}, { -sin(Z), 0, -cos(Z)}, {0, sin(Z), -cos(Z)}}; //change z components to be -z
@@ -1810,7 +1810,7 @@ void GetMirrorHitAngle_ST2(double* n_posnu2MirrorAT, double* n_pol, double* hita
       for (int j = 0; j < 3; j++) {
          n_normal[i][j] = tempn[i][j];
          n_hplane[i][j] = temph[i][j];
-         n_eplane[i][j] = tempe[i][j];
+         n_epol[i][j] = tempe[i][j];
       }
    }
 
@@ -1818,7 +1818,7 @@ void GetMirrorHitAngle_ST2(double* n_posnu2MirrorAT, double* n_pol, double* hita
    double n_component[5];
 
    for (int i = 0; i < 5; i++) {
-      e_component[i] = -Dot(n_posnu2MirrorAT, n_eplane[i]); //use the antenna as the tail of a vector
+      e_component[i] = -Dot(n_posnu2MirrorAT, n_epol[i]); //use the antenna as the tail of a vector
       h_component[i] = -Dot(n_posnu2MirrorAT, n_hplane[i]);
       n_component[i] = -Dot(n_posnu2MirrorAT, n_normal[i]);
       hitangle_e[i] = atan(h_component[i] / n_component[i]);
@@ -1836,7 +1836,7 @@ void GetMirrorHitAngle_ST2(double* n_posnu2MirrorAT, double* n_pol, double* hita
       //  cout<<hitangle_e[i]*180/PI<<"  mirror       eeeeeeeeeeeee"<<endl;
       // cout<<hitangle_h[i]*180/PI<<"  mirror       hhhhhhhhhhhhh"<<endl;
 
-      e_component[i] = Dot(n_pol, n_eplane[i]);
+      e_component[i] = Dot(n_pol, n_epol[i]);
       h_component[i] = Dot(n_pol, n_hplane[i]);
    }
 
@@ -1846,16 +1846,16 @@ void GetMirrorHitAngle_ST2(double* n_posnu2MirrorAT, double* n_pol, double* hita
 
 void GetMirrorHitAngle_ST1(double* nposnu2MirrorAT, double* n_pol, double& hitangle_e, double& hitangle_h, double& e_component, double& h_component, double& hitangle_e2, double& hitangle_h2, double& e2_component, double& h2_component)
 {
-   double n_eplane[3] = {0, 1, 0}; //y direction,unit vector in e plane
+   double n_epol[3] = {0, 1, 0}; //y direction,unit vector in e plane
    double n_hplane[3] = {1, 0, 0}; //x direction, unit vector in h plane
    double n_normal[3] = {0, 0, 1}; //-z direction, normal direction which is perpendicular to the face of an antenna
-   double n_eplane2[3] = {0.707, 0.707, 0};
+   double n_epol2[3] = {0.707, 0.707, 0};
    double n_hplane2[3] = {0.707, -0.707, 0};
    double n_normal2[3] = {0, 0, 1};
    double n_component = 0;
    double n2_component = 0;
-   e_component = -Dot(nposnu2MirrorAT, n_eplane);
-   e2_component = -Dot(nposnu2MirrorAT, n_eplane2);
+   e_component = -Dot(nposnu2MirrorAT, n_epol);
+   e2_component = -Dot(nposnu2MirrorAT, n_epol2);
    h_component = -Dot(nposnu2MirrorAT, n_hplane);
    h2_component = -Dot(nposnu2MirrorAT, n_hplane2);
    n_component = -Dot(nposnu2MirrorAT, n_normal);
@@ -1887,13 +1887,13 @@ void GetMirrorHitAngle_ST1(double* nposnu2MirrorAT, double* n_pol, double& hitan
 
 
 
-   // hitangle_e=fabs(PI/2-acos(e_component/Mag(posnu2AT)/Mag(n_eplane)));
-   // hitangle_e2=fabs(PI/2-acos(e2_component/Mag(posnu2AT)/Mag(n_eplane2)));
+   // hitangle_e=fabs(PI/2-acos(e_component/Mag(posnu2AT)/Mag(n_epol)));
+   // hitangle_e2=fabs(PI/2-acos(e2_component/Mag(posnu2AT)/Mag(n_epol2)));
    // hitangle_h=fabs(PI/2-acos(h_component/Mag(posnu2AT)/Mag(n_hplane)));
    // hitangle_h2=fabs(PI/2-acos(h2_component/Mag(posnu2AT)/Mag(n_hplane2)));
-   e2_component = Dot(n_pol, n_eplane2);
+   e2_component = Dot(n_pol, n_epol2);
    h2_component = Dot(n_pol, n_hplane2);
-   e_component = Dot(n_pol, n_eplane);
+   e_component = Dot(n_pol, n_epol);
    h_component = Dot(n_pol, n_hplane);
 
 
@@ -2544,15 +2544,15 @@ int ReadStnGeo(const char * infn, int &NAntPerStn, vector<AntennaPlacement> &Vec
       pValue = pValue->NextSiblingElement("value");
     }
 
-    ErrorStat = SetElementXML(pListElement,pSubElement,"n_eplane");
+    ErrorStat = SetElementXML(pListElement,pSubElement,"n_epol");
     if (ErrorStat) {printf(ErrMesg); return 1;}
 
     ErrorStat = SetElementXML(pSubElement,pValue,"value");
     if (ErrorStat) {printf(ErrMesg); return 1;}
 
     for (int i =0; i<3; i++){
-      eResult = pValue->QueryDoubleText(&iAntenna.n_eplane[i]);
-      if (eResult != tinyxml2::XML_SUCCESS) { printf("Error reading n_eplane value. tinyXML Error: %i\n", eResult); return eResult; }
+      eResult = pValue->QueryDoubleText(&iAntenna.n_epol[i]);
+      if (eResult != tinyxml2::XML_SUCCESS) { printf("Error reading n_epol value. tinyXML Error: %i\n", eResult); return eResult; }
       pValue = pValue->NextSiblingElement("value");
     }
 

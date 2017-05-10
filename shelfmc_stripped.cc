@@ -1840,13 +1840,13 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
             double ATCoordinates8[N_Ant_perST][3];//the detailed position of the center of each LPA in a station
             int AntType[N_Ant_perST];
             double Ant_n_boresight[N_Ant_perST][3];
-            double Ant_n_eplane[N_Ant_perST][3];
+            double Ant_n_epol[N_Ant_perST][3];
 
 	    for  (int i = 0; i < N_Ant_perST; i++) {
 	      AntType[i]=StationGeometry[i].Type;
 	      for (int j = 0; j<3; j++){
 		ATCoordinates8[i][j] = ATCoordinate[j] + StationGeometry[j].position[0];
-		Ant_n_eplane[i][j]=StationGeometry[i].n_eplane[j];
+		Ant_n_epol[i][j]=StationGeometry[i].n_epol[j];
 		Ant_n_boresight[i][j]=StationGeometry[i].n_boresight[j];
 		  }
 	    }
@@ -2326,17 +2326,17 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 */
 	       //antenna orientation vectors to pass into Heff function
 	          double n_boresight[3];
-		  double n_eplane[3];
+		  double n_epol[3];
 		  for (int i =0; i<3; i++){
 		    n_boresight[i]=Ant_n_boresight[WhichAntenna][i];
-		    n_eplane[i]=Ant_n_eplane[WhichAntenna][i];
+		    n_epol[i]=Ant_n_epol[WhichAntenna][i];
 		  }
 
 		  //Give an e and h plane component for output tree
 		  if (FIRN)
-		    GetHitAngle(n_boresight, n_eplane, nsignal_atAT, n_pol, hitangle_e_LPA, hitangle_h_LPA, e_component_LPA, h_component_LPA);
+		    GetHitAngle(n_boresight, n_epol, nsignal_atAT, n_pol, hitangle_e_LPA, hitangle_h_LPA, e_component_LPA, h_component_LPA);
                   else
-		    GetHitAngle(n_boresight, n_eplane, nposnu2AT, n_pol, hitangle_e_LPA, hitangle_h_LPA, e_component_LPA, h_component_LPA);
+		    GetHitAngle(n_boresight, n_epol, nposnu2AT, n_pol, hitangle_e_LPA, hitangle_h_LPA, e_component_LPA, h_component_LPA);
 
                   double volt_LPA = 0; //volts of log periodic antenna
                   double volt_LPA_preNoise = 0;
@@ -2355,13 +2355,13 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 		  }
 
 		  if (AntType[WhichAntenna]==2)//don't bother if we aren't using this antenna model
-		    Create100->LoadGain(n_boresight, n_eplane, n_arrival);
+		    Create100->LoadGain(n_boresight, n_epol, n_arrival);
 
 		  else if (AntType[WhichAntenna]==3)
-		    ARA_Bicone->LoadGain(n_boresight,n_arrival);
+		    ARA_Bicone->LoadGain(n_epol,n_arrival);
 
       else if (AntType[WhichAntenna]==4)//don't bother if we aren't using this antenna model
-		    Create50->LoadGain(n_boresight, n_eplane, n_arrival);
+		    Create50->LoadGain(n_boresight, n_epol, n_arrival);
 
                   for (int i = 0; i < NFREQ; i++) { //here needs to be modified
 
@@ -2375,9 +2375,9 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                                 sqrt((pow(e_component_LPA * exp(-2 * ALOG2 * (hitangle_e_LPA / flare[0][i]) * (hitangle_e_LPA / flare[0][i])), 2)  +   pow(e_component_LPA * exp(-2 * ALOG2 * (hitangle_h_LPA / flare[1][i]) * (hitangle_h_LPA / flare[1][i])), 2)) / 2);
 		    */
 		    if (FIRN)
-		      term_LPA = vmmhz[i] * FREQ_BIN * 0.5 * GetHeff(AntType[WhichAntenna], freq[i],n_boresight,n_eplane, nsignal_atAT, n_pol);
+		      term_LPA = vmmhz[i] * FREQ_BIN * 0.5 * GetHeff(AntType[WhichAntenna], freq[i],n_boresight,n_epol, nsignal_atAT, n_pol);
 		    else
-		      term_LPA = vmmhz[i] * FREQ_BIN * 0.5 * GetHeff(AntType[WhichAntenna], freq[i],n_boresight,n_eplane, nposnu2AT, n_pol);
+		      term_LPA = vmmhz[i] * FREQ_BIN * 0.5 * GetHeff(AntType[WhichAntenna], freq[i],n_boresight,n_epol, nposnu2AT, n_pol);
 
 
                      /*//works for gain tests
@@ -2792,17 +2792,17 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
             double MirrorATCoordinates8[N_Ant_perST][3];//the detailed position of the center of each LPA in a station
             int AntType[N_Ant_perST];
             double MirrorAnt_n_boresight[N_Ant_perST][3];
-            double MirrorAnt_n_eplane[N_Ant_perST][3];
+            double MirrorAnt_n_epol[N_Ant_perST][3];
 
 	    for  (int i = 0; i < N_Ant_perST; i++) {
 	      AntType[i]=StationGeometry[i].Type;
 	      for (int j = 0; j<3; j++){
 		MirrorATCoordinates8[i][j] = MirrorATCoordinate[j] + StationGeometry[i].position[j];
-		MirrorAnt_n_eplane[i][j]=StationGeometry[i].n_eplane[j];
+		MirrorAnt_n_epol[i][j]=StationGeometry[i].n_epol[j];
 		MirrorAnt_n_boresight[i][j]=StationGeometry[i].n_boresight[j];
 		  }
 	      MirrorATCoordinates8[i][2] = MirrorATCoordinate[2] - StationGeometry[i].position[2];//'cause mirror
-	      MirrorAnt_n_eplane[i][2]=-StationGeometry[i].n_eplane[2];//'cause mirror
+	      MirrorAnt_n_epol[i][2]=-StationGeometry[i].n_epol[2];//'cause mirror
 	      MirrorAnt_n_boresight[i][2]=-StationGeometry[i].n_boresight[2];//'cause mirror
 	    }
 
@@ -3420,17 +3420,17 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 
 	       //antenna orientation vectors to pass into Heff function
 	          double n_boresight_mirror[3];
-		  double n_eplane_mirror[3];
+		  double n_epol_mirror[3];
 		  for (int i =0; i<3; i++){
 		    n_boresight_mirror[i]=MirrorAnt_n_boresight[WhichMirrorAntenna][i];
-		    n_eplane_mirror[i]=MirrorAnt_n_eplane[WhichMirrorAntenna][i];
+		    n_epol_mirror[i]=MirrorAnt_n_epol[WhichMirrorAntenna][i];
 		  }
 
 		  //Give an e and h plane component for output tree
 		  if (FIRN)
-		    GetHitAngle(n_boresight_mirror, n_eplane_mirror, nsignal_mirror_atAT, n_pol, hitangle_e_LPA, hitangle_h_LPA, e_component_LPA, h_component_LPA);
+		    GetHitAngle(n_boresight_mirror, n_epol_mirror, nsignal_mirror_atAT, n_pol, hitangle_e_LPA, hitangle_h_LPA, e_component_LPA, h_component_LPA);
                   else
-		    GetHitAngle(n_boresight_mirror, n_eplane_mirror, nposnu2MirrorAT, n_pol, hitangle_e_LPA, hitangle_h_LPA, e_component_LPA, h_component_LPA);
+		    GetHitAngle(n_boresight_mirror, n_epol_mirror, nposnu2MirrorAT, n_pol, hitangle_e_LPA, hitangle_h_LPA, e_component_LPA, h_component_LPA);
 
                   double volt_LPA_mirror = 0; //volts of log periodic antenna
                   double volt_LPA_mirror_preNoise = 0;
@@ -3449,13 +3449,13 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 		  }
 
 		  if (AntType[WhichMirrorAntenna]==2)//don't bother loading if not using antenna type
-		    Create100->LoadGain(n_boresight_mirror, n_eplane_mirror, n_arrival_mirror);
+		    Create100->LoadGain(n_boresight_mirror, n_epol_mirror, n_arrival_mirror);
 
 		  else if (AntType[WhichMirrorAntenna]==3)
-		    ARA_Bicone->LoadGain(n_boresight_mirror,n_arrival_mirror);
+		    ARA_Bicone->LoadGain(n_epol_mirror,n_arrival_mirror);
 
       else if (AntType[WhichMirrorAntenna]==4)//don't bother loading if not using antenna type
-        Create50->LoadGain(n_boresight_mirror, n_eplane_mirror, n_arrival_mirror);
+        Create50->LoadGain(n_boresight_mirror, n_epol_mirror, n_arrival_mirror);
 
 
                   for (int i = 0; i < NFREQ; i++) {
@@ -3468,9 +3468,9 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                                 sqrt((pow(e_component_LPA * exp(-2 * ALOG2 * (hitangle_e_LPA / flare[0][i]) * (hitangle_e_LPA / flare[0][i])), 2)  +   pow(e_component_LPA * exp(-2 * ALOG2 * (hitangle_h_LPA / flare[1][i]) * (hitangle_h_LPA / flare[1][i])), 2)) / 2);
 */
 		    if (FIRN)
-		      term_LPA = vmmhz[i] * FREQ_BIN * 0.5 * GetHeff(AntType[WhichMirrorAntenna], freq[i],n_boresight_mirror,n_eplane_mirror, nsignal_mirror_atAT, n_pol);
+		      term_LPA = vmmhz[i] * FREQ_BIN * 0.5 * GetHeff(AntType[WhichMirrorAntenna], freq[i],n_boresight_mirror,n_epol_mirror, nsignal_mirror_atAT, n_pol);
 		    else
-		      term_LPA = vmmhz[i] * FREQ_BIN * 0.5 * GetHeff(AntType[WhichMirrorAntenna], freq[i],n_boresight_mirror,n_eplane_mirror, nposnu2MirrorAT, n_pol);
+		      term_LPA = vmmhz[i] * FREQ_BIN * 0.5 * GetHeff(AntType[WhichMirrorAntenna], freq[i],n_boresight_mirror,n_epol_mirror, nposnu2MirrorAT, n_pol);
 
                      /*//works for gain tests
                      term_LPA=vmmhz[i]*FREQ_BIN*0.5*GaintoHeight(gainv,freq[i]*1.E6)*sqrt(pow(e_component_LPA*exp(-2*ALOG2*(hitangle_e_LPA/flare[0][i])*(hitangle_e_LPA/flare[0][i])),2)     +
