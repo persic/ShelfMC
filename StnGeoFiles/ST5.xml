@@ -1,0 +1,83 @@
+<Station><!--All Dipole Station. 4 Ara dipoles aranged in the same positions as the standard station-->
+
+  <Antennas><!--This will be a vector of AntennaPlacement's-->
+
+    <Antenna><!--This will be an AntennaPlacemtent struct-->
+      <AntType>3</AntType>  <!--Type 2 is Ara Dipoles-->
+      <position>  <!--Position of antenna relative to station center-->
+	<value>3.</value>  <!--x-->
+	<value>0.</value>  <!--y-->
+	<value>0.</value>  <!--y-->
+      </position>
+      <n_boresight>  <!--Forward direction for LPDA's. Irrelevant for Dipoles due to axial symmetry.
+	MUST BE NORMAL VECTOR-->
+	<value>1.</value>  <!--x-->
+	<value>0.</value>  <!--y-->
+	<value>0.</value> <!--z-->
+      </n_boresight>
+      <n_epol>  <!--Down the tines for LPDA.  Along axis for Dipoles.
+        MUST BE NORMAL VECTOR-->
+	<value>0.</value>  <!--x-->
+	<value>0.</value>  <!--y-->
+	<value>-1.</value>  <!--z-->
+      </n_eplane>
+    </Antenna>
+
+    <Antenna>
+      <AntType>3</AntType>
+      <position>
+	<value>0.</value>
+	<value>3.</value>
+	<value>0.</value>
+      </position>
+      <n_boresight>
+	<value>1.</value>
+	<value>0.</value>
+	<value>0.</value>
+      </n_boresight>
+      <n_epol>
+	<value>0.</value>
+	<value>0.</value>
+	<value>-1.</value>
+      </n_eplane>
+    </Antenna>
+
+    <Antenna>
+      <AntType>3</AntType>
+      <position>
+	<value>-3.</value>
+	<value>0.</value>
+	<value>0.</value>
+      </position>
+      <n_boresight>
+	<value>1.</value>
+	<value>0.</value>
+	<value>0.</value>
+      </n_boresight>
+      <n_epol>
+	<value>0.</value>
+	<value>0.</value>
+	<value>-1.</value>
+      </n_epol>
+    </Antenna>
+
+    <Antenna>
+      <AntType>3</AntType>
+      <position>
+	<value>0.</value>
+	<value>-3.</value>
+	<value>0.</value>
+      </position>
+      <n_boresight>
+	<value>1.</value>
+	<value>0.</value>
+	<value>0.</value>
+      </n_boresight>
+      <n_epol>
+	<value>0.</value>
+	<value>0.</value>
+	<value>-1.</value>
+      </n_eplane>
+    </Antenna>
+  </Antennas>
+</Station>
