@@ -1915,13 +1915,13 @@ int Getifreq(double freq)
 
 
 
-double GetN(double* posnu)
+double GetN(double height)
 //KD 07/21/11 I need to rewrite this so that when FIRN is 0 in input file, I don't have to systematically turn off DEPTH_DEPENDENT in declaration.hh file
 
 {
    double n = 0;
 
-   if (posnu[2] <= ICETHICK - FIRNDEPTH) //interact in the ice
+   if (height <= ICETHICK - FIRNDEPTH) //interact in the ice
       n = NICE;
 
    else
@@ -1941,7 +1941,8 @@ double GetN(double* posnu)
 //this is from BARELLA paper, use this now
 //n = 1.0 + 0.86*(1.0-0.638*exp(-(ICETHICK-posnu[2])/34.7));
 
-         n = 1.0 + 0.86 * (1.0 - 0.638 * exp(-FIRNfactor * (ICETHICK - posnu[2]) / 34.7));
+         //n = 1.0 + 0.86 * (1.0 - 0.638 * exp(-FIRNfactor * (ICETHICK - posnu[2]) / 34.7));
+         n = NICE - (NICE - NFIRN) * exp(-(ICETHICK - height) / C_INDEX);
 
    }
 
@@ -1949,8 +1950,79 @@ double GetN(double* posnu)
 
 }
 
+void CalcShadowEdge(double zstep)
+{
+    double SinSquareTheta0 = NFIRN*NFIRN/NICE/NICE;
+    double Nz = NICE;
+    double dr = 0;
+    double rtemp = 0;
+    double z;
+    z = zstep;
 
-double GetRange(double height)//NOTE: THIS VARIABLE firndepth not to be confused with FIRNDEPTH. this is local and a bit of a misnomer
+    SHADOWRANGE.push_back(0.0);
+    SHADOWHEIGHTS.push_back(0.0);
+
+    while (z <= ICETHICK)
+    {
+        Nz = GetN(z);
+        dr = zstep/sqrt(Nz*Nz/NICE/NICE - SinSquareTheta0);
+        rtemp += dr;
+        SHADOWRANGE.push_back(rtemp);
+        SHADOWHEIGHTS.push_back(z);
+        z+=zstep;
+    }
+
+    int nPoints = SHADOWRANGE.size();
+
+    for (int i=0;i<nPoints;i++)
+    {
+        SHADOWRANGE[i] = rtemp - SHADOWRANGE[i];
+    }
+}
+
+double InterpolateLinear(double xtest, double x0, double y0, double x1, double y1)
+//must have x0<=xtest<=x1
+{
+    return y0 + (y1-y0)/(x1-x0)*(xtest-x0);
+}
+
+double GetRange(double height)
+{
+    int npoints = SHADOWHEIGHTS.size();
+    int i = int(npoints*height/ICETHICK);
+    double heighti = SHADOWHEIGHTS[i];
+    int lasti = i;
+    double heightlasti = SHADOWHEIGHTS[lasti];
+    bool greater = height > SHADOWHEIGHTS[i];
+    bool changed = false;
+    while (changed == false)
+    {
+        lasti = i;
+        heightlasti = heighti;
+        if (greater){i--;}
+        else {i++;}
+
+        heighti=SHADOWHEIGHTS[i];
+
+        if ((heighti - height)*(heightlasti - height) <= 0)
+        {
+            changed = true;
+        }
+    }
+    double rangei = SHADOWRANGE[i];
+    double rangelasti = SHADOWRANGE[lasti];
+    if (greater)
+    {
+        return InterpolateLinear(height,heighti,rangei,heightlasti,rangelasti);
+    }
+    else
+    {
+        return InterpolateLinear(height,heightlasti,rangelasti,heighti,rangei);
+    }
+}
+
+/*//Now calculated for a custom index profile
+double GetRange(double height)
 //KD: 9/23/2010 introducing a variable horizontal range due to shadowing
 //KD need to have this activated only if FIRN present
 {
@@ -1963,6 +2035,7 @@ double GetRange(double height)//NOTE: THIS VARIABLE firndepth not to be confused
     }
 
 }
+*/
 
 void Zero(double* array, int i)
 {
@@ -2663,6 +2736,9 @@ int ReadInputXML(const char * infn){
   if (ErrorStat) {printf(ErrMesg); return 1;}
 
   ErrorStat = SetDoubleValueXML(pRoot, NFIRN, "NFIRN");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetDoubleValueXML(pRoot, C_INDEX, "C_INDEX");
   if (ErrorStat) {printf(ErrMesg); return 1;}
 
   ErrorStat = SetDoubleValueXML(pRoot, ATTEN_UP, "ATTEN_UP");

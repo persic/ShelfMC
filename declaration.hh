@@ -48,6 +48,7 @@ int N_Ant_perST = 0; //KD now input as part of input file
 int N_Ant_Trigger; //KD new majority logic variable
 int n_chan_perST;//the total number of channels each station
 double  NFIRN;//the initial refraction index at the surface of the ice
+double  C_INDEX;//exponential scale factor for A-B*exp(z/C) index of refraction fit
 int NNU;//number of neutrinos isotropically reach the ice block
 double ATTEN_FACTOR;
 double REFLECT_RATE;
@@ -67,6 +68,9 @@ int H_PROP; //Use Chris' horizontal propagation model with effective attenuation
 int HEXAGONAL = 0; //note changes in row,col(input file) and ATGAPs(function file) (500m, 866m), works for 7 stations
 double HRAfactor = 1; //sets the spacing scale wrt to 1km
 double FIRNfactor = 1;
+
+std::vector<double> SHADOWRANGE;
+std::vector<double> SHADOWHEIGHTS;
 
 //parameters of antennas
 //const double HeightAT=37.62*INCH2M;//height of antenna in m
@@ -167,8 +171,10 @@ double GaintoHeight(double gain, double freq);
 
 double GetHeff(int, double, double*, double*, double*, double*);
 
-double GetN(double* posnu);
-double GetRange(double firndepth); //KD added 9/23/10
+double GetN(double height);
+void CalcShadowEdge(double zstep = 0.1);
+double InterpolateLinear(double xtest, double x0, double y0, double x1, double x2);
+double GetRange(double height); //KD added 9/23/10
 void GetInteractionPoint(double* posnu);
 void GetPosnuBin(double* posnu, int& posnu_iRow, int& posnu_iCol);
 void GetAttenlength(double* posnu, double& attenlength_up, double& attenlength_down);

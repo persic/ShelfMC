@@ -147,7 +147,12 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
    cout << "gainv=" << gainv << endl;
    cout << "signal fluct=" << SIGNAL_FLUCT << endl;
    cout << "tau regen=" << TAUREGENERATION << endl;
-   cout << "NNU=" << NNU << endl;
+   cout << "NNU=" << NNU << endl << endl;
+   //
+   // Calculate the shadow range for this index profile
+   cout << "Calculating the Shadow Zone...\n";
+   CalcShadowEdge();
+   cout << "Shadow Zone calculated\n\n";
    //
    //    //HRAfactor = (double)atof(argv[8]);
    //    FIRNfactor = (double)atof(argv[7]);
@@ -1208,7 +1213,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
       GetAttenlength(posnu, attenlength_up, attenlength_down);
       // cout<<attenlength_up<<" "<<attenlength_down<<endl;
 
-      n1 = GetN(posnu); //get the refraction index at the interaction point
+      n1 = GetN(posnu[2]); //get the refraction index at the interaction point
       elpm = GetLPM(n1); //KD: probably shouldn't be n1 but apparently it gets overriden in GetSpread below anyway?
       // cout<<"posnu[2]="<<posnu[2]<<"  n1="<<n1<<endl;
       changle = acos(1 / n1);

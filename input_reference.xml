@@ -18,6 +18,7 @@
   <ICETHICK>575.0</ICETHICK> <!--thickness of ice including firn, 575m at Moore's Bay-->
   <FIRNDEPTH>60.0</FIRNDEPTH> <!--Depth of firn in meters-->
   <NFIRN>1.30</NFIRN> <!--1.30-->
+  <C_INDEX>34.48</C_INDEX> <!--Exponential scale factor for indec of refraction fit-->
   <CONST_ATTENLENGTH>0</CONST_ATTENLENGTH> <!--use constant attenuation length if ==1-->
   <ATTEN_UP>500.0</ATTEN_UP> <!--Average Attenuation Length of the ice-->
   <ATTEN_DOWN>250.0</ATTEN_DOWN> <!--not used anymore except for CONST_ATTENLENGTH-->
