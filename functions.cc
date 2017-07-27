@@ -1970,46 +1970,65 @@ void CalcShadowEdge(double zstep)
     {
         SHADOWRANGE[i] = rtemp - SHADOWRANGE[i];
     }
+    SHADOWRANGE.push_back(0.0);
+    SHADOWHEIGHTS.push_back(ICETHICK);
 }
 
 double InterpolateLinear(double xtest, double x0, double y0, double x1, double y1)
-//must have x0<=xtest<=x1
+//must have x0<=xtest<=x1, x0!=x1
 {
     return y0 + (y1-y0)/(x1-x0)*(xtest-x0);
 }
 
 double GetRange(double height)
 {
+    //cout << "\nGetRange for height = " << height << endl;
     int npoints = SHADOWHEIGHTS.size();
     int i = int(npoints*height/ICETHICK);
+    //cout << "initial guess i = " << i << endl;
     double heighti = SHADOWHEIGHTS[i];
-    int lasti = i;
-    double heightlasti = SHADOWHEIGHTS[lasti];
-    bool greater = height > SHADOWHEIGHTS[i];
-    bool changed = false;
-    while (changed == false)
-    {
-        lasti = i;
-        heightlasti = heighti;
-        if (greater){i--;}
-        else {i++;}
-
-        heighti=SHADOWHEIGHTS[i];
-
-        if ((heighti - height)*(heightlasti - height) <= 0)
-        {
-            changed = true;
-        }
-    }
+    //cout << "initial guess height = " << heighti << endl;
     double rangei = SHADOWRANGE[i];
-    double rangelasti = SHADOWRANGE[lasti];
-    if (greater)
-    {
-        return InterpolateLinear(height,heighti,rangei,heightlasti,rangelasti);
+    //cout << "initial guess range = " << rangei << endl;
+    if (height == heighti){
+      //cout << "correct height guess, return range = " << rangei << endl << endl;
+      return rangei;
     }
-    else
-    {
-        return InterpolateLinear(height,heightlasti,rangelasti,heighti,rangei);
+    else {
+      int lasti = i;
+      double heightlasti = SHADOWHEIGHTS[lasti];
+      bool greater = height > heighti;
+      //cout << "greater = " << greater << endl;
+      bool changed = false;
+      while (changed == false){
+          lasti = i;
+          heightlasti = heighti;
+          if (greater)
+            i++;
+          else
+            i--;
+          if (i>=npoints){
+            heighti = ICETHICK;
+            changed = true;
+            i = npoints-1;
+          }
+          else{
+            heighti=SHADOWHEIGHTS[i];
+            //cout << "lasti = " << lasti << ", i = " << i << ", heightlasti = " << heightlasti << ", heighti = " << heighti << endl;
+            if ((heighti - height)*(heightlasti - height) <= 0){
+                changed = true;
+              }
+          }
+      }
+      double rangelasti = SHADOWRANGE[lasti];
+      rangei = SHADOWRANGE[i];
+      //cout << "rangelasti = " << rangelasti << "rangei = " << rangei << endl << endl;
+      if (greater){
+          return InterpolateLinear(height,heighti,rangei,heightlasti,rangelasti);
+      }
+      else{
+          return InterpolateLinear(height,heightlasti,rangelasti,heighti,rangei);
+      }
     }
 }
 
