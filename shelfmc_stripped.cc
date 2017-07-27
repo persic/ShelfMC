@@ -122,7 +122,12 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
    ReadStnGeo(StnGeoFN,N_Ant_perST,StationGeometry);
    cout<<"\n\n";
    int N_ST_required = 1;
-
+   //
+   // Calculate the shadow range for this index profile
+   cout << "Calculating the Shadow Zone...\n";
+   CalcShadowEdge();
+   cout << "Shadow Zone calculated\n\n";
+   //
    //ATTEN_UP=(double)atof(argv[1]);
    //REFLECT_RATE=(double)atof(argv[7]);
    //EXPONENT=(double)atof(argv[7]);  //energy exponent
@@ -148,12 +153,6 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
    cout << "signal fluct=" << SIGNAL_FLUCT << endl;
    cout << "tau regen=" << TAUREGENERATION << endl;
    cout << "NNU=" << NNU << endl << endl;
-   //
-   // Calculate the shadow range for this index profile
-   cout << "Calculating the Shadow Zone...\n";
-   CalcShadowEdge();
-   cout << "Shadow Zone calculated\n\n";
-   //
    //    //HRAfactor = (double)atof(argv[8]);
    //    FIRNfactor = (double)atof(argv[7]);
    //    FIRNDEPTH = FIRNDEPTH/FIRNfactor;
