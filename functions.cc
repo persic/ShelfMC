@@ -1917,35 +1917,27 @@ int Getifreq(double freq)
 
 double GetN(double height)
 //KD 07/21/11 I need to rewrite this so that when FIRN is 0 in input file, I don't have to systematically turn off DEPTH_DEPENDENT in declaration.hh file
-
 {
-   double n = 0;
+    double n = 0;
 
-   if (height <= ICETHICK - FIRNDEPTH) //interact in the ice
-      n = NICE;
+    if (!DEPTH_DEPENDENT_N) {
+       if (FIRN && height > (ICETHICK - FIRNDEPTH))
+          n = NFIRN;
+       else
+          n = NICE;
+    }
+    else {
+       //these are Peter's fit parameters//old usage by FW
+       //double a1=0.463251;
+       //double b1=0.0140157;
+       //n=NFIRN+a1*(1.0-exp(-b1*(ICETHICK-posnu[2]))); //KD: this was the previous one
 
-   else
+       //this is from BARELLA paper, use this now
+       //n = 1.0 + 0.86*(1.0-0.638*exp(-(ICETHICK-posnu[2])/34.7));
 
-   {
-      if (!DEPTH_DEPENDENT_N) {
-         if (FIRN)
-            n = NFIRN;
-         else
-            n = NICE;
-      } else
-         //these are Peter's fit parameters//old usage by FW
-         //double a1=0.463251;
-         //double b1=0.0140157;
-         //n=NFIRN+a1*(1.0-exp(-b1*(ICETHICK-posnu[2]))); //KD: this was the previous one
-
-//this is from BARELLA paper, use this now
-//n = 1.0 + 0.86*(1.0-0.638*exp(-(ICETHICK-posnu[2])/34.7));
-
-         //n = 1.0 + 0.86 * (1.0 - 0.638 * exp(-FIRNfactor * (ICETHICK - posnu[2]) / 34.7));
-         n = NICE - (NICE - NFIRN) * exp(-(ICETHICK - height) / C_INDEX);
-
-   }
-
+       //n = 1.0 + 0.86 * (1.0 - 0.638 * exp(-FIRNfactor * (ICETHICK - posnu[2]) / 34.7));
+       n = NICE - (NICE - NFIRN) * exp(-(ICETHICK - height) / C_INDEX);
+     }
    return n;
 
 }
