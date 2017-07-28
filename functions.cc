@@ -1957,8 +1957,19 @@ void CalcShadowEdge(double zstep)
     while (z <= ICETHICK)
     {
         Nz = GetN(z);
-        dr = zstep/sqrt(Nz*Nz/NICE/NICE - SinSquareTheta0);
-        rtemp += dr;
+        if (Nz>NFIRN){
+          dr = zstep/sqrt(Nz*Nz/NICE/NICE - SinSquareTheta0);
+        }
+        else{
+          dr=58*zstep; //treat a horizontal ray like 1deg
+        }
+        if (dr > 58*zstep){
+          //The idea is to keep the ray steeper than 1degree, keeping 1/tan from blowing up
+          rtemp += 58*zstep;
+        }
+        else{
+          rtemp += dr;
+        }
         SHADOWRANGE.push_back(rtemp);
         SHADOWHEIGHTS.push_back(z);
         z+=zstep;
@@ -1970,8 +1981,10 @@ void CalcShadowEdge(double zstep)
     {
         SHADOWRANGE[i] = rtemp - SHADOWRANGE[i];
     }
-    SHADOWRANGE.push_back(0.0);
-    SHADOWHEIGHTS.push_back(ICETHICK);
+    if (SHADOWHEIGHTS.back()<ICETHICK){
+      SHADOWRANGE.push_back(0.0);
+      SHADOWHEIGHTS.push_back(ICETHICK);
+    }
 }
 
 double InterpolateLinear(double xtest, double x0, double y0, double x1, double y1)
@@ -2008,9 +2021,7 @@ double GetRange(double height)
           else
             i--;
           if (i>=npoints){
-            heighti = ICETHICK;
-            changed = true;
-            i = npoints-1;
+            return 0.0;
           }
           else{
             heighti=SHADOWHEIGHTS[i];
