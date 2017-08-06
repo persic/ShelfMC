@@ -1944,7 +1944,8 @@ double GetN(double height)
 
 void CalcShadowEdge(double zstep)
 {
-    double SinSquareTheta0 = NFIRN*NFIRN/NICE/NICE;
+    double SinTheta0 = NFIRN/NICE;
+    double SinSquareTheta0 = SinTheta0*SinTheta0;
     double Nz = NICE;
     double dr = 0;
     double rtemp = 0;
@@ -1958,7 +1959,7 @@ void CalcShadowEdge(double zstep)
     {
         Nz = GetN(z);
         if (Nz>NFIRN){
-          dr = zstep/sqrt(Nz*Nz/NICE/NICE - SinSquareTheta0);
+          dr = zstep*SinTheta0/sqrt(Nz*Nz/NICE/NICE - SinSquareTheta0);
         }
         else{
           dr=58*zstep; //treat a horizontal ray like 1deg
