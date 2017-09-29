@@ -22,7 +22,7 @@ def CalcVeffMutiLog(infn,UseWeights=True,Tname="nt"):
 			WtAve=(WtNuE+WtNuMu+WtNuTau)/3
 		else:
 			E=ent.energy
-			V=ent.volume
+			V=ent.volume/1.0e9
 			nNuEtrg = ent.nNuEtrg
 			nNuMutrg = ent.nNuMutrg
 			nNuTautrg = ent.nNuTautrg
