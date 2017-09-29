@@ -5,20 +5,36 @@ def DictToArray(Dict):
 	outArray=np.sort(outArray,axis=0)
 	return outArray
 
-def CalcVeffMutiLog(infn,Tname="nt"):
+def CalcVeffMutiLog(infn,UseWeights=True,Tname="nt"):
 	inf=ROOT.TFile(infn)
 	nt=inf.Get(Tname)
 	Values=[]
 	for ent in nt:
 		E=ent.energy
-		VeffAve=ent.VeffAve
-		VeffNuE=ent.VeffNuE
-		VeffNuMu=ent.VeffNuMu
-		VeffNuTau=ent.VeffNuTau
-		WtNuE=ent.wtNuE
-		WtNuMu=ent.wtNuMu
-		WtNuTau=ent.wtNuTau
-		WtAve=(WtNuE+WtNuMu+WtNuTau)/3
+		if UseWeights:
+			VeffAve=ent.VeffAve
+			VeffNuE=ent.VeffNuE
+			VeffNuMu=ent.VeffNuMu
+			VeffNuTau=ent.VeffNuTau
+			WtNuE=ent.wtNuE
+			WtNuMu=ent.wtNuMu
+			WtNuTau=ent.wtNuTau
+			WtAve=(WtNuE+WtNuMu+WtNuTau)/3
+		else:
+			E=ent.energy
+			V=ent.volume
+			nNuEtrg = ent.nNuEtrg
+			nNuMutrg = ent.nNuMutrg
+			nNuTautrg = ent.nNuTautrg
+			nNuTottrg = nNuEtrg + nNuMutrg + nNuTautrg
+			WtNuE=ent.nNuEthrown
+			WtNuMu=ent.nNuMuthrown
+			WtNuTau=ent.nNuTauthrown
+			WtAve=(WtNuE+WtNuMu+WtNuTau)
+			VeffAve=V * nNuTottrg / WtAve
+			VeffNuE=V * nNuEtrg / WtNuE
+			VeffNuMu=V * nNuMutrg / WtNuMu
+			VeffNuTau=V * nNuEtrg / WtNuTau
 		Values.append((E,VeffAve,VeffNuE,VeffNuMu,VeffNuTau,WtAve,WtNuE,WtNuMu,WtNuTau))
 	VvsEAve={}
 	VvsENuE={}
