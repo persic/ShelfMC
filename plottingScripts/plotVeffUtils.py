@@ -11,30 +11,39 @@ def CalcVeffMutiLog(infn,UseWeights=True,Tname="nt"):
 	Values=[]
 	for ent in nt:
 		E=ent.energy
-		if UseWeights:
-			VeffAve=ent.VeffAve
-			VeffNuE=ent.VeffNuE
-			VeffNuMu=ent.VeffNuMu
-			VeffNuTau=ent.VeffNuTau
-			WtNuE=ent.wtNuE
-			WtNuMu=ent.wtNuMu
-			WtNuTau=ent.wtNuTau
-			WtAve=(WtNuE+WtNuMu+WtNuTau)/3
-		else:
-			E=ent.energy
-			V=ent.volume/1.0e9
+		VeffAve=ent.VeffAve
+		VeffNuE=ent.VeffNuE
+		VeffNuMu=ent.VeffNuMu
+		VeffNuTau=ent.VeffNuTau
+		WtNuE=ent.wtNuE
+		WtNuMu=ent.wtNuMu
+		WtNuTau=ent.wtNuTau
+		WtAve=(WtNuE+WtNuMu+WtNuTau)/3.0
+		if UseWeights==False:
 			nNuEtrg = ent.nNuEtrg
 			nNuMutrg = ent.nNuMutrg
 			nNuTautrg = ent.nNuTautrg
-			nNuTottrg = nNuEtrg + nNuMutrg + nNuTautrg
-			WtNuE=ent.nNuEthrown
-			WtNuMu=ent.nNuMuthrown
-			WtNuTau=ent.nNuTauthrown
-			WtAve=(WtNuE+WtNuMu+WtNuTau)
-			VeffAve=V * nNuTottrg / WtAve
-			VeffNuE=V * nNuEtrg / WtNuE
-			VeffNuMu=V * nNuMutrg / WtNuMu
-			VeffNuTau=V * nNuEtrg / WtNuTau
+			nAvetrg = (nNuEtrg + nNuMutrg + nNuTautrg)/3.0
+			if WtNuE != 0:
+				VeffNuE = VeffNuE * nNuEtrg / WtNuE
+			else:
+				VeffNuE = 0
+			if WtNuMu != 0:
+				VeffNuMu = VeffNuMu * nNuMutrg / WtNuMu
+			else:
+				VeffNuMu = 0
+			if WtNuTau != 0:
+				VeffNuTau = VeffNuTau * nNuTautrg / WtNuTau
+			else:
+				VeffNuTau = 0
+			if WtNuE != 0:
+				VeffAve = VeffAve * nAvetrg / WtNuE
+			else:
+				VeffAve = 0
+			WtNuE = nNuEtrg
+			WtNuMu = nNuMutrg
+			WtNuTau = nNuTautrg
+			WtAve = nAvetrg
 		Values.append((E,VeffAve,VeffNuE,VeffNuMu,VeffNuTau,WtAve,WtNuE,WtNuMu,WtNuTau))
 	VvsEAve={}
 	VvsENuE={}
