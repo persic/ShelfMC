@@ -86,7 +86,6 @@ void GetATLocation(int iRow, int iCol, double* ATCoordinate)
 
 }
 
-
 void GetMirrorATLocation(int iRow, int iCol, double* MirrorATCoordinate)
 {
 
@@ -109,8 +108,8 @@ void GetInteractionPoint(double* posnu)
 {
 
    if (HEXAGONAL) {
-      posnu[0] = Rand3.Rndm() * ((2) * 1000. + 2 * EDGE) - EDGE;
-      posnu[1] = Rand3.Rndm() * ((2) * 1000. + 2 * EDGE) - EDGE;
+      posnu[0] = Rand3.Rndm() * ((2) * 1000. + 2 * MAX_DISTANCE) - MAX_DISTANCE;
+      posnu[1] = Rand3.Rndm() * ((2) * 1000. + 2 * MAX_DISTANCE) - MAX_DISTANCE;
       posnu[2] = Rand3.Rndm() * ICETHICK; //postive
    }
 
@@ -125,10 +124,10 @@ void GetInteractionPoint(double* posnu)
 
       //  posnu[0]=Random(0.,101*ATGap );
       // posnu[0]=Random(-4000.,NROWS*ATGap+4000. );
-      posnu[0] = Rand3.Rndm() * ((NROWS - 1) * ATGap + 2 * EDGE) - EDGE;
+      posnu[0] = Rand3.Rndm() * ((NROWS - 1) * ATGap + 2 * MAX_DISTANCE) - MAX_DISTANCE;
       // cout<<posnu[0]/101./ATGap<<endl;
       // posnu[1]=Random(-4000.,NCOLS*ATGap+4000. );
-      posnu[1] = Rand3.Rndm() * ((NCOLS - 1) * ATGap + 2 * EDGE) - EDGE;
+      posnu[1] = Rand3.Rndm() * ((NCOLS - 1) * ATGap + 2 * MAX_DISTANCE) - MAX_DISTANCE;
       // cout<<posnu[1]/101./ATGap<<endl;
       posnu[2] = Rand3.Rndm() * ICETHICK; //postive
       // cout<<posnu[2]/ICETHICK<<endl;
@@ -227,7 +226,7 @@ void GetAttenlength(double* posnu, double& attenlength_up, double& attenlength_d
 	  sum_down += dx * AttenLengthAtDepth(dx * bin + dx2 + effectivedepth); //down to the ice bottom
 	 xtot += dx;
 	}
-      
+
 
       dx = effectivemaxdepth * 0.005;
       if (dx < 1.e-5)
@@ -654,160 +653,253 @@ double GetTauRegen(string current, double energy, double theta_nu, double L_TauD
 // KD 10/2010
 {
    double tauweight = 0;
+   int NEbins = 0;
 // data below for GZK spectrum
 //if (GZK){ JET:  If TauRegeneration is on, we want GZK table to be used
 // regardless of wether or not GZK is toggled on.
    double tautable[10][9];
-
-// energy 15.0-15.5
-   tautable[0][0] = 3.58 ;
-   tautable[0][1] = 3.01 ;
-   tautable[0][2] = 2.38 ;
-   tautable[0][3] = 1.94 ;
-   tautable[0][4] = 1.63 ;
-   tautable[0][5] = 1.43 ;
-   tautable[0][6] = 1.29 ;
-   tautable[0][7] = 1.16 ;
-   tautable[0][8] = 1.05 ;
-
-// energy 15.5-16.0
-   tautable[1][0] = 2.92;
-   tautable[1][1] = 2.94;
-   tautable[1][2] = 2.65;
-   tautable[1][3] = 2.28;
-   tautable[1][4] = 1.87;
-   tautable[1][5] = 1.74 ;
-   tautable[1][6] = 1.47;
-   tautable[1][7] = 1.27;
-   tautable[1][8] = 1.07;
-
-// energy 16.0-16.5
-   tautable[2][0] = 1.33;
-   tautable[2][1] = 1.89;
-   tautable[2][2] = 2.23;
-   tautable[2][3] = 2.22;
-   tautable[2][4] = 2.11;
-   tautable[2][5] = 1.89;
-   tautable[2][6] = 1.69;
-   tautable[2][7] = 1.42;
-   tautable[2][8] = 1.13;
-
-// energy 16.5-17.0
-   tautable[3][0] = 0.26;
-   tautable[3][1] = 0.57;
-   tautable[3][2] = 0.97;
-   tautable[3][3] = 1.27;
-   tautable[3][4] = 1.46;
-   tautable[3][5] = 1.51;
-   tautable[3][6] = 1.48;
-   tautable[3][7] = 1.37;
-   tautable[3][8] = 1.14;
-
-// energy 17.0-17.5
-   tautable[4][0] = 0.02;
-   tautable[4][1] = 0.06;
-   tautable[4][2] = 0.17;
-   tautable[4][3] = 0.34;
-   tautable[4][4] = 0.52;
-   tautable[4][5] = 0.65;
-   tautable[4][6] = 0.80;
-   tautable[4][7] = 0.92;
-   tautable[4][8] = 0.98;
-
-// energy 17.5-18.0
-   tautable[5][0] = 0.00;
-   tautable[5][1] = 0.00;
-   tautable[5][2] = 0.02;
-   tautable[5][3] = 0.08;
-   tautable[5][4] = 0.17;
-   tautable[5][5] = 0.28;
-   tautable[5][6] = 0.43;
-   tautable[5][7] = 0.64;
-   tautable[5][8] = 0.87;
-
-// energy 18.0-18.5
-   tautable[6][0] = 0.00;
-   tautable[6][1] = 0.00;
-   tautable[6][2] = 0.00;
-   tautable[6][3] = 0.01;
-   tautable[6][4] = 0.03;
-   tautable[6][5] = 0.07;
-   tautable[6][6] = 0.17;
-   tautable[6][7] = 0.36;
-   tautable[6][8] = 0.77;
-
-// energy 18.5-19.0
-   tautable[7][0] = 0.00;
-   tautable[7][1] = 0.00;
-   tautable[7][2] = 0.00;
-   tautable[7][3] = 0.00;
-   tautable[7][4] = 0.00;
-   tautable[7][5] = 0.01;
-   tautable[7][6] = 0.05;
-   tautable[7][7] = 0.22;
-   tautable[7][8] = 0.74;
-
-// energy 19.0-19.5
-   tautable[8][0] = 0.00;
-   tautable[8][1] = 0.00;
-   tautable[8][2] = 0.00;
-   tautable[8][3] = 0.00;
-   tautable[8][4] = 0.00;
-   tautable[8][5] = 0.00;
-   tautable[8][6] = 0.01;
-   tautable[8][7] = 0.15;
-   tautable[8][8] = 0.73;
-
-// energy 19.5-20.0
-   tautable[9][0] = 0.00;
-   tautable[9][1] = 0.00;
-   tautable[9][2] = 0.00;
-   tautable[9][3] = 0.00;
-   tautable[9][4] = 0.00;
-   tautable[9][5] = 0.00;
-   tautable[9][6] = 0.02;
-   tautable[9][7] = 0.13;
-   tautable[9][8] = 0.67;
-// end of GZK
-
-
    double angle_range[10];
-   angle_range[0] = 60.;
-   angle_range[1] = 65.;
-   angle_range[2] = 70.;
-   angle_range[3] = 75.;
-   angle_range[4] = 80.;
-   angle_range[5] = 82.;
-   angle_range[6] = 84.;
-   angle_range[7] = 86.;
-   angle_range[8] = 88.;
-   angle_range[9] = 90.;
-
    double energy_range[11];
-   energy_range[0] = 15.0 ;
-   energy_range[1] = 15.5 ;
-   energy_range[2] = 16.0 ;
-   energy_range[3] = 16.5 ;
-   energy_range[4] = 17.0 ;
-   energy_range[5] = 17.5 ;
-   energy_range[6] = 18.0 ;
-   energy_range[7] = 18.5 ;
-   energy_range[8] = 19.0 ;
-   energy_range[9] = 19.5 ;
-   energy_range[10] = 20.0;
 
    double theta_nu_deg = theta_nu * RAD2DEG;
    double D = ICETHICK - H;
    double GeoFactor = 1.0;
-
    //Add to effective volume for upward going Tau, since original interaction can occur below the ice
    if (current == "cc" && (L_TauDecay*cos(theta_nu) + D) > ICETHICK){
       GeoFactor = (L_TauDecay*cos(theta_nu) + D)/ICETHICK;
    }
 
+   if (GZK){ //GZK Spectrum
+     NEbins=10;
+  // energy 15.0-15.5
+     tautable[0][0] = 3.58 ;
+     tautable[0][1] = 3.01 ;
+     tautable[0][2] = 2.38 ;
+     tautable[0][3] = 1.94 ;
+     tautable[0][4] = 1.63 ;
+     tautable[0][5] = 1.43 ;
+     tautable[0][6] = 1.29 ;
+     tautable[0][7] = 1.16 ;
+     tautable[0][8] = 1.05 ;
+
+  // energy 15.5-16.0
+     tautable[1][0] = 2.92;
+     tautable[1][1] = 2.94;
+     tautable[1][2] = 2.65;
+     tautable[1][3] = 2.28;
+     tautable[1][4] = 1.87;
+     tautable[1][5] = 1.74 ;
+     tautable[1][6] = 1.47;
+     tautable[1][7] = 1.27;
+     tautable[1][8] = 1.07;
+
+  // energy 16.0-16.5
+     tautable[2][0] = 1.33;
+     tautable[2][1] = 1.89;
+     tautable[2][2] = 2.23;
+     tautable[2][3] = 2.22;
+     tautable[2][4] = 2.11;
+     tautable[2][5] = 1.89;
+     tautable[2][6] = 1.69;
+     tautable[2][7] = 1.42;
+     tautable[2][8] = 1.13;
+
+  // energy 16.5-17.0
+     tautable[3][0] = 0.26;
+     tautable[3][1] = 0.57;
+     tautable[3][2] = 0.97;
+     tautable[3][3] = 1.27;
+     tautable[3][4] = 1.46;
+     tautable[3][5] = 1.51;
+     tautable[3][6] = 1.48;
+     tautable[3][7] = 1.37;
+     tautable[3][8] = 1.14;
+
+  // energy 17.0-17.5
+     tautable[4][0] = 0.02;
+     tautable[4][1] = 0.06;
+     tautable[4][2] = 0.17;
+     tautable[4][3] = 0.34;
+     tautable[4][4] = 0.52;
+     tautable[4][5] = 0.65;
+     tautable[4][6] = 0.80;
+     tautable[4][7] = 0.92;
+     tautable[4][8] = 0.98;
+
+  // energy 17.5-18.0
+     tautable[5][0] = 0.00;
+     tautable[5][1] = 0.00;
+     tautable[5][2] = 0.02;
+     tautable[5][3] = 0.08;
+     tautable[5][4] = 0.17;
+     tautable[5][5] = 0.28;
+     tautable[5][6] = 0.43;
+     tautable[5][7] = 0.64;
+     tautable[5][8] = 0.87;
+
+  // energy 18.0-18.5
+     tautable[6][0] = 0.00;
+     tautable[6][1] = 0.00;
+     tautable[6][2] = 0.00;
+     tautable[6][3] = 0.01;
+     tautable[6][4] = 0.03;
+     tautable[6][5] = 0.07;
+     tautable[6][6] = 0.17;
+     tautable[6][7] = 0.36;
+     tautable[6][8] = 0.77;
+
+  // energy 18.5-19.0
+     tautable[7][0] = 0.00;
+     tautable[7][1] = 0.00;
+     tautable[7][2] = 0.00;
+     tautable[7][3] = 0.00;
+     tautable[7][4] = 0.00;
+     tautable[7][5] = 0.01;
+     tautable[7][6] = 0.05;
+     tautable[7][7] = 0.22;
+     tautable[7][8] = 0.74;
+
+  // energy 19.0-19.5
+     tautable[8][0] = 0.00;
+     tautable[8][1] = 0.00;
+     tautable[8][2] = 0.00;
+     tautable[8][3] = 0.00;
+     tautable[8][4] = 0.00;
+     tautable[8][5] = 0.00;
+     tautable[8][6] = 0.01;
+     tautable[8][7] = 0.15;
+     tautable[8][8] = 0.73;
+
+  // energy 19.5-20.0
+     tautable[9][0] = 0.00;
+     tautable[9][1] = 0.00;
+     tautable[9][2] = 0.00;
+     tautable[9][3] = 0.00;
+     tautable[9][4] = 0.00;
+     tautable[9][5] = 0.00;
+     tautable[9][6] = 0.02;
+     tautable[9][7] = 0.13;
+     tautable[9][8] = 0.67;
+
+     //angle Range
+     angle_range[0] = 60.;
+     angle_range[1] = 65.;
+     angle_range[2] = 70.;
+     angle_range[3] = 75.;
+     angle_range[4] = 80.;
+     angle_range[5] = 82.;
+     angle_range[6] = 84.;
+     angle_range[7] = 86.;
+     angle_range[8] = 88.;
+     angle_range[9] = 90.;
+
+     //energy_range
+     energy_range[0] = 15.0 ;
+     energy_range[1] = 15.5 ;
+     energy_range[2] = 16.0 ;
+     energy_range[3] = 16.5 ;
+     energy_range[4] = 17.0 ;
+     energy_range[5] = 17.5 ;
+     energy_range[6] = 18.0 ;
+     energy_range[7] = 18.5 ;
+     energy_range[8] = 19.0 ;
+     energy_range[9] = 19.5 ;
+     energy_range[10] = 20.0;
+  }// end of if GZK
+  else{ //E^2 Spectrum
+     NEbins=6;
+    // energy 15.0-16.0
+     tautable[0][0]=0.59 ;
+     tautable[0][1]=0.69 ;
+     tautable[0][2]=0.78 ;
+     tautable[0][3]=0.84 ;
+     tautable[0][4]=0.89 ;
+     tautable[0][5]=0.90 ;
+     tautable[0][6]=0.93 ;
+     tautable[0][7]=0.96 ;
+     tautable[0][8]=0.99 ;
+
+    // energy 16.0-17.0
+     tautable[1][0]=0.19;
+     tautable[1][1]=0.33;
+     tautable[1][2]=0.49;
+     tautable[1][3]=0.60;
+     tautable[1][4]=0.70;
+     tautable[1][5]=0.79;
+     tautable[1][6]=0.84;
+     tautable[1][7]=0.91;
+     tautable[1][8]=0.97;
+
+    // energy 17.0-18.0
+     tautable[2][0]=0.01;
+     tautable[2][1]=0.03;
+     tautable[2][2]=0.08;
+     tautable[2][3]=0.22;
+     tautable[2][4]=0.35;
+     tautable[2][5]=0.39;
+     tautable[2][6]=0.66;
+     tautable[2][7]=0.75;
+     tautable[2][8]=0.93;
+
+    // energy 18.0-19.0
+     tautable[3][0]=0.00;
+     tautable[3][1]=0.00;
+     tautable[3][2]=0.00;
+     tautable[3][3]=0.01;
+     tautable[3][4]=0.04;
+     tautable[3][5]=0.07;
+     tautable[3][6]=0.15;
+     tautable[3][7]=0.36;
+     tautable[3][8]=0.77;
+
+    // energy 19.0-20.0
+     tautable[4][0]=0.00;
+     tautable[4][1]=0.00;
+     tautable[4][2]=0.00;
+     tautable[4][3]=0.00;
+     tautable[4][4]=0.00;
+     tautable[4][5]=0.00;
+     tautable[4][6]=0.01;
+     tautable[4][7]=0.21;
+     tautable[4][8]=0.73;
+
+    // energy 20.0-21.5
+     tautable[5][0]=0.00;
+     tautable[5][1]=0.00;
+     tautable[5][2]=0.00;
+     tautable[5][3]=0.00;
+     tautable[5][4]=0.00;
+     tautable[5][5]=0.00;
+     tautable[5][6]=0.00;
+     tautable[5][7]=0.35;
+     tautable[5][8]=0.90;
+
+     //angle range
+     angle_range[0]=60.;
+     angle_range[1]=65.;
+     angle_range[2]=70.;
+     angle_range[3]=75.;
+     angle_range[4]=80.;
+     angle_range[5]=82.;
+     angle_range[6]=84.;
+     angle_range[7]=86.;
+     angle_range[8]=88.;
+     angle_range[9]=90.;
+
+     //energy range
+     energy_range[0]=15.0 ;
+     energy_range[1]=16.0 ;
+     energy_range[2]=17.0 ;
+     energy_range[3]=18.0 ;
+     energy_range[4]=19.0 ;
+     energy_range[5]=20.0 ;
+     energy_range[6]=21.5 ;
+
+  }//end else
+
 //double tauweight=0;
 
-   for (int j = 0; j < 10; j++) {
+   for (int j = 0; j < NEbins; j++) {
       if (log10(energy) >= energy_range[j] && log10(energy) < energy_range[j + 1]) {
          for (int i = 0; i < 9; i++) {
             if (theta_nu_deg >= angle_range[i] && theta_nu_deg < angle_range[i + 1]) {
@@ -816,62 +908,6 @@ double GetTauRegen(string current, double energy, double theta_nu, double L_TauD
          }
       }
    }
-
-   /* }
-    If tau regeneration is turned on, we always want to use the GZK table
-       for tau regeneration instead of the E-2 spectrum.
-
-   // data below for E2 spectrum
-   if (GZK==0){
-   double tautable[6][9];
-
-   // energy 15.0-16.0
-   tautable[0][0]=0.59 ; tautable[0][1]=0.69 ; tautable[0][2]=0.78 ; tautable[0][3]=0.84 ; tautable[0][4]=0.89 ; tautable[0][5]=0.90 ; tautable[0][6]=0.93 ; tautable[0][7]=0.96 ; tautable[0][8]=0.99 ;
-
-   // energy 16.0-17.0
-   tautable[1][0]=0.19; tautable[1][1]=0.33; tautable[1][2]=0.49; tautable[1][3]=0.60; tautable[1][4]=0.70; tautable[1][5]=0.79; tautable[1][6]=0.84; tautable[1][7]=0.91; tautable[1][8]=0.97;
-
-   // energy 17.0-18.0
-   tautable[2][0]=0.01; tautable[2][1]=0.03; tautable[2][2]=0.08; tautable[2][3]=0.22; tautable[2][4]=0.35; tautable[2][5]=0.39; tautable[2][6]=0.66; tautable[2][7]=0.75; tautable[2][8]=0.93;
-
-   // energy 18.0-19.0
-   tautable[3][0]=0.00; tautable[3][1]=0.00; tautable[3][2]=0.00; tautable[3][3]=0.01; tautable[3][4]=0.04; tautable[3][5]=0.07; tautable[3][6]=0.15; tautable[3][7]=0.36; tautable[3][8]=0.77;
-
-   // energy 19.0-20.0
-   tautable[4][0]=0.00; tautable[4][1]=0.00; tautable[4][2]=0.00; tautable[4][3]=0.00; tautable[4][4]=0.00; tautable[4][5]=0.00; tautable[4][6]=0.01; tautable[4][7]=0.21; tautable[4][8]=0.73;
-
-   // energy 20.0-21.5
-   tautable[5][0]=0.00; tautable[5][1]=0.00; tautable[5][2]=0.00; tautable[5][3]=0.00; tautable[5][4]=0.00; tautable[5][5]=0.00; tautable[5][6]=0.00; tautable[5][7]=0.35; tautable[5][8]=0.90;
-
-
-   // end of E2
-
-
-   double angle_range[10];
-   angle_range[0]=60.; angle_range[1]=65.; angle_range[2]=70.; angle_range[3]=75.; angle_range[4]=80.; angle_range[5]=82.;
-   angle_range[6]=84.; angle_range[7]=86.; angle_range[8]=88.;
-   angle_range[9]=90.;
-
-   double energy_range[7];
-   energy_range[0]=15.0 ; energy_range[1]=16.0 ; energy_range[2]=17.0 ; energy_range[3]=18.0 ; energy_range[4]=19.0 ; energy_range[5]=20.0 ;
-   energy_range[6]=21.5 ;
-
-
-   double theta_nu_deg = theta_nu*RAD2DEG;
-   //double tauweight=0;
-
-    for (int j=0;j<6;j++) {
-         if (log10(energy)>=energy_range[j] && log10(energy)<energy_range[j+1]){
-               for (int i=0;i<9;i++) {
-            if (theta_nu_deg>=angle_range[i] && theta_nu_deg<angle_range[i+1]){
-               tauweight = tautable[j][i];
-            }
-         }
-      }
-     }
-
-    }
-    */
 
    return tauweight;
 }
@@ -1037,6 +1073,65 @@ int GetBeamWidths(double flare[4][NFREQ],double gain[2][NFREQ],double freq[NFREQ
 }
 */
 
+void GetFlare(double freq, double* flare_tmp)
+{
+   double specs[5][4];
+   double freq_specs[5];
+   double scale = 0;
+
+//KD: here are the beam widths from Jordan, but flip it due to hitangle e and h definitions in main code
+   //GOOD ONES
+   specs[0][0] = 144;
+   specs[0][1] = 74;
+   specs[0][2] = 0;
+   specs[0][3] = 0;
+   specs[1][0] = 128;
+   specs[1][1] = 70;
+   specs[1][2] = 0;
+   specs[1][3] = 0;
+   specs[2][0] = 134;
+   specs[2][1] = 74;
+   specs[2][2] = 0;
+   specs[2][3] = 0;
+   specs[3][0] = 132;
+   specs[3][1] = 68;
+   specs[3][2] = 0;
+   specs[3][3] = 0;
+   specs[4][0] = 154;
+   specs[4][1] = 70;
+   specs[4][2] = 0;
+   specs[4][3] = 0;
+
+   freq_specs[0] = 300; //  freq_specs[0]=300.E6;
+   freq_specs[1] = 600; //  freq_specs[1]=600.E6;
+   freq_specs[2] = 900; //  freq_specs[2]=900.E6;
+   freq_specs[3] = 1200; //  freq_specs[3]=1200.E6;
+   freq_specs[4] = 1500; //  freq_specs[4]=1500.E6;
+
+   if (freq < freq_specs[0]) {
+     for (int j = 0; j < 4; j++) {
+       flare_tmp[j] = specs[0][j] * DEG2RAD;
+     } //for
+   } //if
+   else if (freq >= freq_specs[3]) {
+     for (int j = 0; j < 4; j++) {
+       flare_tmp[j] = specs[3][j] * DEG2RAD;
+     } //for
+   } //else if
+   else {
+     for (int i = 0; i < 4; i++) {
+       if (freq >= freq_specs[i] && freq < freq_specs[i + 1]) {
+	 scale = (freq - freq_specs[i]) / (freq_specs[i + 1] - freq_specs[i]);
+
+	 for (int j = 0; j < 4; j++) {
+	   flare_tmp[j] = (specs[i][j] + scale * (specs[i + 1][j] - specs[i][j])) * DEG2RAD;
+	 } //for
+	 i = 4;
+       } //if
+     } //for
+   } //else
+
+}
 
 int GetBeamWidths(double flare[4][NFREQ], double gain[2][NFREQ], double freq[NFREQ])
 {
@@ -1214,68 +1309,102 @@ int GetBeamWidths(double flare[4][NFREQ], double gain[2][NFREQ], double freq[NFR
 }
 
 
-
-double GetGainV(double freq)
-{
-
-   int whichbin = (int)((freq - frequency_forgain_measured[0]) / (frequency_forgain_measured[1] - frequency_forgain_measured[0])); //KD: we assume equally spaced frequency intervals in our gain file.
-
-   return gainv_measured[whichbin];
-
-}
-
-double GetGainH(double freq)
-{
-
-   int whichbin = (int)((freq - frequency_forgain_measured[0]) / (frequency_forgain_measured[1] - frequency_forgain_measured[0])); //KD: we assume equally spaced frequency intervals in our gain file.
-
-   return gainh_measured[whichbin];
-
-}
-
 double GaintoHeight(double gain, double freq)
 {
    // from f=4*pi*A_eff/lambda^2
    // and h_eff=2*sqrt(A_eff*Z_rx/Z_air)
-   return 2 * sqrt(gain / 4 / PI * C * C / (freq * freq) * Zr / Z0 * NICE);
+  //Shouldn't there be a factor 1/NFIRN^2 to shift frequencies?
+   return 2.0*sqrt(gain / 4 / PI * C * C / (freq * freq) * Zr / Z0 * NICE);
 } //GaintoHeight
 
-
-void ReadGains()
+double GetHeff(int AntType, double freq, double* n_boresight, double* n_epol, double* n_prop, double* n_pol)
 {
 
-   ifstream gainsfile(GAINFILENAME.c_str());
-   if (gainsfile.good()) {
+  if (AntType==0){//Isotropic Antenne
+    double Heff = GaintoHeight(gainv, freq * 1.E6);
 
-      // gains from university of hawaii measurements.
-      string sfrequency;
-      string sgainv;
-      string sgainh;
-      string junk;
+    //    cout<<"AntType = "<<AntType<<", freq = "<<freq<<", Heff = "<<Heff<<endl;
 
-      getline(gainsfile, junk);
-
-
-      NPOINTS_GAIN = 0;
-      while (!gainsfile.eof()) {
-         gainsfile >> sfrequency >> sgainh >> sgainv;
-         gainv_measured[NPOINTS_GAIN] = (double)atof(sgainv.c_str());
-         gainh_measured[NPOINTS_GAIN] = (double)atof(sgainh.c_str());
-         frequency_forgain_measured[NPOINTS_GAIN] = (double)atof(sfrequency.c_str()) * 1.E9;
-         NPOINTS_GAIN++;
-         getline(gainsfile, junk);
-
-         //  cout<<"NPOINTS_GAIN:"<< NPOINTS_GAIN <<",gv:" << gainv_measured[NPOINTS_GAIN]<< endl;
-      }
-   } else {
-      printf("Unable to load gain file [%s]. Cannot run.",
-             GAINFILENAME.c_str());
-      exit(0);
-   }
-   //   cout<<NPOINTS_GAIN<<endl;
-   //   cout<<frequency_forgain_measured[0]<<"  "<<frequency_forgain_measured[1]<<endl;
+    return Heff;
 }
+  else if (AntType==1){//Old SHelfMC LPDA
 
+    double hitangle_e, hitangle_h, e_component, h_component;
+    GetHitAngle(n_boresight, n_epol, n_prop, n_pol, hitangle_e, hitangle_h, e_component, h_component);
+
+    double flare_i[4];
+    GetFlare(freq, flare_i);
+
+    double Heff = GaintoHeight(gainv, freq * 1.E6) *
+           sqrt((pow(e_component * exp(-2 * ALOG2 * (hitangle_e / flare_i[0]) * (hitangle_e / flare_i[0])), 2)  +   pow(e_component * exp(-2 * ALOG2 * (hitangle_h / flare_i[1]) * (hitangle_h / flare_i[1])), 2)) / 2);
+
+    //    cout<<"AntType = "<<AntType<<", freq = "<<freq<<", Heff = "<<Heff<<endl;
+
+    return Heff;
+  }
+  else if (AntType==2){//100MHz Create LPDA with Anna's Antenna Model Framework
+
+    int NC = Create100->N[0];
+
+    freq = freq/1.30; //since this antenna model is in the firn, frequencies should be shifted
+
+    double hitangle_e, hitangle_h, e_component, h_component;
+    GetHitAngle(n_boresight, n_epol, n_prop, n_pol, hitangle_e, hitangle_h, e_component, h_component);//should use arrival direction, but it doesn't matter since we only use abs(e_component)
+
+    double Re_Z = Create100->InterpolateToSingleFrequency(freq,  NC, Create100->frequencies, Create100->Re_Z);
+
+    double gain = Create100->InterpolateToSingleFrequency(freq,  NC, Create100->frequencies, Create100->gains);
+
+    /*
+    cout<<"freq = "<<freq<<endl;
+    cout<<"gain = "<<gain<<endl;
+    cout<<"Re_Z = "<<Re_Z<<endl;
+    cout<<"EffectiveHeight = "<<Create100->GetEffectiveHeight(gain,freq,Re_Z,C,119.99169*PI)<<endl;
+    cout<<"abs(e_component) = "<<abs( e_component)<<endl;
+
+*/
+    //    double Heff = 2.0*C/(freq)*sqrt(gain / 4 / PI * C * C / (freq * freq) * Zr / Z0 * NICE)
+    double Heff =  Create100->GetEffectiveHeight(gain,freq,Re_Z,C,119.99169*PI) * abs( e_component);
+
+    //    cout<<"AntType = "<<AntType<<", freq = "<<freq<<", Heff = "<<Heff<<endl;
+
+    return Heff;
+  }
+  else if (AntType==3){//ARA Bicone dipole
+
+    int NC = ARA_Bicone->N[0];
+
+    double Re_Z = ARA_Bicone->InterpolateToSingleFrequency(freq,  NC, ARA_Bicone->frequencies, ARA_Bicone->Re_Z);
+
+    double gain = ARA_Bicone->InterpolateToSingleFrequency(freq,  NC, ARA_Bicone->frequencies, ARA_Bicone->gains);
+
+    double Heff =  ARA_Bicone->GetEffectiveHeight(gain,freq,Re_Z,C,119.99169*PI) * abs(Dot(n_pol,n_epol));
+
+    return Heff;
+
+    }
+    else if (AntType==4){//50MHz Create LPDA with Anna's Antenna Model Framework
+
+      int NC = Create50->N[0];
+
+      freq = freq/1.30; //since this antenna model is in the firn, frequencies should be shifted
+
+      double hitangle_e, hitangle_h, e_component, h_component;
+      GetHitAngle(n_boresight, n_epol, n_prop, n_pol, hitangle_e, hitangle_h, e_component, h_component);//should use arrival direction, but it doesn't matter since we only use abs(e_component)
+
+      double Re_Z = Create50->InterpolateToSingleFrequency(freq,  NC, Create50->frequencies, Create50->Re_Z);
+
+      double gain = Create50->InterpolateToSingleFrequency(freq,  NC, Create50->frequencies, Create50->gains);
+
+      double Heff =  Create50->GetEffectiveHeight(gain,freq,Re_Z,C,119.99169*PI) * abs( e_component);
+
+      return Heff;
+    }
+  else {
+    cout<<"invalid Antenna Type!"<<endl;
+    return -1;
+  }
+}
 
 void GetPolarization(double* nnu, double* posnu2At, double* n_pol, double* n_Bfield)
 {
@@ -1421,7 +1550,35 @@ void GetFresnel(//const Vector &surface_normal,
 } //GetFresnel
 
 
+void GetHitAngle(double* n_boresight, double* n_epol, double* n_prop, double* n_pol, double& hitangle_e, double& hitangle_h, double& e_component,
+                     double& h_component)
+{
 
+   double n_hplane[3];
+   Cross(n_boresight,n_epol,n_hplane);
+
+   //these are the components of the propagation vector in the e and h plane.  They are overwritten later in the function
+   e_component = -Dot(n_prop, n_epol);
+   h_component = -Dot(n_prop, n_hplane);
+   double n_component = -Dot(n_prop, n_boresight);
+
+   hitangle_e = atan(h_component / n_component);
+   if (n_component < 0 && h_component < 0)
+      hitangle_e -= PI;
+   if (n_component < 0 && h_component > 0)
+      hitangle_e += PI;
+
+   hitangle_h = atan(e_component / n_component);
+   if (n_component < 0 && e_component < 0)
+      hitangle_h -= PI;
+   if (n_component < 0 && e_component > 0)
+      hitangle_h += PI;
+
+   //NOTE: this is a re-evaluated e_component and h_component that goes into term_LPA calculation
+   e_component = Dot(n_pol, n_epol);
+   h_component = Dot(n_pol, n_hplane);
+
+}
 
 
 void GetHitAngle_ST0(double* nposnu2AT, double* n_pol, double& hitangle_e, double& hitangle_h, double& e_component,
@@ -1431,9 +1588,9 @@ void GetHitAngle_ST0(double* nposnu2AT, double* n_pol, double& hitangle_e, doubl
 
    double n_normal[3] = {0, 0, -1};
    double n_hplane[3] = {1, 0, 0};
-   double n_eplane[3] = {0, 1, 0};
+   double n_epol[3] = {0, 1, 0};
    double n_component;
-   e_component = -Dot(nposnu2AT, n_eplane);
+   e_component = -Dot(nposnu2AT, n_epol);
    h_component = -Dot(nposnu2AT, n_hplane);
    n_component = -Dot(nposnu2AT, n_normal);
    hitangle_e = atan(h_component / n_component);
@@ -1446,20 +1603,18 @@ void GetHitAngle_ST0(double* nposnu2AT, double* n_pol, double& hitangle_e, doubl
       hitangle_h -= PI;
    if (n_component < 0 && e_component > 0)
       hitangle_h += PI;
-   e_component = Dot(n_pol, n_eplane);
+   e_component = Dot(n_pol, n_epol);
    h_component = Dot(n_pol, n_hplane);
 
-
-
-
-
 }
+
+
 void GetHitAngle_ST2(double* nposnu2AT, double* n_pol, double* hitangle_e, double* hitangle_h, double* e_component,
                      double* h_component)
 //KD: Z is downward angle specified in input file
 {
 
-   double  n_normal[5][3], n_hplane[5][3], n_eplane[5][3];
+   double  n_normal[5][3], n_hplane[5][3], n_epol[5][3];
    double tempn[5][3] = {{0, 0, -1}, {cos(Z), 0, -sin(Z)}, {0, -cos(Z), -sin(Z)}, { -cos(Z), 0, -sin(Z)}, {0, cos(Z), -sin(Z)}};
    double temph[5][3] = {{1, 0, 0}, {0, -1, 0}, { -1, 0, 0}, {0, 1, 0}, {1, 0, 0}};
    double tempe[5][3] = {{0, 1, 0}, {sin(Z), 0, cos(Z)}, {0, -sin(Z), cos(Z)}, { -sin(Z), 0, cos(Z)}, {0, sin(Z), cos(Z)}};
@@ -1467,7 +1622,7 @@ void GetHitAngle_ST2(double* nposnu2AT, double* n_pol, double* hitangle_e, doubl
       for (int j = 0; j < 3; j++) {
          n_normal[i][j] = tempn[i][j];
          n_hplane[i][j] = temph[i][j];
-         n_eplane[i][j] = tempe[i][j];
+         n_epol[i][j] = tempe[i][j];
       }
    }
 
@@ -1476,7 +1631,7 @@ void GetHitAngle_ST2(double* nposnu2AT, double* n_pol, double* hitangle_e, doubl
    double n_component[5];
 
    for (int i = 0; i < 5; i++) {
-      e_component[i] = -Dot(nposnu2AT, n_eplane[i]); //use the antenna as the tail of a vector
+      e_component[i] = -Dot(nposnu2AT, n_epol[i]); //use the antenna as the tail of a vector
       h_component[i] = -Dot(nposnu2AT, n_hplane[i]);
       n_component[i] = -Dot(nposnu2AT, n_normal[i]);
       hitangle_e[i] = atan(h_component[i] / n_component[i]);
@@ -1490,7 +1645,7 @@ void GetHitAngle_ST2(double* nposnu2AT, double* n_pol, double* hitangle_e, doubl
          hitangle_h[i] -= PI;
       if (n_component[i] < 0 && e_component[i] > 0)
          hitangle_h[i] += PI;
-      e_component[i] = Dot(n_pol, n_eplane[i]);
+      e_component[i] = Dot(n_pol, n_epol[i]);
       h_component[i] = Dot(n_pol, n_hplane[i]);
    }
 
@@ -1499,17 +1654,17 @@ void GetHitAngle_ST2(double* nposnu2AT, double* n_pol, double* hitangle_e, doubl
 void GetHitAngle_ST1(double* nposnu2AT, double* n_pol, double& hitangle_e, double& hitangle_h, double& e_component,
                      double& h_component, double& hitangle_e2, double& hitangle_h2, double& e2_component, double& h2_component)
 {
-   double n_eplane[3] = {0, 1, 0}; //y direction,unit vector in e plane
+   double n_epol[3] = {0, 1, 0}; //y direction,unit vector in e plane
    double n_hplane[3] = {1, 0, 0}; //x direction, unit vector in h plane
    double n_normal[3] = {0, 0, -1}; //-z direction, normal direction which is perpendicular to the face of an antenna
-   double n_eplane2[3] = {0.707, 0.707, 0};
+   double n_epol2[3] = {0.707, 0.707, 0};
    double n_hplane2[3] = {0.707, -0.707, 0};
    double n_normal2[3] = {0, 0, -1};
    //double mag_posnu2AT=Mag(posnu2AT);
    double n_component = 0;
    double n2_component = 0;
-   e_component = -Dot(nposnu2AT, n_eplane);
-   e2_component = -Dot(nposnu2AT, n_eplane2);
+   e_component = -Dot(nposnu2AT, n_epol);
+   e2_component = -Dot(nposnu2AT, n_epol2);
    h_component = -Dot(nposnu2AT, n_hplane);
    h2_component = -Dot(nposnu2AT, n_hplane2);
    n_component = -Dot(nposnu2AT, n_normal);
@@ -1540,9 +1695,9 @@ void GetHitAngle_ST1(double* nposnu2AT, double* n_pol, double& hitangle_e, doubl
    if (n2_component < 0 && e2_component > 0)
       hitangle_h2 += PI;
 
-   e2_component = Dot(n_pol, n_eplane2);
+   e2_component = Dot(n_pol, n_epol2);
    h2_component = Dot(n_pol, n_hplane2);
-   e_component = Dot(n_pol, n_eplane);
+   e_component = Dot(n_pol, n_epol);
    h_component = Dot(n_pol, n_hplane);
 
 
@@ -1554,13 +1709,13 @@ void GetHitAngle_LPA(int NofAT, int N_Ant_perST, double* nposnu2AT, double* n_po
    //hitangle_h is the angle between the signal and the H-plane of LPA(which is perpendicular to the dipole array plane)
    //pol_component is the polarization component in the dipole's polarization direction
    double n_normal[3] = {0, 0, -1}; //vertically downward
-   double n_eplane[3] = {cos((0.5 + NofAT * (2. / N_Ant_perST))*PI), sin((0.5 + NofAT * (2. / N_Ant_perST))*PI), 0.};
-   //FW n_eplane[3]={cos((2.+NofAT)*0.25*PI),sin((2.+NofAT)*0.25*PI),0.};
+   double n_epol[3] = {cos((0.5 + NofAT * (2. / N_Ant_perST))*PI), sin((0.5 + NofAT * (2. / N_Ant_perST))*PI), 0.};
+   //FW n_epol[3]={cos((2.+NofAT)*0.25*PI),sin((2.+NofAT)*0.25*PI),0.};
    //the unit vector in the e-plane(also called the array plane)
    double n_hplane[3] = {cos((2. / N_Ant_perST)*PI * NofAT), sin((2. / N_Ant_perST)*PI * NofAT), 0.};
    //FW       n_hplane[3]={cos(0.25*PI*NofAT),sin(0.25*PI*NofAT),0.};
    //perpendicular to the array plane,point outward from the center of the station
-   e_component = -Dot(nposnu2AT, n_eplane);
+   e_component = -Dot(nposnu2AT, n_epol);
    h_component = -Dot(nposnu2AT, n_hplane);
    double n_component = -Dot(nposnu2AT, n_normal);
 
@@ -1579,7 +1734,7 @@ void GetHitAngle_LPA(int NofAT, int N_Ant_perST, double* nposnu2AT, double* n_po
       hitangle_h += PI;
 
    //NOTE: this is a re-evaluated e_component and h_component that goes into term_LPA calculation
-   e_component = Dot(n_pol, n_eplane);
+   e_component = Dot(n_pol, n_epol);
    h_component = Dot(n_pol, n_hplane);
 
 //cout<<"KDAb: "<<"e,h,n components:"<<"["<<e_component<<" , "<<h_component<<" , "<<n_component<<"]"<<endl;
@@ -1593,17 +1748,17 @@ void GetMirrorHitAngle_LPA(int NofAT, int N_Ant_perST, double* nposnu2MirrorAT, 
    //pol_component is the polarization component in the dipole's polarization direction
    double n_normal[3] = {0, 0, 1}; //vertically upward
 //FW------------------------------------------------------
-//  double n_eplane[3]={cos((2.+NofAT)*0.25*PI),sin((2.+NofAT)*0.25*PI),0.};
+//  double n_epol[3]={cos((2.+NofAT)*0.25*PI),sin((2.+NofAT)*0.25*PI),0.};
    //the unit vector in the e-plane(also called the array plane)
 //  double n_hplane[3]={cos(0.25*PI*NofAT),sin(0.25*PI*NofAT),0.};
    //perpendicular to the array plane,point outward from the center of the station
 //--------------------------------------------------------
-   double n_eplane[3] = {cos((0.5 + NofAT * (2. / N_Ant_perST))*PI), sin((0.5 + NofAT * (2. / N_Ant_perST))*PI), 0.};
+   double n_epol[3] = {cos((0.5 + NofAT * (2. / N_Ant_perST))*PI), sin((0.5 + NofAT * (2. / N_Ant_perST))*PI), 0.};
    //the unit vector in the e-plane(also called the array plane)
    double n_hplane[3] = {cos((2. / N_Ant_perST)*PI * NofAT), sin((2. / N_Ant_perST)*PI * NofAT), 0.};
    //perpendicular to the array plane,point outward from the center of the station
 
-   e_component = -Dot(nposnu2MirrorAT, n_eplane);
+   e_component = -Dot(nposnu2MirrorAT, n_epol);
    h_component = -Dot(nposnu2MirrorAT, n_hplane);
    double n_component = -Dot(nposnu2MirrorAT, n_normal);
    hitangle_e = atan(h_component / n_component);
@@ -1617,7 +1772,7 @@ void GetMirrorHitAngle_LPA(int NofAT, int N_Ant_perST, double* nposnu2MirrorAT, 
    if (n_component < 0 && e_component > 0)
       hitangle_h += PI;
 
-   e_component = Dot(n_pol, n_eplane);
+   e_component = Dot(n_pol, n_epol);
    h_component = Dot(n_pol, n_hplane);
 }
 
@@ -1625,9 +1780,9 @@ void GetMirrorHitAngle_ST0(double* n_posnu2MirrorAT, double* n_pol, double& hita
 {
    double n_normal[3] = {0, 0, 1};
    double n_hplane[3] = {1, 0, 0};
-   double n_eplane[3] = {0, 1, 0};
+   double n_epol[3] = {0, 1, 0};
    double n_component;
-   e_component = -Dot(n_posnu2MirrorAT, n_eplane);
+   e_component = -Dot(n_posnu2MirrorAT, n_epol);
    h_component = -Dot(n_posnu2MirrorAT, n_hplane);
    n_component = -Dot(n_posnu2MirrorAT, n_normal);
    hitangle_e = atan(h_component / n_component);
@@ -1640,14 +1795,14 @@ void GetMirrorHitAngle_ST0(double* n_posnu2MirrorAT, double* n_pol, double& hita
       hitangle_h -= PI;
    if (n_component < 0 && e_component > 0)
       hitangle_h += PI;
-   e_component = Dot(n_pol, n_eplane);
+   e_component = Dot(n_pol, n_epol);
    h_component = Dot(n_pol, n_hplane);
 }
 
 void GetMirrorHitAngle_ST2(double* n_posnu2MirrorAT, double* n_pol, double* hitangle_e, double* hitangle_h, double* e_component, double* h_component)
 {
 
-   double n_normal[5][3], n_hplane[5][3], n_eplane[5][3];
+   double n_normal[5][3], n_hplane[5][3], n_epol[5][3];
    double tempn[5][3] = {{0, 0, 1}, {cos(Z), 0, sin(Z)}, {0, -cos(Z), sin(Z)}, { -cos(Z), 0, sin(Z)}, {0, cos(Z), sin(Z)}}; //all the z components of n turn to negative of the original
    double temph[5][3] = {{1, 0, 0}, {0, -1, 0}, { -1, 0, 0}, {0, 1, 0}, {1, 0, 0}}; //horizontal component doesn't change
    double tempe[5][3] = {{0, 1, 0}, {sin(Z), 0, -cos(Z)}, {0, -sin(Z), -cos(Z)}, { -sin(Z), 0, -cos(Z)}, {0, sin(Z), -cos(Z)}}; //change z components to be -z
@@ -1655,7 +1810,7 @@ void GetMirrorHitAngle_ST2(double* n_posnu2MirrorAT, double* n_pol, double* hita
       for (int j = 0; j < 3; j++) {
          n_normal[i][j] = tempn[i][j];
          n_hplane[i][j] = temph[i][j];
-         n_eplane[i][j] = tempe[i][j];
+         n_epol[i][j] = tempe[i][j];
       }
    }
 
@@ -1663,7 +1818,7 @@ void GetMirrorHitAngle_ST2(double* n_posnu2MirrorAT, double* n_pol, double* hita
    double n_component[5];
 
    for (int i = 0; i < 5; i++) {
-      e_component[i] = -Dot(n_posnu2MirrorAT, n_eplane[i]); //use the antenna as the tail of a vector
+      e_component[i] = -Dot(n_posnu2MirrorAT, n_epol[i]); //use the antenna as the tail of a vector
       h_component[i] = -Dot(n_posnu2MirrorAT, n_hplane[i]);
       n_component[i] = -Dot(n_posnu2MirrorAT, n_normal[i]);
       hitangle_e[i] = atan(h_component[i] / n_component[i]);
@@ -1681,7 +1836,7 @@ void GetMirrorHitAngle_ST2(double* n_posnu2MirrorAT, double* n_pol, double* hita
       //  cout<<hitangle_e[i]*180/PI<<"  mirror       eeeeeeeeeeeee"<<endl;
       // cout<<hitangle_h[i]*180/PI<<"  mirror       hhhhhhhhhhhhh"<<endl;
 
-      e_component[i] = Dot(n_pol, n_eplane[i]);
+      e_component[i] = Dot(n_pol, n_epol[i]);
       h_component[i] = Dot(n_pol, n_hplane[i]);
    }
 
@@ -1691,16 +1846,16 @@ void GetMirrorHitAngle_ST2(double* n_posnu2MirrorAT, double* n_pol, double* hita
 
 void GetMirrorHitAngle_ST1(double* nposnu2MirrorAT, double* n_pol, double& hitangle_e, double& hitangle_h, double& e_component, double& h_component, double& hitangle_e2, double& hitangle_h2, double& e2_component, double& h2_component)
 {
-   double n_eplane[3] = {0, 1, 0}; //y direction,unit vector in e plane
+   double n_epol[3] = {0, 1, 0}; //y direction,unit vector in e plane
    double n_hplane[3] = {1, 0, 0}; //x direction, unit vector in h plane
    double n_normal[3] = {0, 0, 1}; //-z direction, normal direction which is perpendicular to the face of an antenna
-   double n_eplane2[3] = {0.707, 0.707, 0};
+   double n_epol2[3] = {0.707, 0.707, 0};
    double n_hplane2[3] = {0.707, -0.707, 0};
    double n_normal2[3] = {0, 0, 1};
    double n_component = 0;
    double n2_component = 0;
-   e_component = -Dot(nposnu2MirrorAT, n_eplane);
-   e2_component = -Dot(nposnu2MirrorAT, n_eplane2);
+   e_component = -Dot(nposnu2MirrorAT, n_epol);
+   e2_component = -Dot(nposnu2MirrorAT, n_epol2);
    h_component = -Dot(nposnu2MirrorAT, n_hplane);
    h2_component = -Dot(nposnu2MirrorAT, n_hplane2);
    n_component = -Dot(nposnu2MirrorAT, n_normal);
@@ -1732,13 +1887,13 @@ void GetMirrorHitAngle_ST1(double* nposnu2MirrorAT, double* n_pol, double& hitan
 
 
 
-   // hitangle_e=fabs(PI/2-acos(e_component/Mag(posnu2AT)/Mag(n_eplane)));
-   // hitangle_e2=fabs(PI/2-acos(e2_component/Mag(posnu2AT)/Mag(n_eplane2)));
+   // hitangle_e=fabs(PI/2-acos(e_component/Mag(posnu2AT)/Mag(n_epol)));
+   // hitangle_e2=fabs(PI/2-acos(e2_component/Mag(posnu2AT)/Mag(n_epol2)));
    // hitangle_h=fabs(PI/2-acos(h_component/Mag(posnu2AT)/Mag(n_hplane)));
    // hitangle_h2=fabs(PI/2-acos(h2_component/Mag(posnu2AT)/Mag(n_hplane2)));
-   e2_component = Dot(n_pol, n_eplane2);
+   e2_component = Dot(n_pol, n_epol2);
    h2_component = Dot(n_pol, n_hplane2);
-   e_component = Dot(n_pol, n_eplane);
+   e_component = Dot(n_pol, n_epol);
    h_component = Dot(n_pol, n_hplane);
 
 
@@ -1760,53 +1915,150 @@ int Getifreq(double freq)
 
 
 
-double GetN(double* posnu)
+double GetN(double height)
 //KD 07/21/11 I need to rewrite this so that when FIRN is 0 in input file, I don't have to systematically turn off DEPTH_DEPENDENT in declaration.hh file
-
 {
-   double n = 0;
+    double n = 0;
 
-   if (posnu[2] <= ICETHICK - FIRNDEPTH) //interact in the ice
-      n = NICE;
+    if (!DEPTH_DEPENDENT_N) {
+       if (FIRN && height > (ICETHICK - FIRNDEPTH))
+          n = NFIRN;
+       else
+          n = NICE;
+    }
+    else {
+       //these are Peter's fit parameters//old usage by FW
+       //double a1=0.463251;
+       //double b1=0.0140157;
+       //n=NFIRN+a1*(1.0-exp(-b1*(ICETHICK-posnu[2]))); //KD: this was the previous one
 
-   else
+       //this is from BARELLA paper, use this now
+       //n = 1.0 + 0.86*(1.0-0.638*exp(-(ICETHICK-posnu[2])/34.7));
 
-   {
-      if (!DEPTH_DEPENDENT_N) {
-         if (FIRN)
-            n = NFIRN;
-         else
-            n = NICE;
-      } else
-         //these are Peter's fit parameters//old usage by FW
-         //double a1=0.463251;
-         //double b1=0.0140157;
-         //n=NFIRN+a1*(1.0-exp(-b1*(ICETHICK-posnu[2]))); //KD: this was the previous one
-
-//this is from BARELLA paper, use this now
-//n = 1.0 + 0.86*(1.0-0.638*exp(-(ICETHICK-posnu[2])/34.7));
-
-         n = 1.0 + 0.86 * (1.0 - 0.638 * exp(-FIRNfactor * (ICETHICK - posnu[2]) / 34.7));
-
-   }
-
+       //n = 1.0 + 0.86 * (1.0 - 0.638 * exp(-FIRNfactor * (ICETHICK - posnu[2]) / 34.7));
+       n = NICE - (NICE - NFIRN) * exp(-(ICETHICK - height) / C_INDEX);
+     }
    return n;
 
 }
 
-
-double GetRange(double firndepth)//NOTE: THIS VARIABLE firndepth not to be confused with FIRNDEPTH. this is local and a bit of a misnomer
-//KD: 9/23/2010 introducing a variable horizontal range due to shadowing
-//KD need to have this activated only if FIRN present
-// only valid within FIRN
-
+void CalcShadowEdge(double zstep)
 {
-//return 24.4*pow((ICETHICK-firndepth),0.48) - 8.7;
-   return 13.09 * pow((ICETHICK - firndepth), 0.56) - 0.74; //fit to range integration
+    double SinTheta0 = NFIRN/NICE;
+    double SinSquareTheta0 = SinTheta0*SinTheta0;
+    double Nz = NICE;
+    double dr = 0;
+    double rtemp = 0;
+    double z;
+    z = zstep;
+
+    SHADOWRANGE.push_back(0.0);
+    SHADOWHEIGHTS.push_back(0.0);
+
+    while (z <= ICETHICK)
+    {
+        Nz = GetN(z);
+        if (Nz>NFIRN){
+          dr = zstep*SinTheta0/sqrt(Nz*Nz/NICE/NICE - SinSquareTheta0);
+        }
+        else{
+          dr=58*zstep; //treat a horizontal ray like 1deg
+        }
+        if (dr > 58*zstep){
+          //The idea is to keep the ray steeper than 1degree, keeping 1/tan from blowing up
+          rtemp += 58*zstep;
+        }
+        else{
+          rtemp += dr;
+        }
+        SHADOWRANGE.push_back(rtemp);
+        SHADOWHEIGHTS.push_back(z);
+        z+=zstep;
+    }
+
+    int nPoints = SHADOWRANGE.size();
+
+    for (int i=0;i<nPoints;i++)
+    {
+        SHADOWRANGE[i] = rtemp - SHADOWRANGE[i];
+    }
+    if (SHADOWHEIGHTS.back()<ICETHICK){
+      SHADOWRANGE.push_back(0.0);
+      SHADOWHEIGHTS.push_back(ICETHICK);
+    }
 }
 
+double InterpolateLinear(double xtest, double x0, double y0, double x1, double y1)
+//must have x0<=xtest<=x1, x0!=x1
+{
+    return y0 + (y1-y0)/(x1-x0)*(xtest-x0);
+}
 
+double GetRange(double height)
+{
+    //cout << "\nGetRange for height = " << height << endl;
+    int npoints = SHADOWHEIGHTS.size();
+    int i = int(npoints*height/ICETHICK);
+    //cout << "initial guess i = " << i << endl;
+    double heighti = SHADOWHEIGHTS[i];
+    //cout << "initial guess height = " << heighti << endl;
+    double rangei = SHADOWRANGE[i];
+    //cout << "initial guess range = " << rangei << endl;
+    if (height == heighti){
+      //cout << "correct height guess, return range = " << rangei << endl << endl;
+      return rangei;
+    }
+    else {
+      int lasti = i;
+      double heightlasti = SHADOWHEIGHTS[lasti];
+      bool greater = height > heighti;
+      //cout << "greater = " << greater << endl;
+      bool changed = false;
+      while (changed == false){
+          lasti = i;
+          heightlasti = heighti;
+          if (greater)
+            i++;
+          else
+            i--;
+          if (i>=npoints){
+            return 0.0;
+          }
+          else{
+            heighti=SHADOWHEIGHTS[i];
+            //cout << "lasti = " << lasti << ", i = " << i << ", heightlasti = " << heightlasti << ", heighti = " << heighti << endl;
+            if ((heighti - height)*(heightlasti - height) <= 0){
+                changed = true;
+              }
+          }
+      }
+      double rangelasti = SHADOWRANGE[lasti];
+      rangei = SHADOWRANGE[i];
+      //cout << "rangelasti = " << rangelasti << "rangei = " << rangei << endl << endl;
+      if (greater){
+          return InterpolateLinear(height,heighti,rangei,heightlasti,rangelasti);
+      }
+      else{
+          return InterpolateLinear(height,heightlasti,rangelasti,heighti,rangei);
+      }
+    }
+}
 
+/*//Now calculated for a custom index profile
+double GetRange(double height)
+//KD: 9/23/2010 introducing a variable horizontal range due to shadowing
+//KD need to have this activated only if FIRN present
+{
+    double depth = ICETHICK - height;
+    if (depth<=FIRNDEPTH){
+        return 13.09 * pow(depth, 0.56) - 0.74; //fit to range integration
+    }
+    else{
+        return 13.09 * pow(FIRNDEPTH, 0.56) - 0.74 + (depth-FIRNDEPTH); //below firn, extend at 45 degrees
+    }
+
+}
+*/
 
 void Zero(double* array, int i)
 {
@@ -1826,138 +2078,33 @@ double fx(double x, double h1, double h2, double nconst, double deltax)
    return h1 / sqrt(1 / x - 1) + h2 / sqrt(nconst / x - 1) - deltax;
 }
 
-void ReadInput()
+void Refract(double deltax, double yIce, double yFirn, double nVertex, double nSurface, double &dIce, double &dFirn, double &theta1, double &theta2)
 {
+  double x1 = 1.e-100;
+  double x3 = 0.;
+  double nconst = nSurface * nSurface / nVertex / nVertex; //here nSurface=NFIRN, nVertex=NICE
+  double x2 = nconst; // x2 is not angle. x2=sin(theta)^2
 
-   string junk, number;
-   getline(inputfile, junk);
+  if (deltax == 0) {
+     theta1 = 0.;
+     theta2 = 0.;
+     dIce = yIce;
+     dFirn = yFirn;
+  }
 
-   GetNextNumber(inputfile, number);
-   NNU = (int)atoi(number.c_str());
+  else {
+     do {
+        x3 = (x1 + x2) / 2.;
+        if (fx(x1, yIce, yFirn, nconst, deltax)*fx(x3, yIce, yFirn, nconst, deltax) < 0)
+           x2 = x3;
+        else x1 = x3;
+     }while (fabs(fx(x3, yIce, yFirn, nconst, deltax)) > 0.00001);
 
-   GetNextNumber(inputfile, number);
-   seed = (int)atoi(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   EXPONENT = (double)atof(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   ATGap = (double)atof(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   ST_TYPE = (int)atoi(number.c_str());
-
-   GetNextNumber(inputfile, number); //KD: added to take number of antennas into account
-   N_Ant_perST = (int)atoi(number.c_str());
-
-   GetNextNumber(inputfile, number); //KD: added to take number of Trigger antennas into account
-   N_Ant_Trigger = (int)atoi(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   Z = DEG2RAD * (double)atof(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   ICETHICK = (double)atof(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   FIRN = (int)atoi(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   NFIRN = (double)atof(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   FIRNDEPTH = (double)atof(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   NROWS = (int)atoi(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   NCOLS = (int)atoi(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   SCATTER = (int)atoi(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   SCATTER_WIDTH = (double)atof(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   SPECTRUM = (int)atoi(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   DIPOLE = (int)atoi(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   CONST_ATTENLENGTH = (int)atoi(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   ATTEN_UP = (double)atof(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   ATTEN_DOWN = (double)atof(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   NSIGMA = (double)atoi(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   ATTEN_FACTOR = (double)atof(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   REFLECT_RATE = (double)atof(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   GZK = atoi(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   FANFLUX = atoi(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   WIDESPECTRUM = atoi(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   SHADOWING = atoi(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   DEPTH_DEPENDENT_N = atoi(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   HEXAGONAL = atoi(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   SIGNAL_FLUCT = atoi(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   gainv = atof(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   TAUREGENERATION = atoi(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   ST4_R = (double) atof(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   TNOISE = (double) atof(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   FREQ_LOW = (double) atof(number.c_str());
-
-   GetNextNumber(inputfile, number);
-   FREQ_HIGH = (double) atof(number.c_str());
-
-   // CJR 2015-07-15: add gain file as input.txt paramter
-   GetNextNumber(inputfile, number);
-   GAINFILENAME = number;
-   GAINFILENAME.erase(
-      std::remove(GAINFILENAME.begin(), GAINFILENAME.end(), ' '),
-      GAINFILENAME.end());
-}
-
-void GetNextNumber(ifstream& fin, string& number)
-{
-   string temp;
-   getline(fin, temp);
-   int place = 0;
-   place = temp.find_first_of(" \t");
-   number = temp.substr(0, place);
+     theta1 = asin(sqrt(x3));
+     theta2 = asin(nVertex * sin(theta1) / nSurface);
+     dIce = yIce / cos(theta1);
+     dFirn = yFirn / cos(theta2);
+  }
 
 }
 
@@ -2368,3 +2515,301 @@ double  PickEnergy_fan(double* energy, double* EdNdEdAdt)
    return pow(10., thisenergy + Min(energy, 7));
 
 } //Get energy spectrum
+
+//some functions for reading in from xml using tinyxml2
+int SetIntValueXML(tinyxml2::XMLNode * pRoot, int &IntParam, const char* ParamName){
+
+  tinyxml2::XMLElement * InputParam = pRoot->FirstChildElement(ParamName);
+  if (!InputParam) {printf("Could not find %s. tintXML Parsing Error: %i\n",ParamName,tinyxml2::XML_ERROR_PARSING_ELEMENT); return tinyxml2::XML_ERROR_PARSING_ELEMENT;}
+  tinyxml2::XMLError eResult = InputParam->QueryIntText(&IntParam);
+  if (eResult != tinyxml2::XML_SUCCESS) { printf("Coult not read %s as type int, tinyXML Error: %i\n",ParamName, eResult); return eResult; }
+  printf("%s= %i\n",ParamName,IntParam);
+
+  return 0;
+}
+
+int SetBoolValueXML(tinyxml2::XMLNode * pRoot, int &BoolParam, const char* ParamName){
+
+  tinyxml2::XMLElement * InputParam = pRoot->FirstChildElement(ParamName);
+  if (!InputParam) {printf("Could not find %s. tintXML Parsing Error: %i\n",ParamName,tinyxml2::XML_ERROR_PARSING_ELEMENT); return tinyxml2::XML_ERROR_PARSING_ELEMENT;}
+  tinyxml2::XMLError eResult = InputParam->QueryIntText(&BoolParam);
+  if (eResult != tinyxml2::XML_SUCCESS) { printf("Coult not read %s as type int, tinyXML Error: %i\n",ParamName, eResult); return eResult; }
+  if (BoolParam != 0 && BoolParam != 1) { printf("%s should be boolean, so it must be 0 or 1",ParamName); return 1; }
+  printf("%s= %i\n",ParamName,BoolParam);
+
+  return 0;
+}
+
+int SetDoubleValueXML(tinyxml2::XMLNode * pRoot, double &DoubleParam, const char* ParamName){
+
+  tinyxml2::XMLElement * InputParam = pRoot->FirstChildElement(ParamName);
+  if (!InputParam) {printf("Could not find %s. tintXML Parsing Error: %i\n",ParamName,tinyxml2::XML_ERROR_PARSING_ELEMENT); return tinyxml2::XML_ERROR_PARSING_ELEMENT;}
+  tinyxml2::XMLError eResult = InputParam->QueryDoubleText(&DoubleParam);
+  if (eResult != tinyxml2::XML_SUCCESS) { printf("Coult not read %s as type double, tinyXML Error: %i\n",ParamName, eResult); return eResult; }
+  printf("%s= %f\n",ParamName,DoubleParam);
+
+  return 0;
+}
+
+int SetTextValueXML(tinyxml2::XMLNode * pRoot, const char * &TextParam, const char* ParamName){
+
+  tinyxml2::XMLElement * InputParam = pRoot->FirstChildElement(ParamName);
+  if (!InputParam) {printf("Could not find %s. tintXML Parsing Error: %i\n",ParamName,tinyxml2::XML_ERROR_PARSING_ELEMENT); return tinyxml2::XML_ERROR_PARSING_ELEMENT;}
+  tinyxml2::XMLText * textNode = InputParam->FirstChild()->ToText();
+  if (!textNode) {printf("Could not convert %s to text. tintXML Parsing Error: %i\n",ParamName,tinyxml2::XML_ERROR_PARSING_ELEMENT); return tinyxml2::XML_ERROR_PARSING_ELEMENT;}
+  TextParam = textNode->Value();
+  printf("%s= %s\n",ParamName,TextParam);
+
+  return 0;
+}
+
+int SetElementXML(tinyxml2::XMLNode * pRoot, tinyxml2::XMLElement * &Element, const char* ParamName){
+
+  Element = pRoot->FirstChildElement(ParamName);
+  if (!Element) {printf("Could not find %s. tintXML Parsing Error: %i\n",ParamName,tinyxml2::XML_ERROR_PARSING_ELEMENT); return tinyxml2::XML_ERROR_PARSING_ELEMENT;}
+  //  printf("Set pointer for %s= %s\n",ParamName,Element);
+
+  return 0;
+}
+
+int SetElementXML(tinyxml2::XMLElement * Element, tinyxml2::XMLElement * &SubElement, const char* ParamName){
+  SubElement = Element->FirstChildElement(ParamName);
+  if (!SubElement) {printf("Could not find %s. tintXML Parsing Error: %i\n",ParamName,tinyxml2::XML_ERROR_PARSING_ELEMENT); return tinyxml2::XML_ERROR_PARSING_ELEMENT;}
+  //  printf("Set pointer for %s= %s\n",ParamName,SubElement);
+
+  return 0;
+}
+
+int ReadStnGeo(const char * infn, int &NAntPerStn, vector<AntennaPlacement> &VectAntennas){
+  //This follows closely the  structure of the tinyxml2 tutorial found at shilohjames.wordpress.com/2014/04/27/tinyxml2-tutorial/
+  //Sets NAntPerStn and VectAntennas from xml file
+
+  cout<<"Reading Station Geometry from "<<infn<<"..."<<endl;
+
+  tinyxml2::XMLDocument xmlDoc;
+  tinyxml2::XMLError eResult = xmlDoc.LoadFile(infn);
+  if (eResult != tinyxml2::XML_SUCCESS) { printf("Error loading Stn Geometry file %s, tinyXML Error: %i\n",infn, eResult); return eResult; }
+
+  tinyxml2::XMLNode * pRoot = xmlDoc.FirstChild();
+  if (!pRoot) { printf("tinyXML Error reading input file: %i\n", tinyxml2::XML_ERROR_FILE_READ_ERROR); return tinyxml2::XML_ERROR_FILE_READ_ERROR; }
+
+  int ErrorStat = 0;
+  const char* ErrMesg = "Error in ReadStnGeo\n";
+
+  //Now we just measure the size of VectAntennas, so remove a human derp point
+  //ErrorStat = SetIntValueXML(pRoot, NAntPerStn, "N_Ant_perST");
+  //if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  tinyxml2::XMLElement * pElement;
+  ErrorStat = SetElementXML(pRoot,pElement,"Antennas");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  tinyxml2::XMLElement * pListElement;
+  ErrorStat = SetElementXML(pElement,pListElement,"Antenna");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  while (pListElement){
+    AntennaPlacement iAntenna;
+
+    ErrorStat = SetIntValueXML(pListElement, iAntenna.Type, "AntType");
+    if (ErrorStat) {printf(ErrMesg); return 1;}
+
+    tinyxml2::XMLElement * pSubElement;
+    ErrorStat = SetElementXML(pListElement,pSubElement,"position");
+    if (ErrorStat) {printf(ErrMesg); return 1;}
+
+    tinyxml2::XMLElement * pValue;
+    ErrorStat = SetElementXML(pSubElement,pValue,"value");
+    if (ErrorStat) {printf(ErrMesg); return 1;}
+
+    for (int i =0; i<3; i++){
+      eResult = pValue->QueryDoubleText(&iAntenna.position[i]);
+      if (eResult != tinyxml2::XML_SUCCESS) { printf("Error reading position value. tinyXML Error: %i\n", eResult); return eResult; }
+      pValue = pValue->NextSiblingElement("value");
+    }
+
+    ErrorStat = SetElementXML(pListElement,pSubElement,"n_boresight");
+    if (ErrorStat) {printf(ErrMesg); return 1;}
+
+    ErrorStat = SetElementXML(pSubElement,pValue,"value");
+    if (ErrorStat) {printf(ErrMesg); return 1;}
+
+    for (int i =0; i<3; i++){
+      eResult = pValue->QueryDoubleText(&iAntenna.n_boresight[i]);
+      if (eResult != tinyxml2::XML_SUCCESS) { printf("Error reading n_boresight value. tinyXML Error: %i\n", eResult); return eResult; }
+      pValue = pValue->NextSiblingElement("value");
+    }
+
+    ErrorStat = SetElementXML(pListElement,pSubElement,"n_epol");
+    if (ErrorStat) {printf(ErrMesg); return 1;}
+
+    ErrorStat = SetElementXML(pSubElement,pValue,"value");
+    if (ErrorStat) {printf(ErrMesg); return 1;}
+
+    for (int i =0; i<3; i++){
+      eResult = pValue->QueryDoubleText(&iAntenna.n_epol[i]);
+      if (eResult != tinyxml2::XML_SUCCESS) { printf("Error reading n_epol value. tinyXML Error: %i\n", eResult); return eResult; }
+      pValue = pValue->NextSiblingElement("value");
+    }
+
+    VectAntennas.push_back(iAntenna);
+    pListElement = pListElement->NextSiblingElement("Antenna");
+  }
+
+  //Measure the size of VectAntennas to set NAntPerStn
+  NAntPerStn = VectAntennas.size();
+  printf("NAntPerStn = %i\n",NAntPerStn);
+
+  return 0;
+}
+
+int ReadInputXML(const char * infn){
+  //This follows closely the  structure of the tinyxml2 tutorial found at shilohjames.wordpress.com/2014/04/27/tinyxml2-tutorial/
+  //Since this is ShelfMC, all of these parameters should be declaired at global scope ('cause that's the way we do things 'round here, apparently)
+
+  cout<<"Reading Input Parameters from "<<infn<<"..."<<endl;
+
+  tinyxml2::XMLDocument xmlDoc;
+  tinyxml2::XMLError eResult = xmlDoc.LoadFile(infn);
+  if (eResult != tinyxml2::XML_SUCCESS) { printf("Error loading input file, tinyXML Error: %i\n", eResult); return eResult; }
+
+  tinyxml2::XMLNode * pRoot = xmlDoc.FirstChild();
+  if (!pRoot) { printf("tinyXML Error reading input file: %i\n", tinyxml2::XML_ERROR_FILE_READ_ERROR); return tinyxml2::XML_ERROR_FILE_READ_ERROR; }
+
+  int ErrorStat = 0;
+  const char* ErrMesg = "Error in ReadInputXML\n";
+
+  //Boolean parameters can go here (They are actually still ints, but who's watching?)
+  ErrorStat = SetBoolValueXML(pRoot, SPECTRUM, "SPECTRUM");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetBoolValueXML(pRoot, WIDESPECTRUM, "WIDESPECTRUM");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetBoolValueXML(pRoot, GZK, "GZK");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetBoolValueXML(pRoot, FANFLUX, "FANFLUX");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetBoolValueXML(pRoot, SIGNAL_FLUCT, "SIGNAL_FLUCT");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetBoolValueXML(pRoot, TAUREGENERATION, "TAUREGENERATION");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetBoolValueXML(pRoot, SHADOWING, "SHADOWING");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetBoolValueXML(pRoot, H_PROP, "H_PROP");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetBoolValueXML(pRoot, DEPTH_DEPENDENT_N, "DEPTH_DEPENDENT_N");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetBoolValueXML(pRoot, FIRN, "FIRN");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetBoolValueXML(pRoot, CONST_ATTENLENGTH, "CONST_ATTENLENGTH");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetBoolValueXML(pRoot, HEXAGONAL, "HEXAGONAL");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  //The next few parameters are obsolete and should be removed
+  ErrorStat = SetBoolValueXML(pRoot, SCATTER, "SCATTER");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetBoolValueXML(pRoot, DIPOLE, "DIPOLE");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+
+  //Int parameters can go here
+  ErrorStat = SetIntValueXML(pRoot, NNU, "NNU");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetIntValueXML(pRoot, seed, "seed");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetIntValueXML(pRoot, NROWS, "NROWS");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetIntValueXML(pRoot, NCOLS, "NCOLS");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+
+  //N_Ant_perST is now set in the Stn Geometry File
+  //  ErrorStat = SetIntValueXML(pRoot, N_Ant_perST, "N_Ant_perST");
+  //  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetIntValueXML(pRoot, N_Ant_Trigger, "N_Ant_Trigger");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  //Double parameters can go here
+  ErrorStat = SetDoubleValueXML(pRoot, EXPONENT, "EXPONENT");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetDoubleValueXML(pRoot, TNOISE, "TNOISE");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetDoubleValueXML(pRoot, ICETHICK, "ICETHICK");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetDoubleValueXML(pRoot, FIRNDEPTH, "FIRNDEPTH");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetDoubleValueXML(pRoot, NFIRN, "NFIRN");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetDoubleValueXML(pRoot, C_INDEX, "C_INDEX");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetDoubleValueXML(pRoot, ATTEN_UP, "ATTEN_UP");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetDoubleValueXML(pRoot, ATTEN_DOWN, "ATTEN_DOWN");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetDoubleValueXML(pRoot, ATTEN_H, "ATTEN_H");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetDoubleValueXML(pRoot, ATTEN_FACTOR, "ATTEN_FACTOR");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetDoubleValueXML(pRoot, REFLECT_RATE, "REFLECT_RATE");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetDoubleValueXML(pRoot, ATGap, "ATGap");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetDoubleValueXML(pRoot, ST4_R, "ST4_R");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetDoubleValueXML(pRoot, NSIGMA, "NSIGMA");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetDoubleValueXML(pRoot, gainv, "gainv");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetDoubleValueXML(pRoot, FREQ_LOW, "FREQ_LOW");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetDoubleValueXML(pRoot, FREQ_HIGH, "FREQ_HIGH");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetDoubleValueXML(pRoot, MAX_DISTANCE, "MAX_DISTANCE");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  //The next few parameters are obsolete and should be removed
+   ErrorStat = SetDoubleValueXML(pRoot, SCATTER_WIDTH, "SCATTER_WIDTH");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetDoubleValueXML(pRoot, Z, "Z");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  //Text parameters (const char *) can go here
+  ErrorStat = SetTextValueXML(pRoot, StnGeoFN, "StnGeoFN");
+  if (ErrorStat) {printf("Error in ReadInputXML"); return 1;}
+
+  return ErrorStat;
+}

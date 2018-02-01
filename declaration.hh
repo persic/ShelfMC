@@ -1,5 +1,6 @@
 // CJR 2015-07-15: add gain file as input.txt paramter
-std::string GAINFILENAME;
+# include "tinyxml2.h"
+const char * StnGeoFN;
 
 //constant parameters
 const double C = 3.e8; //speed of light m/s
@@ -34,6 +35,7 @@ int ATTEN_EXP = 1; //use the data from Minna Bluff measurement
 int ATTEN_FREQ = 0; //let attenuation length be a function of frequency when f<122MHz
 double ATTEN_UP;
 double ATTEN_DOWN;
+double ATTEN_H; //Effective attenuation length for horizontal propagation
 int SIGNAL_FLUCT = 0; //1=add noise fluctuation to signal or 0=do not
 double ICETHICK; //575 for Moore's Bay
 int FIRN;//0 means only uniform ice, 1 means ice and firn 2 uniform layers.
@@ -42,11 +44,11 @@ double SCATTER_WIDTH;
 int SPECTRUM;
 int WIDESPECTRUM;
 int DIPOLE;
-int ST_TYPE;//different station designs, ST0--only one seavey antenna with an optional dipole, ST1--2 Seaveys intercrossing each other, ST2--5 close Seaveys, ST3--5 separate Seaveys, ST4--8 LPA
-int N_Ant_perST; //KD now input as part of input file
+int N_Ant_perST = 0; //KD now input as part of input file
 int N_Ant_Trigger; //KD new majority logic variable
 int n_chan_perST;//the total number of channels each station
 double  NFIRN;//the initial refraction index at the surface of the ice
+double  C_INDEX;//exponential scale factor for A-B*exp(z/C) index of refraction fit
 int NNU;//number of neutrinos isotropically reach the ice block
 double ATTEN_FACTOR;
 double REFLECT_RATE;
@@ -61,11 +63,14 @@ double n1 = 1.78; //ice refraction index at the interaction position
 
 int TAUREGENERATION = 1; //KD: if 1=tau regeneration effect, if 0=original
 int PLANEWAVE = 1; //KD: if 1: plane wave calculations is on //check code for multistation
-//int SHADOWING = 0; //if FIRN is 0, it automatically doesn't apply
 int SHADOWING; //now shifted to steering file 11/17/11
+int H_PROP; //Use Chris' horizontal propagation model with effective attenuation length
 int HEXAGONAL = 0; //note changes in row,col(input file) and ATGAPs(function file) (500m, 866m), works for 7 stations
 double HRAfactor = 1; //sets the spacing scale wrt to 1km
 double FIRNfactor = 1;
+
+std::vector<double> SHADOWRANGE;
+std::vector<double> SHADOWHEIGHTS;
 
 //parameters of antennas
 //const double HeightAT=37.62*INCH2M;//height of antenna in m
@@ -82,7 +87,7 @@ double FREQ_LOW; //MHz
 double FREQ_HIGH; //MHz;
 double BW; //MHz Now Declaired in shelfmc_stripped.cc
 double FREQ_BIN;
-double EDGE;//m
+double MAX_DISTANCE;//m
 //const double ICETHICK = 575.; //m //FW:624 //double ICETHICK=575.; //Moved to input.txt
 const double ATDepth = 0.; //put the antennas at the mirror surface of the real ice surface taking the ice bottom as a mirror.
 
@@ -106,7 +111,7 @@ const double CONEWIDTH = 20.*DEG2RAD;
 const int NFREQ = 95; //number of frequency bins 95//380
 const int NVIEWANGLE = 7; //number of viewing angles to look at the signal,on Seckel's request
 //const double FREQ_LOW=10;//MHz
-//const double FREQ_HIGH=5000;//MHz Assigned in input.txt 
+//const double FREQ_HIGH=5000;//MHz Assigned in input.txt
 //const double FREQ_LOW = 100; //MHz
 //const double FREQ_HIGH = 1000; //MHz;
 //const double BW = FREQ_HIGH - FREQ_LOW; //MHz Now Declaired in shelfmc_stripped.cc
@@ -148,10 +153,15 @@ double viewangles[NVIEWANGLE] = {acos(1 / NICE),
                                  acos(1 / NICE) - 40.*DEG2RAD
                                 };
 
+struct AntennaPlacement{
+  int Type;
+  double position[3];
+  double n_boresight[3];
+  double n_epol[3];
+};
 
 double GetNoise(double);
 double GetDecayLength(double EXPONENT); //CP 07/15
-
 void GetBothLocation(int, int, double*, double*);
 void GetATLocation(int, int, double*);
 void GetMirrorATLocation(int, int, double*);
@@ -159,8 +169,12 @@ double GetGainV(double freq);
 double GetGainH(double freq);
 double GaintoHeight(double gain, double freq);
 
-double GetN(double* posnu);
-double GetRange(double firndepth); //KD added 9/23/10
+double GetHeff(int, double, double*, double*, double*, double*);
+
+double GetN(double height);
+void CalcShadowEdge(double zstep = 0.1);
+double InterpolateLinear(double xtest, double x0, double y0, double x1, double x2);
+double GetRange(double height); //KD added 9/23/10
 void GetInteractionPoint(double* posnu);
 void GetPosnuBin(double* posnu, int& posnu_iRow, int& posnu_iCol);
 void GetAttenlength(double* posnu, double& attenlength_up, double& attenlength_down);
@@ -197,6 +211,7 @@ void GetSpread(double pnu,
 double VmMHz1m(double viewangle, double freq, double emfrac, double hadfrac, double em_shower_length, double had_shower_length); //Seckel's scaling
 double VmMHz(double vmmhz1m, double r);
 double VmMHz_attenuated(double d_posnu2AT, double vmmhz, double attenlength);
+void GetFlare(double freq, double* flare_tmp);
 int GetBeamWidths(double flare[4][NFREQ], double gain[2][NFREQ], double freq[NFREQ]);
 void ReadGains();
 void ConvertEHtoLR(double e_component, double h_component, double& lcp_component, double& rcp_component);
@@ -207,6 +222,7 @@ void GetFresnel(double theta1, double theta2, double* original_nsignal, double* 
 //KD: our rotation matrix
 void GetRotation(double theta1, double theta2, double* original_nsignal, double* n_pol, double* n_pol_out);
 
+void GetHitAngle(double*, double*, double*, double*, double&, double&, double&, double&);
 void GetHitAngle_ST0(double*, double*, double&, double&, double&, double&);
 void GetMirrorHitAngle_ST0(double* posnu2MirrorAT, double* n_pol, double& hitangle_e, double& hitangle_h, double& e_component, double& h_component);
 void GetHitAngle_ST1(double*, double*, double&, double&, double&, double&, double&, double&, double&, double&);
@@ -251,6 +267,18 @@ void GetMaxDis(double pnu, double& Max_distance);
 double GetLPM(double);
 double Gety();
 double fx(double x, double h1, double h2, double nconst, double deltax);
+void Refract(double deltax, double yIce, double yFirn, double nVertex, double nSurface, double &dIce, double &dFirn, double &theta1, double &theta2);
+
+//Fn's for reading in from XML
+int SetIntValueXML(tinyxml2::XMLNode * pRoot, int &IntParam, const char* ParamName);
+int SetBoolValueXML(tinyxml2::XMLNode * pRoot, int &BoolParam, const char* ParamName);
+int SetDoubleValueXML(tinyxml2::XMLNode * pRoot, double &DoubleParam, const char* ParamName);
+int SetTextValueXML(tinyxml2::XMLNode * pRoot, const char * &TextParam, const char* ParamName);
+int SetElementXML(tinyxml2::XMLNode * pRoot, tinyxml2::XMLElement * &Element, const char* ParamName);
+int SetElementXML(tinyxml2::XMLElement * Element, tinyxml2::XMLElement * &SubElement, const char* ParamName);
+int ReadStnGeo(const char * infn, int &NAntPerStn, std::vector<AntennaPlacement> &VectAntennas);
+int ReadInputXML(const char * infn);
+
 
 //some const parameters of VmMHz1m
 double freq0 = 1150.; //MHz

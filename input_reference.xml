@@ -1,0 +1,46 @@
+<inputs>
+
+  <NNU>1000000</NNU> <!--setting to 1 for unique neutrino-->
+  <seed>42</seed> <!--Seed for Rand3-->
+  <EXPONENT>18.0</EXPONENT> <!--should be exclusive with SPECTRUM-->
+  <MAX_DISTANCE>4000.0</MAX_DISTANCE> <!--Farthest Distance from a station that a neutrino will be considered for a trigger in meters-->
+  <SPECTRUM>0</SPECTRUM> <!--use spectrum-->
+  <WIDESPECTRUM>1</WIDESPECTRUM> <!--use 10^16 eV to 10^21.5 eV as the energy spectrum, otherwise use 17-20-->
+  <GZK>1</GZK> <!--1 means using GZK flux, 0 means E-2 flux. Used only in TAUREGENERATION unless SPECTRUM is set-->
+  <FANFLUX>0</FANFLUX> <!--use fenfang's flux which only covers from 10^17 eV to 10^20 eV.-->
+  <SIGNAL_FLUCT>1</SIGNAL_FLUCT> <!--1=add noise fluctuation to signal or 0=do not-->
+  <TNOISE>350.0</TNOISE> <!--noise temperature in Kelvin-->
+  <TAUREGENERATION>1</TAUREGENERATION> <!--if 1=tau regeneration effect, if 0=original-->
+  <SHADOWING>1</SHADOWING> <!-- Apply the Shadow Zone Veto-->
+  <H_PROP>0</H_PROP> <!-- Use an effective attenuation length model for horizontal propigation.  Only use if SHADOWING==0-->
+  <DEPTH_DEPENDENT_N>1</DEPTH_DEPENDENT_N> <!--0 means uniform firn, 1 means n_firn is a function of depth-->
+  <FIRN>1</FIRN> <!--KD: ensure DEPTH_DEPENDENT is off if FIRN is 0-->
+  <ICETHICK>575.0</ICETHICK> <!--thickness of ice including firn, 575m at Moore's Bay-->
+  <FIRNDEPTH>60.0</FIRNDEPTH> <!--Depth of firn in meters-->
+  <NFIRN>1.30</NFIRN> <!--1.30-->
+  <C_INDEX>34.48</C_INDEX> <!--Exponential scale factor for indec of refraction fit-->
+  <CONST_ATTENLENGTH>0</CONST_ATTENLENGTH> <!--use constant attenuation length if ==1-->
+  <ATTEN_UP>500.0</ATTEN_UP> <!--Average Attenuation Length of the ice-->
+  <ATTEN_DOWN>250.0</ATTEN_DOWN> <!--not used anymore except for CONST_ATTENLENGTH-->
+  <ATTEN_H>400.0</ATTEN_H> <!--Effective Attenuation Length for horizontal propagation.  Needs H_PROP==1-->
+  <ATTEN_FACTOR>1.0</ATTEN_FACTOR> <!--scale factor for attenuation length-->
+  <REFLECT_RATE>0.9</REFLECT_RATE> <!--power reflection rate at the ice bottom-->
+  <ATGap>1000.0</ATGap> <!--distance between stations in meters-->
+  <NROWS>1</NROWS> <!--set to 3 for HEXAGONAL-->
+  <NCOLS>1</NCOLS> <!--set to 5 for HEXAGONAL-->
+  <HEXAGONAL>0</HEXAGONAL> <!--Use hexagonal array of stations-->
+  <StnGeoFN>StnGeoFiles/ST2.xml</StnGeoFN>
+  <ST4_R>3.0</ST4_R> <!--radius in meters between center of station and antenna. Obsolete Param soon-->
+  <N_Ant_Trigger>2</N_Ant_Trigger> <!--this is the minimum number of AT to trigger-->
+  <NSIGMA>4.0</NSIGMA> <!--threshold of trigger-->
+  <gainv>4.0</gainv> <!--gain dependency used only on parametrized antenna model-->
+  <FREQ_LOW>50.0</FREQ_LOW> <!--low frequency of LPDA Response MHz-->
+  <FREQ_HIGH>1000.0</FREQ_HIGH> <!--high frequency of LPDA Response MHz-->
+
+  <!--Soon to Be Obsolete Parameters Below-->
+  <SCATTER>0</SCATTER> <!--Ignore-->
+  <SCATTER_WIDTH>1.0</SCATTER_WIDTH> <!--how many times wider after scattering-->
+  <Z>30.0</Z> <!--for ST_TYPE=2 (Ignore)-->
+  <DIPOLE>0</DIPOLE> <!--add a dipole to the station, NO LONGER USED-->
+
+</inputs>
