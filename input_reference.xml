@@ -1,7 +1,9 @@
 <inputs>
 
   <NNU>1000000</NNU> <!--setting to 1 for unique neutrino-->
-  <seed>42</seed> <!--Seed for Rand3-->
+  <seed>42</seed> <!--Seed for Rand3. Set 0 to use clock for seed.-->
+  <USELIST>0</USELIST> <!--0 for random events, 1 to use event list-->
+  <EventListFN>EventLists/EventList.xml</EventListFN> <!--Event List -->
   <EXPONENT>18.0</EXPONENT> <!--should be exclusive with SPECTRUM-->
   <MAX_DISTANCE>4000.0</MAX_DISTANCE> <!--Farthest Distance from a station that a neutrino will be considered for a trigger in meters-->
   <SPECTRUM>0</SPECTRUM> <!--use spectrum-->

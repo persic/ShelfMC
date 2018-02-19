@@ -3,7 +3,7 @@
 
     <Antenna><!--This will be an AntennaPlacemtent struct-->
       <AntType>2</AntType>  <!--Type 2 is Create LPDA-->
-      <position>  <!--Position of antenna relative to station center-->
+      <position>  <!--Position of antenna relative to station center in meters-->
 	<value>3.</value>  <!--x-->
 	<value>0.</value>  <!--y-->
 	<value>0.</value>  <!--y-->

@@ -1,5 +1,7 @@
 // CJR 2015-07-15: add gain file as input.txt paramter
 # include "tinyxml2.h"
+
+const char * EventListFN;
 const char * StnGeoFN;
 
 //constant parameters
@@ -26,6 +28,7 @@ const double SIGMA_FACTOR = 1.;
 const double LIVETIME = 180.*24.*3600.; //half year in seconds//added factor of 2 on 9/13
 
 int seed;
+int USELIST;
 double FIRNDEPTH;//m
 double NSIGMA;//threshold for trigger
 double TNOISE;//Noise Temperature
@@ -160,6 +163,18 @@ struct AntennaPlacement{
   double n_epol[3];
 };
 
+struct EvtParams{
+  double Exponent;
+  const char * Flavor;
+  const char * Current;
+  double Inelasticity;
+  double X;
+  double Y;
+  double Z;
+  double ThetaDir;
+  double PhiDir;
+};
+
 double GetNoise(double);
 double GetDecayLength(double EXPONENT); //CP 07/15
 void GetBothLocation(int, int, double*, double*);
@@ -276,7 +291,8 @@ int SetDoubleValueXML(tinyxml2::XMLNode * pRoot, double &DoubleParam, const char
 int SetTextValueXML(tinyxml2::XMLNode * pRoot, const char * &TextParam, const char* ParamName);
 int SetElementXML(tinyxml2::XMLNode * pRoot, tinyxml2::XMLElement * &Element, const char* ParamName);
 int SetElementXML(tinyxml2::XMLElement * Element, tinyxml2::XMLElement * &SubElement, const char* ParamName);
-int ReadStnGeo(const char * infn, int &NAntPerStn, std::vector<AntennaPlacement> &VectAntennas);
+int ReadStnGeo(std::string infn, int &NAntPerStn, std::vector<AntennaPlacement> &VectAntennas);
+int ReadEventList(std::string infn, int &NNU, std::vector<EvtParams> &EventList);
 int ReadInputXML(const char * infn);
 
 
