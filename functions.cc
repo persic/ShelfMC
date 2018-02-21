@@ -2580,9 +2580,79 @@ int SetElementXML(tinyxml2::XMLElement * Element, tinyxml2::XMLElement * &SubEle
   return 0;
 }
 
-int ReadStnGeo(const char * infn, int &NAntPerStn, vector<AntennaPlacement> &VectAntennas){
+int ReadEventList(string inputFN, int &NNU, vector<EvtParams> &EventList){
+  //This follows closely the  structure of the tinyxml2 tutorial found at shilohjames.wordpress.com/2014/04/27/tinyxml2-tutorial/
+  //Sets NNU and EventList from xml file
+  const char * infn = inputFN.c_str();
+  cout<<"Reading Event List from "<<infn<<"..."<<endl;
+  tinyxml2::XMLDocument xmlDoc;
+  tinyxml2::XMLError eResult = xmlDoc.LoadFile(infn);
+  if (eResult != tinyxml2::XML_SUCCESS) { printf("Error loading Event List file %s, tinyXML Error: %i\n",infn, eResult); return eResult; }
+
+  tinyxml2::XMLNode * pRoot = xmlDoc.FirstChild();
+  if (!pRoot) { printf("tinyXML Error reading input file: %i\n", tinyxml2::XML_ERROR_FILE_READ_ERROR); return tinyxml2::XML_ERROR_FILE_READ_ERROR; }
+
+  int ErrorStat = 0;
+  const char* ErrMesg = "Error in ReadEventList\n";
+
+  //Now we just measure the size of VectAntennas, so remove a human derp point
+  //ErrorStat = SetIntValueXML(pRoot, NAntPerStn, "N_Ant_perST");
+  //if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  tinyxml2::XMLElement * pElement;
+  ErrorStat = SetElementXML(pRoot,pElement,"List");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  tinyxml2::XMLElement * pListElement;
+  ErrorStat = SetElementXML(pElement,pListElement,"Event");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  while (pListElement){
+    EvtParams iEvent;
+
+    ErrorStat = SetDoubleValueXML(pListElement, iEvent.Exponent, "Exponent");
+    if (ErrorStat) {printf(ErrMesg); return 1;}
+
+    ErrorStat = SetDoubleValueXML(pListElement, iEvent.Inelasticity, "Inelasticity");
+    if (ErrorStat) {printf(ErrMesg); return 1;}
+
+    ErrorStat = SetDoubleValueXML(pListElement, iEvent.X, "X");
+    if (ErrorStat) {printf(ErrMesg); return 1;}
+
+    ErrorStat = SetDoubleValueXML(pListElement, iEvent.Y, "Z");
+    if (ErrorStat) {printf(ErrMesg); return 1;}
+
+    ErrorStat = SetDoubleValueXML(pListElement, iEvent.Y, "Z");
+    if (ErrorStat) {printf(ErrMesg); return 1;}
+
+    ErrorStat = SetDoubleValueXML(pListElement, iEvent.ThetaDir, "ThetaDir");
+    if (ErrorStat) {printf(ErrMesg); return 1;}
+
+    ErrorStat = SetDoubleValueXML(pListElement, iEvent.PhiDir, "PhiDir");
+    if (ErrorStat) {printf(ErrMesg); return 1;}
+
+    ErrorStat = SetTextValueXML(pListElement, iEvent.Flavor, "Flavor");
+    if (ErrorStat) {printf(ErrMesg); return 1;}
+
+    ErrorStat = SetTextValueXML(pListElement, iEvent.Current, "Current");
+    if (ErrorStat) {printf(ErrMesg); return 1;}
+
+    EventList.push_back(iEvent);
+    pListElement = pListElement->NextSiblingElement("Event");
+  }
+
+  //Measure the size of VectAntennas to set NAntPerStn
+  NNU = EventList.size();
+  printf("NNU = %i\n",NNU);
+
+  return 0;
+}
+
+int ReadStnGeo(string inputFN, int &NAntPerStn, vector<AntennaPlacement> &VectAntennas){
   //This follows closely the  structure of the tinyxml2 tutorial found at shilohjames.wordpress.com/2014/04/27/tinyxml2-tutorial/
   //Sets NAntPerStn and VectAntennas from xml file
+
+  const char * infn = inputFN.c_str();
 
   cout<<"Reading Station Geometry from "<<infn<<"..."<<endl;
 
@@ -2655,7 +2725,6 @@ int ReadStnGeo(const char * infn, int &NAntPerStn, vector<AntennaPlacement> &Vec
     VectAntennas.push_back(iAntenna);
     pListElement = pListElement->NextSiblingElement("Antenna");
   }
-
   //Measure the size of VectAntennas to set NAntPerStn
   NAntPerStn = VectAntennas.size();
   printf("NAntPerStn = %i\n",NAntPerStn);
@@ -2680,6 +2749,9 @@ int ReadInputXML(const char * infn){
   const char* ErrMesg = "Error in ReadInputXML\n";
 
   //Boolean parameters can go here (They are actually still ints, but who's watching?)
+  ErrorStat = SetBoolValueXML(pRoot, USELIST, "USELIST");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
   ErrorStat = SetBoolValueXML(pRoot, SPECTRUM, "SPECTRUM");
   if (ErrorStat) {printf(ErrMesg); return 1;}
 
@@ -2808,6 +2880,9 @@ int ReadInputXML(const char * infn){
   if (ErrorStat) {printf(ErrMesg); return 1;}
 
   //Text parameters (const char *) can go here
+  ErrorStat = SetTextValueXML(pRoot, EventListFN, "EventListFN");
+  if (ErrorStat) {printf("Error in ReadInputXML"); return 1;}
+
   ErrorStat = SetTextValueXML(pRoot, StnGeoFN, "StnGeoFN");
   if (ErrorStat) {printf("Error in ReadInputXML"); return 1;}
 

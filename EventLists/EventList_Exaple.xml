@@ -1,0 +1,26 @@
+<EventList>
+  <List><!--list of event parameters-->
+    <Event><!--Event Object-->
+      <Exponent>18.0</Exponent><!--log(neutrino energy)-->
+      <Flavor>nue</Flavor><!--nue, numu, or nutau-->
+      <Inelasticity>0.5</Inelasticity><!--y-->
+      <Current>cc</Current><!--cc, or nc-->
+      <X>200.</X> <!--x vertex position in meters-->
+      <Y>200.</Y> <!--y vertex position in meters-->
+      <Z>400.</Z> <!--z vertex position in meters, from ice bottom-->
+      <ThetaDir>2.2</ThetaDir><!--propagation direction Azimuth in radians-->
+      <PhiDir>0.55</PhiDir><!--propagation direction Zenith in radians-->
+    </Event>
+    <Event>
+      <Exponent>16.0</Exponent>
+      <Flavor>numu</Flavor>
+      <Inelasticity>0.7</Inelasticity>
+      <Current>cc</Current>
+      <X>125.</X>
+      <Y>189.</Y>
+      <Z>2600.</Z>
+      <ThetaDir>2.0</ThetaDir>
+      <PhiDir>1.5</PhiDir>
+    </Event>
+  </List>
+</EventList>

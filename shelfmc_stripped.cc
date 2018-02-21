@@ -68,6 +68,9 @@ LPDA* Create50 = new LPDA((char *)"WIPLD_antennamodel_50MHz_firn_v1.root");//typ
 //Declare a Vector of AntennaPlacements which defines the station geometry
 vector<AntennaPlacement> StationGeometry;
 
+//Declase a Vector of EvtParams, which is the event List
+vector<EvtParams> EventList;
+
 int main(int argc, char** argv) //MC IceShelf 09/01/2005
 {
    string workDir;
@@ -113,14 +116,23 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
    //New Input Method
    ReadInputXML(infn);
    cout<<"\n\n";
-
    //assigning some globals
    BW = FREQ_HIGH - FREQ_LOW; //MHz
    FREQ_BIN = BW / NFREQ;
 
    //read in Stn Geometry from file
-   ReadStnGeo(StnGeoFN,N_Ant_perST,StationGeometry);
+   //recasting as strings was nescessary for some reason in order to avoid segfault
+   //this is why you avoid global variables!!
+   string inputFN = StnGeoFN;
+   string inFilename = EventListFN;
+   ReadStnGeo(inputFN,N_Ant_perST,StationGeometry);
    cout<<"\n\n";
+   if (USELIST) {
+
+     ReadEventList(inFilename,NNU,EventList);
+     cout<<"\n\n";
+   }
+
    int N_ST_required = 1;
    //
    // Calculate the shadow range for this index profile
@@ -1186,54 +1198,62 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
       Zero(posnu, 3);
       Zero(nnu, 3);
       Zero(entry, 3);
+      double theta_nu;
+      double phi_nu;
 
-//posnu[0]=(100. + 300.*(-2*Rand3.Rndm()+1)) ; posnu[1]=0. ; posnu[2]=300.  ;
-      GetInteractionPoint(posnu);
+      if (USELIST) {
+        EXPONENT = EventList[inu].Exponent;
+        pnu = pow(10, EXPONENT);
+        posnu[0] = EventList[inu].X;
+        posnu[1] = EventList[inu].Y;
+        posnu[2] = EventList[inu].Z;
+        theta_nu = EventList[inu].ThetaDir;
+        phi_nu = EventList[inu].PhiDir;
+        nuflavor = EventList[inu].Flavor;
+        current = EventList[inu].Current;
+        elast_y = EventList[inu].Inelasticity;
 
-//posnu[0]=342.098 ; posnu[1]= -142.388; posnu[2]= 507.861;//KD fringe neutrino example 1
-//posnu[0]=240.364 ; posnu[1]= 870.649; posnu[2]= 127.351;  //KD neutrino example 2
+      }
+      else{
+        GetInteractionPoint(posnu);
 
-      //GetPosnuBin(posnu[0],posnu[1],ibin);
-      // test<<ibin[0]<<"  1  "<<ibin[1]<<endl;
+  //KD: added to take firn into account, imposed condition on 01/19/11
+        if (FIRN) {
+           double mytemp = Rand3.Rndm();
+           if (posnu[2] > (ICETHICK - FIRNDEPTH) && mytemp > 0.59782)
+              //how does this get affected for DEPTH_DEPEND? we are now using some average
+              //KD 02/17/2011: it's the weight factor correction because fewer nucleons in the firn. Now, for uniform firn (ie no DEPTH_DEPEND), that cut should be reflecting the uniform density of firn at 0.3gcm^-3, so strictly, this can be further refined to be depth dependent
+              continue;
+        }
 
+        theta_nu = acos(-2 * Rand3.Rndm() + 1);
 
-//KD: added to take firn into account, imposed condition on 01/19/11
-      if (FIRN) {
-         double mytemp = Rand3.Rndm();
-         if (posnu[2] > (ICETHICK - FIRNDEPTH) && mytemp > 0.59782)
-            //how does this get affected for DEPTH_DEPEND? we are now using some average
-            //KD 02/17/2011: it's the weight factor correction because fewer nucleons in the firn. Now, for uniform firn (ie no DEPTH_DEPEND), that cut should be reflecting the uniform density of firn at 0.3gcm^-3, so strictly, this can be further refined to be depth dependent
-            continue;
+        phi_nu = Rand3.Rndm() * 2 * PI;
+
+        GetNuFlavor(nuflavor); //nuflavor="nutau";//nuflavor="nue";
+        GetCurrent(current); //current="cc";
+        elast_y = Gety();
       }
 
-
+      nnu[0] = sin(theta_nu) * cos(phi_nu);
+      nnu[1] = sin(theta_nu) * sin(phi_nu);
+      nnu[2] = cos(theta_nu);
 //+ outposnuall<< posnu[0]<<" "<<posnu[1]<<" "<<posnu[2]<<endl;   //KD: output all generated neutrinos?
 
-      GetAttenlength(posnu, attenlength_up, attenlength_down);
-      // cout<<attenlength_up<<" "<<attenlength_down<<endl;
-
-      n1 = GetN(posnu[2]); //get the refraction index at the interaction point
-      elpm = GetLPM(n1); //KD: probably shouldn't be n1 but apparently it gets overriden in GetSpread below anyway?
-      // cout<<"posnu[2]="<<posnu[2]<<"  n1="<<n1<<endl;
-      changle = acos(1 / n1);
-      f0 = 2.53E-7 / freq0 / sin(changle); //f0 in VmMHz1m function
-
       //Get the direction of a neutrino by random
-      double theta_nu = acos(-2 * Rand3.Rndm() + 1); //original over all sky 12/9/2010
+       //original over all sky 12/9/2010
       //double theta_nu=acos(-1*Rand3.Rndm()); //original over half sky
 
 
       //double theta_nu=acos((-2*Rand3.Rndm()+1)/20.);
       // h1angle->Fill(theta_nu);
       // h1cos->Fill(cos(theta_nu));
-      double phi_nu = Rand3.Rndm() * 2 * PI;
+
 //double phi_nu=1.25 + 0.05*(-2*Rand3.Rndm()+1);
 //double phi_nu = 0;
 
 
-      nnu[0] = sin(theta_nu) * cos(phi_nu);
-      nnu[1] = sin(theta_nu) * sin(phi_nu);
-      nnu[2] = cos(theta_nu);
+
 //nnu[0]=-0.68131 ; nnu[1]= 0.710366;  nnu[2]=-0.176627; // KD fringe example neutrino 1
 //nnu[0]=-0.784983   ; nnu[1]= -0.619009;    nnu[2]=-0.0250813; //KD neutrino example 2
 
@@ -1243,6 +1263,14 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
       // if(theta_nu>=PI/2)//study the downward neutrinos
       //neglecting upgoing neutrinos
       // continue;
+      GetAttenlength(posnu, attenlength_up, attenlength_down);
+      // cout<<attenlength_up<<" "<<attenlength_down<<endl;
+
+      n1 = GetN(posnu[2]); //get the refraction index at the interaction point
+      elpm = GetLPM(n1); //KD: probably shouldn't be n1 but apparently it gets overriden in GetSpread below anyway?
+      // cout<<"posnu[2]="<<posnu[2]<<"  n1="<<n1<<endl;
+      changle = acos(1 / n1);
+      f0 = 2.53E-7 / freq0 / sin(changle); //f0 in VmMHz1m function
 
       GetEntryPoint(theta_nu, nnu, posnu, entry);
       // outVector(entry,3);
@@ -1256,7 +1284,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
       double L_Ice = posnu[2]/cos(theta_nu);
 //+++++++++++++++++++++++++++++++++++++++++++++++++
 
-      GetNuFlavor(nuflavor); //nuflavor="nutau";//nuflavor="nue";
+
       if (nuflavor == "nue") {
          nue_counts++; //KD
       } else if (nuflavor == "numu") {
@@ -1267,10 +1295,10 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 
 
 
-      GetCurrent(current); //current="cc";
+
 
       //elast_y=0.1;//
-      elast_y = Gety(); //elast_y=0.999; //KD setting to a fixed value to see
+       //elast_y=0.999; //KD setting to a fixed value to see
 
       GetEmHadFrac(nuflavor, current, elast_y, theta_nu, L_TauDecay, L_Ice, emfrac, hadfrac);
 //cout<<"KD1a: "<<"emfrac="<<emfrac<<"  hadfrac="<<hadfrac<<" elast_y="<<elast_y<<endl; //KD, was previously commented, 7/9/10
