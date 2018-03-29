@@ -14,6 +14,20 @@ def PolarFromCart(x,y,z):
     phi = np.arctan2(y,x)
     return r,theta,phi
 
+def RandomNormal(D): #D is the number of dimensions
+    Vect = np.random.normal(size=D)
+    return Vect/np.linalg.norm(Vect)
+
+def RandomVectorSphere(D): #D is the number of dimensions
+    UVector = RandomNormal(D)
+    R = np.random.rand()
+    return UVector * (R**(1.0/D))
+
+def RandomPhiTheta():
+    phi = 2*np.pi*np.random.rand()
+    theta = np.arccos(2*np.random.rand()-1)
+    return phi, theta
+
 class EventProps:
     FlavorMap = {
     'nue':1,
@@ -315,6 +329,35 @@ def WriteShelfMCXMLList(outFN,Events,Origin=[0,0,-2700]):
 
     Tree = ET.ElementTree(element=EventList)
     Tree.write(outFN)
+
+def makeRandomEventList(N, Exp, RhoMax = 4000.0, IceThick=2700.0, nunubar = 1):
+    """Creates Random neutrino vertices in ShelfMC's Coordinate system, with the origin at the bottom of the ice. """
+    Events = []
+
+    for i in xrange(N):
+        x,y = RhoMax*RandomVectorSphere(2)
+        z = IceThick*np.random.rand()
+        #print('[x,y,z] = [{},{},{}]'.format(x,y,z))
+        gamma = np.random.rand()
+        flavor=np.random.randint(1,4)
+        current=np.random.randint(2)
+        phi, theta = RandomPhiTheta()
+
+        E = EventProps(
+        Num=i,
+        Exponent=Exp,
+        Inelasticity = gamma,
+        NuNuBar=nunubar,
+        X=x,Y=y,Z=z,
+        PhiDir=phi,ThetaDir=theta
+        )
+
+        E.SetFlavorInt(flavor)
+        E.SetCurrentInt(current)
+
+        Events.append(E)
+
+    return Events
 
 if __name__ == '__main__':
     infn = sys.argv[1]
