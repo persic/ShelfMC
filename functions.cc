@@ -2610,6 +2610,9 @@ int ReadEventList(string inputFN, int &NNU, vector<EvtParams> &EventList){
   while (pListElement){
     EvtParams iEvent;
 
+    ErrorStat = SetIntValueXML(pListElement, iEvent.EvID, "EvID");
+    if (ErrorStat) {printf(ErrMesg); return 1;}
+
     ErrorStat = SetDoubleValueXML(pListElement, iEvent.Exponent, "Exponent");
     if (ErrorStat) {printf(ErrMesg); return 1;}
 

@@ -293,6 +293,10 @@ def WriteShelfMCXMLList(outFN,Events,Origin=[0,0,-2700]):
 
         EventElemnt = ET.SubElement(List,'Event')
 
+        EvID = E.GetNum()
+        EvIDElement = ET.SubElement(EvID,'EvID')
+        EvIDElement.text = '{}'.format(EvID)
+
         Exponent = E.GetExponent()
         ExponentElement = ET.SubElement(EventElemnt,'Exponent')
         ExponentElement.text = '{}'.format(Exponent)

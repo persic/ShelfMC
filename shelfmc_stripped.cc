@@ -1155,7 +1155,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 
 //  int count_step=0; //KD:goes with definition just below
 
-
+   int EvID = 0;
    for (int inu = 0; inu < NNU; inu++) {
 
       if ( (inu%10000)==0 ) {
@@ -1202,6 +1202,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
       double phi_nu;
 
       if (USELIST) {
+        EvID = EventList[inu].EvID;
         EXPONENT = EventList[inu].Exponent;
         pnu = pow(10, EXPONENT);
         posnu[0] = EventList[inu].X;
@@ -1215,6 +1216,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 
       }
       else{
+        EvID=inu;
         GetInteractionPoint(posnu);
 
   //KD: added to take firn into account, imposed condition on 01/19/11
@@ -3995,7 +3997,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
          mycurrent = 2;
 
 
-      b1.ievt = inu;
+      b1.ievt = EvID;
       b1.Energy = EXPONENT;
       b1.flavor = ff;
       b1.mycurrent = mycurrent;
@@ -4114,7 +4116,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 //-------------------------------
 
 //------------------added KD for multi-st-----------------
-      b3.ievt = inu;
+      b3.ievt = EvID;
       b3.Energy = EXPONENT;
       b3.flavor = ff;
       b3.y = elast_y;

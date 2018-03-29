@@ -164,6 +164,7 @@ struct AntennaPlacement{
 };
 
 struct EvtParams{
+  int EvID;
   double Exponent;
   const char * Flavor;
   const char * Current;

@@ -1,6 +1,7 @@
 <EventList>
   <List><!--list of event parameters-->
     <Event><!--Event Object-->
+      <EvID>0</EvID><!--EventID-->
       <Exponent>18.0</Exponent><!--log(neutrino energy)-->
       <Flavor>nue</Flavor><!--nue, numu, or nutau-->
       <Inelasticity>0.5</Inelasticity><!--y-->
@@ -12,6 +13,7 @@
       <PhiDir>0.55</PhiDir><!--propagation direction Zenith in radians-->
     </Event>
     <Event>
+      <EvID>1</EvID>
       <Exponent>16.0</Exponent>
       <Flavor>numu</Flavor>
       <Inelasticity>0.7</Inelasticity>
