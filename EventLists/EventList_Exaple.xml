@@ -2,7 +2,7 @@
   <List><!--list of event parameters-->
     <Event><!--Event Object-->
       <EvID>0</EvID><!--EventID-->
-      <Exponent>18.0</Exponent><!--log(neutrino energy)-->
+      <Exponent>18.0</Exponent><!--log10(neutrino energy/eV)-->
       <Flavor>nue</Flavor><!--nue, numu, or nutau-->
       <Inelasticity>0.5</Inelasticity><!--y-->
       <Current>cc</Current><!--cc, or nc-->

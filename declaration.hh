@@ -162,12 +162,26 @@ struct AntennaPlacement{
   double n_boresight[3];
   double n_epol[3];
 };
-
+ /*
 struct EvtParams{
   int EvID;
   double Exponent;
   const char * Flavor;
   const char * Current;
+  double Inelasticity;
+  double X;
+  double Y;
+  double Z;
+  double ThetaDir;
+  double PhiDir;
+};
+*/
+
+struct EvtParams{
+  int EvID;
+  double Exponent;
+  std::string Flavor;
+  std::string Current;
   double Inelasticity;
   double X;
   double Y;

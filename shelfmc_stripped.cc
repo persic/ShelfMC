@@ -1162,7 +1162,6 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
          fprintf(stderr, "Processing %d / %d...            \r", inu, NNU);
       }
 
-
       if (SPECTRUM) {
          if (WIDESPECTRUM) {
             if (GZK)
@@ -1200,7 +1199,6 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
       Zero(entry, 3);
       double theta_nu;
       double phi_nu;
-
       if (USELIST) {
         EvID = EventList[inu].EvID;
         EXPONENT = EventList[inu].Exponent;
@@ -1616,7 +1614,6 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 
                ST_abs_time_mirror = (hy1_mirror * NICE + hy2_mirror * NFIRN) / C;
             }// end of if PLANEWAVE for reflected
-
 
             b1.theta_signal_atAT_mirror = theta2_mirror * RAD2DEG;
 
@@ -3995,7 +3992,6 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
          mycurrent = 1;
       else if (current == "nc")
          mycurrent = 2;
-
 
       b1.ievt = EvID;
       b1.Energy = EXPONENT;

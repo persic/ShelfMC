@@ -2563,6 +2563,18 @@ int SetTextValueXML(tinyxml2::XMLNode * pRoot, const char * &TextParam, const ch
   return 0;
 }
 
+int SetTextValueXML(tinyxml2::XMLNode * pRoot, std::string &TextParam, const char* ParamName){
+
+  tinyxml2::XMLElement * InputParam = pRoot->FirstChildElement(ParamName);
+  if (!InputParam) {printf("Could not find %s. tintXML Parsing Error: %i\n",ParamName,tinyxml2::XML_ERROR_PARSING_ELEMENT); return tinyxml2::XML_ERROR_PARSING_ELEMENT;}
+  tinyxml2::XMLText * textNode = InputParam->FirstChild()->ToText();
+  if (!textNode) {printf("Could not convert %s to text. tintXML Parsing Error: %i\n",ParamName,tinyxml2::XML_ERROR_PARSING_ELEMENT); return tinyxml2::XML_ERROR_PARSING_ELEMENT;}
+  TextParam = textNode->Value();
+  printf("%s= %s\n",ParamName,TextParam);
+
+  return 0;
+}
+
 int SetElementXML(tinyxml2::XMLNode * pRoot, tinyxml2::XMLElement * &Element, const char* ParamName){
 
   Element = pRoot->FirstChildElement(ParamName);
@@ -2622,10 +2634,10 @@ int ReadEventList(string inputFN, int &NNU, vector<EvtParams> &EventList){
     ErrorStat = SetDoubleValueXML(pListElement, iEvent.X, "X");
     if (ErrorStat) {printf(ErrMesg); return 1;}
 
-    ErrorStat = SetDoubleValueXML(pListElement, iEvent.Y, "Z");
+    ErrorStat = SetDoubleValueXML(pListElement, iEvent.Y, "Y");
     if (ErrorStat) {printf(ErrMesg); return 1;}
 
-    ErrorStat = SetDoubleValueXML(pListElement, iEvent.Y, "Z");
+    ErrorStat = SetDoubleValueXML(pListElement, iEvent.Z, "Z");
     if (ErrorStat) {printf(ErrMesg); return 1;}
 
     ErrorStat = SetDoubleValueXML(pListElement, iEvent.ThetaDir, "ThetaDir");
