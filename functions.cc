@@ -2587,7 +2587,7 @@ int SetTextValueXML(tinyxml2::XMLNode * pRoot, std::string &TextParam, const cha
   tinyxml2::XMLText * textNode = InputParam->FirstChild()->ToText();
   if (!textNode) {printf("Could not convert %s to text. tintXML Parsing Error: %i\n",ParamName,tinyxml2::XML_ERROR_PARSING_ELEMENT); return tinyxml2::XML_ERROR_PARSING_ELEMENT;}
   TextParam = textNode->Value();
-  printf("%s= %s\n",ParamName,TextParam);
+  printf("%s= %s\n",ParamName,TextParam.c_str());
 
   return 0;
 }
