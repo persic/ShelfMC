@@ -252,6 +252,7 @@ def ReadEventListARASimToListObject(infn):
         E.SetThetaPos(ThetaPos)
         E.SetPhiPos(PhiPos)
         E.SetThetaDir(ThetaDir)
+        E.SetPhiDir(PhiDir)
         E.SetInelasticity(Inelasticity)
 
         Events.append(E)
@@ -283,6 +284,33 @@ def WriteARASimList(outfn,Events,Origin=[0,0,2700.]):
         OutArray.append((Num,FlavorInt,NuNuBar,Exponent,CurrentInt,RPos,ThetaPos,PhiPos,ThetaDir,PhiDir,Elasticity))
     OutArray = np.array(OutArray)
     np.savetxt(outfn,OutArray,header=header,fmt=typeFormat,delimiter=' ')
+
+def ARASimListArray(Events,Origin=[0,0,0.0]):
+    NumEvents = len(Events)
+
+    header = '//version\nVERSION=0.1\nEVENT_NUM={}\n//evid nuflavorint nu_nubar pnu currentint posnu_r posnu_theta posnu_phi nnu_theta nnu_phi elast_y\n//use -999 as a flag of random input'.format(NumEvents)
+
+    typeFormat = ['%i','%i','%i','%f','%i','%f','%f','%f','%f','%f','%f']
+
+    OutArray = []
+    for E in Events:
+        E.ShiftOrigin(Origin)
+        Num = E.GetNum()
+        FlavorInt = E.GetFlavorInt()
+        if E.GetNuNuBar() == None:
+            NuNuBar = 0
+        else:
+            NuNuBar = E.GetNuNuBar()
+        Exponent = E.GetExponent()
+        CurrentInt = E.GetCurrentInt()
+        RPos, ThetaPos, PhiPos = E.GetRThetaPhi()
+        ThetaDir = E.GetThetaDir()
+        PhiDir = E.GetPhiDir()
+        Elasticity = E.GetInelasticity()
+
+        OutArray.append((Num,FlavorInt,NuNuBar,Exponent,CurrentInt,RPos,ThetaPos,PhiPos,ThetaDir,PhiDir,Elasticity))
+    OutArray = np.array(OutArray)
+    return OutArray
 
 def WriteShelfMCXMLList(outFN,Events,Origin=[0,0,-2700]):
     EventList = ET.Element('EventList')

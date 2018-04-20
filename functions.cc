@@ -1400,6 +1400,23 @@ double GetHeff(int AntType, double freq, double* n_boresight, double* n_epol, do
 
       return Heff;
     }
+    else if (AntType==5){//100MHz Create LPDA In Firn with simulated boundary
+
+      int NC = Create100Boundary->N[0];
+
+      freq = freq/1.30; //since this antenna model is in the firn, frequencies should be shifted
+
+      double hitangle_e, hitangle_h, e_component, h_component;
+      GetHitAngle(n_boresight, n_epol, n_prop, n_pol, hitangle_e, hitangle_h, e_component, h_component);//should use arrival direction, but it doesn't matter since we only use abs(e_component)
+
+      double Re_Z = Create100Boundary->InterpolateToSingleFrequency(freq,  NC, Create100Boundary->frequencies, Create100Boundary->Re_Z);
+
+      double gain = Create100Boundary->InterpolateToSingleFrequency(freq,  NC, Create100Boundary->frequencies, Create100Boundary->gains);
+
+      double Heff =  Create100Boundary->GetEffectiveHeight(gain,freq,Re_Z,C,119.99169*PI) * abs( e_component);
+
+      return Heff;
+    }
   else {
     cout<<"invalid Antenna Type!"<<endl;
     return -1;

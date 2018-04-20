@@ -32,6 +32,7 @@
 #include "declaration.hh"
 #include "TMath.h"
 #include "antennamodel_lpda.h"
+#include "antennamodel_lpdaZ.h"
 #include "antennamodel_ara.h"
 #include "tinyxml2.h"
 typedef unsigned int uint;
@@ -64,6 +65,7 @@ TRandom3 Rand3;
 LPDA* Create100 = new LPDA((char *)"WIPLD_antennamodel_firn_v2.root");//type 2
 ARA_Ant* ARA_Bicone = new ARA_Ant((char *)"ARA_antennamodel_bicone.root");//type 3
 LPDA* Create50 = new LPDA((char *)"WIPLD_antennamodel_50MHz_firn_v1.root");//type 4
+LPDAZ* Create100Boundary = new LPDAZ((char *)"WIPLD_antennamodel_100MHz_Firn1mDown.root");//type 5
 
 //Declare a Vector of AntennaPlacements which defines the station geometry
 vector<AntennaPlacement> StationGeometry;
@@ -2394,6 +2396,9 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
       else if (AntType[WhichAntenna]==4)//don't bother if we aren't using this antenna model
 		    Create50->LoadGain(n_boresight, n_epol, n_arrival);
 
+      else if (AntType[WhichAntenna]==5)//don't bother if we aren't using this antenna model
+		    Create100Boundary->LoadGain(n_boresight, n_epol, n_arrival);
+
                   for (int i = 0; i < NFREQ; i++) { //here needs to be modified
 
 //term_LPA=vmmhz[i]*FREQ_BIN*0.5*GaintoHeight(gainv,freq[i]*1.E6)*
@@ -3487,6 +3492,9 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 
       else if (AntType[WhichMirrorAntenna]==4)//don't bother loading if not using antenna type
         Create50->LoadGain(n_boresight_mirror, n_epol_mirror, n_arrival_mirror);
+
+      else if (AntType[WhichMirrorAntenna]==5)//don't bother loading if not using antenna type
+        Create100Boundary->LoadGain(n_boresight_mirror, n_epol_mirror, n_arrival_mirror);
 
 
                   for (int i = 0; i < NFREQ; i++) {

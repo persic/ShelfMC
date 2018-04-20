@@ -1,6 +1,6 @@
 # make file to compile and link a test program that uses the verbmenu library
 
-CCFILE       = shelfmc_stripped.cc  functions.cc antennamodel_lpda.cc antennamodel_ara.cc tinyxml2.cpp
+CCFILE       = shelfmc_stripped.cc  functions.cc antennamodel_lpda.cc antennamodel_lpdaZ.cc antennamodel_ara.cc tinyxml2.cpp
 
 # Define filename suffixes
 ObjSuf        = .o
@@ -11,17 +11,17 @@ DllSuf        = .so
 OutPutOpt     = -o
 
 # Define the compile and link commands
-CXX           = g++ 
+CXX           = g++
 CXXFLAGS      = -c -g -O2 -o $(OBJ) -Wall -fPIC -I`${ROOTSYS}/bin/root-config --incdir`
-LD            = g++ 
-LDFLAGS       = -O 
+LD            = g++
+LDFLAGS       = -O
 
 # Define root libraries
-#ROOTLIBS      = -L$(ROOTSYS)/lib 
-ROOTLIBS      = `${ROOTSYS}/bin/root-config --libs` 
+#ROOTLIBS      = -L$(ROOTSYS)/lib
+ROOTLIBS      = `${ROOTSYS}/bin/root-config --libs`
 
-# Define all my libraries	
-LIBS          = $(ROOTLIBS) 
+# Define all my libraries
+LIBS          = $(ROOTLIBS)
 
 # Define shortcuts for compiling and linking
 COMPILE = $(CXX) $(CXXFLAGS) $(SCRATCH)
@@ -33,7 +33,7 @@ OBJ       = shelfmc_stripped.obj
 SRC       = $(CCFILE)
 EXE       = shelfmc_stripped.exe
 SCRATCH   = tmp_stripped.cc
-INC       = shelfmc_stripped.inc 
+INC       = shelfmc_stripped.inc
 
 all:            $(EXE)
 
@@ -52,12 +52,5 @@ clean:
 
 .SUFFIXES: .$(SrcSuf)
 
-.$(SrcSuf).$(ObjSuf):	
-	$(CXX) $(CXXFLAGS) -c $<	
-
-
-
-
-
-
-
+.$(SrcSuf).$(ObjSuf):
+	$(CXX) $(CXXFLAGS) -c $<
