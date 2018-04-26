@@ -173,13 +173,13 @@ void LPDAZ::LoadGain(  double* n_boresight,
 
       eplane.RotateZ(-1*azi_orientation * TMath::Pi() / 180.);
       eplane.RotateY(-1*zen_orientation * TMath::Pi() / 180.);
-      double additional_rotation = eplane.Theta();
+      double additional_rotation = eplane.Phi();
 
       TVector3* v = GetVector(zenith, azimuth);
 
       v->RotateZ(-1*azi_orientation * TMath::Pi() / 180.);
       v->RotateY(-1*zen_orientation * TMath::Pi() / 180.);
-      v->RotateX(additional_rotation-TMath::Pi()/2.);
+      v->RotateZ(TMath::Pi()/2.-additional_rotation);
 
       AntennaAngles ant_angles = Cartesian2WPLD(v);
 
