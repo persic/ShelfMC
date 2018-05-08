@@ -2,15 +2,45 @@ import sys, os
 import xml.etree.ElementTree as ET
 import numpy as np
 
-def CartFromPolar(r, theta, phi):
-    x=r*np.sin(theta)*np.cos(phi)
-    y=r*np.sin(theta)*np.sin(phi)
-    z=r*np.cos(theta)
+def indent(elem, level=0):
+    indentStr = "    "
+    i = "\n" + level*indentStr
+    if len(elem):
+        if not elem.text or not elem.text.strip():
+            elem.text = i + indentStr
+        if not elem.tail or not elem.tail.strip():
+            elem.tail = i
+        for elem in elem:
+            indent(elem, level+1)
+        if not elem.tail or not elem.tail.strip():
+            elem.tail = i
+    else:
+        if level and (not elem.tail or not elem.tail.strip()):
+            elem.tail = i
+
+#Apparently this is the wrong convention
+#def CartFromPolar(r, theta, phi):
+#    x=r*np.sin(theta)*np.cos(phi)
+#    y=r*np.sin(theta)*np.sin(phi)
+#    z=r*np.cos(theta)
+#    return x,y,z
+#
+#def PolarFromCart(x,y,z):
+#    r = np.linalg.norm([x,y,z])
+#    theta = np.arccos(z/r)
+#    phi = np.arctan2(y,x)
+#    return r,theta,phi
+
+#Antenna positions from ARASim uses the convention -pi/2<Theta<pi/2
+def CartFromPolarPosNu(r, theta, phi):
+    x=r*np.cos(theta)*np.cos(phi)
+    y=r*np.cos(theta)*np.sin(phi)
+    z=r*np.sin(theta)
     return x,y,z
 
-def PolarFromCart(x,y,z):
+def PolarFromCartPosNu(x,y,z):
     r = np.linalg.norm([x,y,z])
-    theta = np.arccos(z/r)
+    theta = np.arcsin(z/r)
     phi = np.arctan2(y,x)
     return r,theta,phi
 
@@ -38,6 +68,10 @@ class EventProps:
     'cc':0,
     'nc':1
     }
+    AntiMap = {
+    'nu':0,
+    'nubar':1
+    }
 
     def __init__(self,Num=None,Exponent=None,Flavor=None,Inelasticity=None,\
     Current=None,X=None,Y=None,Z=None,RPos=None,ThetaPos=None,PhiPos=None,
@@ -61,14 +95,14 @@ class EventProps:
 
     def UpdateXYZ(self):
         if (not self._XYZUpToDate) and self._RThetaPhiUpToDate:
-            self._X, self._Y, self._Z = CartFromPolar(self._RPos,self._ThetaPos,self._PhiPos)
+            self._X, self._Y, self._Z = CartFromPolarPosNu(self._RPos,self._ThetaPos,self._PhiPos)
             self._XYZUpToDate = True
         elif (not self._XYZUpToDate) and (not self._RThetaPhiUpToDate):
             print('WARNING: UpdateXYZ Coordinates Never Set')
 
     def UpdateRThetaPhi(self):
         if (not self._RThetaPhiUpToDate) and self._XYZUpToDate:
-            self._RPos, self._ThetaPos, self._PhiPos, = PolarFromCart(self._RPos,self._ThetaPos,self._PhiPos)
+            self._RPos, self._ThetaPos, self._PhiPos, = PolarFromCartPosNu(self._RPos,self._ThetaPos,self._PhiPos)
             self._RThetaPhiUpToDate = True
         elif (not self._XYZUpToDate) and (not self._RThetaPhiUpToDate):
             print('WARNING: UpdateRThetaPhi Coordinates Never Set')
@@ -108,7 +142,7 @@ class EventProps:
         if self._XYZUpToDate:
             return self._X, self._Y, self._Z
         elif self._RThetaPhiUpToDate:
-            self._X, self._Y, self._Z = CartFromPolar(self._RPos,self._ThetaPos,self._PhiPos)
+            self._X, self._Y, self._Z = CartFromPolarPosNu(self._RPos,self._ThetaPos,self._PhiPos)
             self._XYZUpToDate=True
             return self._X, self._Y, self._Z
         else:
@@ -118,7 +152,7 @@ class EventProps:
         if self._RThetaPhiUpToDate:
             return self._RPos, self._ThetaPos, self._PhiPos
         elif self._XYZUpToDate:
-            self._RPos, self._ThetaPos, self._PhiPos = PolarFromCart(self._X,self._Y,self._Z)
+            self._RPos, self._ThetaPos, self._PhiPos = PolarFromCartPosNu(self._X,self._Y,self._Z)
             self._RThetaPhiUpToDate = True
             return self._RPos, self._ThetaPos, self._PhiPos
         else:
@@ -128,11 +162,17 @@ class EventProps:
         return self._ThetaDir
     def GetPhiDir(self):
         return self._PhiDir
-    def GetNuNuBar(self):
+    def GetNuNuBarSting(self):
         return self._NuNuBar
+    def GetNuNuBarInt(self):
+        if self._NuNuBar in self.AntiMap:
+            return self.AntiMap[self._NuNuBar]
+        else:
+            print('Invalid nu/nubar String in Event {}'.format(self._Num))
+            return None
 
     def SetNum(self,Num):
-        self._Num = Num
+        self._Num = int(Num)
     def SetExponent(self,Exponent):
         self._Exponent = Exponent
     def SetFlavorString(self,Flavor):
@@ -190,6 +230,19 @@ class EventProps:
         self._PhiDir = PhiDir
     def SetNuNuBar(self,NuNuBar):
         self._NuNuBar = NuNuBar
+    def SetNuNuBarString(self,NuNuBar):
+        if NuNuBar in self.AntiMap:
+            self._NuNuBar = NuNuBar
+        else:
+            print('Invalid nu/nubar string')
+    def SetNuNuBarInt(self,NuNuBarInt):
+        InMap = False
+        for NuNuBarString, Int in self.AntiMap.iteritems():
+            if Int == NuNuBarInt:
+                InMap = True
+                self._NuNuBar = NuNuBarString
+        if InMap==False:
+            print('Invalid current id')
 
 def ReadEventListXMLToListObject(infn):
     tree = ET.parse(infn)
@@ -199,7 +252,8 @@ def ReadEventListXMLToListObject(infn):
         for i, Event in enumerate(List.iter('Event')):
 
             E = EventProps()
-            E.SetNum(i)
+            EvID = int(Event.find('EvID').text)
+            E.SetNum(EvID)
 
             Exponent = float(Event.find('Exponent').text)
             E.SetExponent(Exponent)
@@ -247,7 +301,7 @@ def ReadEventListARASimToListObject(infn):
         E.SetExponent(Exponent)
         E.SetFlavorInt(FlavorInt)
         E.SetCurrentInt(CurrentInt)
-        E.SetNuNuBar(NuNuBar)
+        E.SetNuNuBarInt(NuNuBar)
         E.SetRPos(RPos)
         E.SetThetaPos(ThetaPos)
         E.SetPhiPos(PhiPos)
@@ -270,10 +324,10 @@ def WriteARASimList(outfn,Events,Origin=[0,0,2700.]):
         E.ShiftOrigin(Origin)
         Num = E.GetNum()
         FlavorInt = E.GetFlavorInt()
-        if E.GetNuNuBar() == None:
+        if E.GetNuNuBarSting() == None:
             NuNuBar = 0
         else:
-            NuNuBar = E.GetNuNuBar()
+            NuNuBar = E.GetNuNuBarInt()
         Exponent = E.GetExponent()
         CurrentInt = E.GetCurrentInt()
         RPos, ThetaPos, PhiPos = E.GetRThetaPhi()
@@ -297,10 +351,10 @@ def ARASimListArray(Events,Origin=[0,0,0.0]):
         E.ShiftOrigin(Origin)
         Num = E.GetNum()
         FlavorInt = E.GetFlavorInt()
-        if E.GetNuNuBar() == None:
+        if E.GetNuNuBarString() == None:
             NuNuBar = 0
         else:
-            NuNuBar = E.GetNuNuBar()
+            NuNuBar = E.GetNuNuBarInt()
         Exponent = E.GetExponent()
         CurrentInt = E.GetCurrentInt()
         RPos, ThetaPos, PhiPos = E.GetRThetaPhi()
@@ -323,7 +377,7 @@ def WriteShelfMCXMLList(outFN,Events,Origin=[0,0,-2700]):
 
         EvID = E.GetNum()
         EvIDElement = ET.SubElement(EventElemnt,'EvID')
-        EvIDElement.text = '{}'.format(EvID)
+        EvIDElement.text = '{:d}'.format(int(EvID))
 
         Exponent = E.GetExponent()
         ExponentElement = ET.SubElement(EventElemnt,'Exponent')
@@ -359,8 +413,42 @@ def WriteShelfMCXMLList(outFN,Events,Origin=[0,0,-2700]):
         PhiDirElement = ET.SubElement(EventElemnt,'PhiDir')
         PhiDirElement.text = '{}'.format(PhiDir)
 
+    indent(EventList)
     Tree = ET.ElementTree(element=EventList)
     Tree.write(outFN)
+
+def WriteNuRadioMCimList(outfn,Events,Origin=[0,0,0]):
+    NumEvents = len(Events)
+    Version = "0.1"
+    FlavorMap = {
+    'nue':'e',
+    'numu':'mu',
+    'nutau':'tau'
+    }
+    header = 'VERSION={}'.format(Version)
+
+    typeFormat = ['%i','%s','%s','%e','%s','%f','%f','%f','%f','%f','%f']
+
+    OutArray = []
+    for E in Events:
+        E.ShiftOrigin(Origin)
+        Num = E.GetNum()
+        FlavorString = FlavorMap[E.GetFlavorString()]
+        if E.GetNuNuBarSting() == None:
+            NuNuBar = 'nu'
+        else:
+            NuNuBar = E.GetNuNuBarSting()
+        Exponent = E.GetExponent()
+        E = 10**Exponent
+        CurrentString = E.GetCurrentString()
+        X, Y, Z = E.GetXYZ()
+        ThetaDir = E.GetThetaDir()
+        PhiDir = E.GetPhiDir()
+        Elasticity = E.GetInelasticity()
+
+        OutArray.append((Num,FlavorInt,NuNuBar,Exponent,CurrentInt,RPos,ThetaPos,PhiPos,ThetaDir,PhiDir,Elasticity))
+    OutArray = np.array(OutArray)
+    np.savetxt(outfn,OutArray,header=header,fmt=typeFormat)
 
 def makeRandomEventList(N, Exp, RhoMax = 4000.0, IceThick=2700.0, nunubar = 1):
     """Creates Random neutrino vertices in ShelfMC's Coordinate system, with the origin at the bottom of the ice. """
@@ -405,5 +493,5 @@ if __name__ == '__main__':
     print('reading in {}'.format(out1))
     Events = ReadEventListARASimToListObject(out1)
 
-    print('converting to ShelfMC format and writing to {}'.format(out1))
+    print('converting to ShelfMC format and writing to {}'.format(out2))
     WriteShelfMCXMLList(out2,Events)

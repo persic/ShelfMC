@@ -18,7 +18,7 @@ def CalcVeffMutiLog(infn,UseWeights=True,Tname="nt"):
 		WtNuE=ent.wtNuE
 		WtNuMu=ent.wtNuMu
 		WtNuTau=ent.wtNuTau
-		WtAve=(WtNuE+WtNuMu+WtNuTau)/3.0
+		WtAve=(WtNuE+WtNuMu+WtNuTau) #This should be the total weighted number of neutrinos
 		if UseWeights==False:
 			nNuEtrg = ent.nNuEtrg
 			nNuMutrg = ent.nNuMutrg
@@ -123,11 +123,16 @@ def GetColumn(DataArray,name):
 	Column=DataArray[:,i]
 	return Column
 
-def RatiosWithErrors(Numerator,Denominator,nError,dError):
+def RatiosWithErrors_Derp(Numerator,Denominator,nError,dError):
 	Ratio=Numerator/Denominator
 	RatioErrHi=(Numerator+nError)/(Denominator-dError) - Ratio
 	RatioErrLo=Ratio - (Numerator-nError)/(Denominator+dError)
 	return Ratio, RatioErrHi, RatioErrLo
+
+def RatiosWithErrors(Numerator,Denominator,nError,dError):
+	Ratio=Numerator/Denominator
+	RatioErr=Ratio*np.sqrt(np.square(nError/Numerator) + np.square(dError/Denominator))
+	return Ratio, RatioErr
 
 def GetAllColumns(DataArray):
 	E=GetColumn(DataArray,'E')

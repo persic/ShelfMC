@@ -221,11 +221,10 @@ void GetAttenlength(double* posnu, double& attenlength_up, double& attenlength_d
          dx = 1.e-5;
       dx2 = 0.5 * dx;
 
-      for (bin = 0; bin < (round)((effectivemaxdepth - effectivedepth) / dx); bin++)
-	{
-	  sum_down += dx * AttenLengthAtDepth(dx * bin + dx2 + effectivedepth); //down to the ice bottom
-	 xtot += dx;
-	}
+      for (bin = 0; bin < (round)((effectivemaxdepth - effectivedepth) / dx); bin++){
+        	sum_down += dx * AttenLengthAtDepth(dx * bin + dx2 + effectivedepth); //down to the ice bottom
+        	xtot += dx;
+	       }
 
 
       dx = effectivemaxdepth * 0.005;
@@ -233,17 +232,13 @@ void GetAttenlength(double* posnu, double& attenlength_up, double& attenlength_d
          dx = 1.e-5;
       dx2 = 0.5 * dx;
 
-      for (bin = 0; bin < (round)((effectivemaxdepth) / dx); bin++)
+      for (bin = 0; bin < (round)((effectivemaxdepth) / dx); bin++){
+	       sum_down += dx * AttenLengthAtDepth(dx * bin + dx2); //upward to the surface
+	       xtot += dx;
+        }
 
-      {
-	sum_down += dx * AttenLengthAtDepth(dx * bin + dx2); //upward to the surface
-	 xtot += dx;
-      }
-      attenlength_down = sum_down / (2 * effectivemaxdepth - effectivedepth);
       //cout << "upward: xtot = " << xtot << endl;
       //cout << "upward: 2*effectivemaxdepth - effectivedepth = " << (2 * effectivemaxdepth - effectivedepth) << endl<<endl;
-
-      attenlength_down *= ATTEN_FACTOR;
 
       if (effectivedepth < 1.e-1)
          effectivedepth = 1.e-1;
@@ -254,10 +249,9 @@ void GetAttenlength(double* posnu, double& attenlength_up, double& attenlength_d
       dx2 = dx / 2.;
 
       for (bin = 0; bin < (round)(effectivedepth / dx); bin++) {
-	sum_up += dx * AttenLengthAtDepth(dx * bin + dx2);
+	       sum_up += dx * AttenLengthAtDepth(dx * bin + dx2);
       }
       attenlength_up = sum_up / effectivedepth;
-
       attenlength_up *= ATTEN_FACTOR;
 
    }

@@ -10,6 +10,12 @@ outfn = sys.argv[2]
 Fin = ROOT.TFile(infn)
 PAM = Fin.Get("PAM")
 
+ShelfMCToPDGParticleConvert = {
+    1:12,
+    2:14,
+    3:16
+    }
+
 ParamList = {'evtNum':'ievt',
             'log10E':'Energy',
             'flavor':'flavor',
@@ -24,7 +30,7 @@ ParamList = {'evtNum':'ievt',
             'coneAngle':'changle',
             'n_pol':'Fresnel_Pol_D',
             'freq':'freq_my',
-            'EField':'vmmhz_my',
+#            'EField':'vmmhz_my',
             'vMaxTrig':'volte_allAT_mymax',
             'weight':'weight'
             }

@@ -9,6 +9,7 @@ Array = np.load(infn)
 X = Array['xyz'][:,0]
 Y = Array['xyz'][:,1]
 Z = Array['xyz'][:,2]
+polZ = Array['n_pol'][:,2]
 Rho = np.sqrt(X*X+Y*Y)
 weight = Array['weight']
 Exp = Array['log10E']
@@ -43,5 +44,10 @@ fig5, ax5 = plt.subplots()
 fig5.suptitle('Emission Angle')
 ax5.hist(Array['viewangle']-Array['coneAngle'],weights=weight,bins=60)
 ax5.set_xlabel('viewaAngle-coneAngle')
+
+fig6, ax6 = plt.subplots()
+fig6.suptitle('Vertical Polarization')
+ax6.hist(polZ,weights=weight,bins=np.linspace(0,1,60))
+ax6.set_xlabel('cos(theta_pol)')
 
 plt.show()
