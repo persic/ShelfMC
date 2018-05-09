@@ -141,6 +141,8 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
    cout << "Calculating the Shadow Zone...\n";
    CalcShadowEdge();
    cout << "Shadow Zone calculated\n\n";
+   double RangeToBottom = GetRange(0);
+   cout << "Range to Bottom = " << RangeToBottom << "\n\n";
    //
    //ATTEN_UP=(double)atof(argv[1]);
    //REFLECT_RATE=(double)atof(argv[7]);
@@ -1514,7 +1516,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                  hy3_mirror = 0;
 
              //KD adding shadowing cut only for reflected
-                 hy3_mirror = (sqrt((posnu[0] - MirrorATCoordinate[0]) * (posnu[0] - MirrorATCoordinate[0]) + (posnu[1] -  MirrorATCoordinate[1]) * (posnu[1] - MirrorATCoordinate[1])) - (GetRange(-posnu[2]) + 20.4 ));
+                 hy3_mirror = (sqrt((posnu[0] - MirrorATCoordinate[0]) * (posnu[0] - MirrorATCoordinate[0]) + (posnu[1] -  MirrorATCoordinate[1]) * (posnu[1] - MirrorATCoordinate[1])) - (2.0*RangeToBottom - GetRange(posnu[2]) + 20.4 ));
 
                  if (hy3_mirror > 0){
                         shadowed_mirror = true;
@@ -2948,7 +2950,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                hy3_mirror = 0;
                if (FIRN) {
                //KD adding shadowing cut only for reflected
-                   hy3_mirror = (sqrt((posnu[0] - MirrorATCoordinate[0]) * (posnu[0] - MirrorATCoordinate[0]) + (posnu[1] -  MirrorATCoordinate[1]) * (posnu[1] - MirrorATCoordinate[1])) - (GetRange(-posnu[2]) + 20.4 ));
+                   hy3_mirror = (sqrt((posnu[0] - MirrorATCoordinate[0]) * (posnu[0] - MirrorATCoordinate[0]) + (posnu[1] -  MirrorATCoordinate[1]) * (posnu[1] - MirrorATCoordinate[1])) - (2.0*RangeToBottom - GetRange(posnu[2]) + 20.4 ));
 
                    if (hy3_mirror > 0){
                           shadowed_mirror = true;

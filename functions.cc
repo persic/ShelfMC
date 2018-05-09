@@ -235,8 +235,9 @@ void GetAttenlength(double* posnu, double& attenlength_up, double& attenlength_d
       for (bin = 0; bin < (round)((effectivemaxdepth) / dx); bin++){
 	       sum_down += dx * AttenLengthAtDepth(dx * bin + dx2); //upward to the surface
 	       xtot += dx;
-        }
-
+       }
+      attenlength_down = sum_down / (2 * effectivemaxdepth - effectivedepth);
+      attenlength_down *= ATTEN_FACTOR;
       //cout << "upward: xtot = " << xtot << endl;
       //cout << "upward: 2*effectivemaxdepth - effectivedepth = " << (2 * effectivemaxdepth - effectivedepth) << endl<<endl;
 
