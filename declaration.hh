@@ -106,7 +106,7 @@ const double bwslice_width[4] = {130.e6, 160.e6, 250.e6, 370.e6}; // 3 dB bandwi
 
 //parameters of dipole from Amy
 const double gain_dipole = 2.15;
-const double Z0 = 377.; //ohms, intrinsic impedance of free space(a pure resistance)
+const double Z0 = 119.99169*PI; //ohms, intrinsic impedance of free space(a pure resistance)
 const double Zr = 50.; //ohms,radation resistance
 
 //signals
@@ -199,6 +199,7 @@ double GetGainV(double freq);
 double GetGainH(double freq);
 double GaintoHeight(double gain, double freq);
 
+double GetHeffVect(int, double, double*, double*, double*, double*);
 double GetHeff(int, double, double*, double*, double*, double*);
 
 double GetN(double height);
@@ -207,6 +208,7 @@ double InterpolateLinear(double xtest, double x0, double y0, double x1, double x
 double GetRange(double height); //KD added 9/23/10
 void GetInteractionPoint(double* posnu);
 void GetPosnuBin(double* posnu, int& posnu_iRow, int& posnu_iCol);
+double AttenLengthAtDepth(double d);
 void GetAttenlength(double* posnu, double& attenlength_up, double& attenlength_down);
 void GetEntryPoint(double theta_nu, double* nnu, double* posnu, double* entry);
 

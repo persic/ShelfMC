@@ -25,10 +25,10 @@ LPDAZ::LPDAZ(char* filename)
     nt->SetBranchAddress("phis", &phis);
     nt->SetBranchAddress("frequencies", &frequencies);
     nt->SetBranchAddress("gains", &gains);
-    //    nt->SetBranchAddress("Re_phi", &Re_phi);
-    //    nt->SetBranchAddress("Im_phi", &Im_phi);
-    //    nt->SetBranchAddress("Re_theta", &Re_theta);
-    //    nt->SetBranchAddress("Im_theta", &Im_theta);
+    nt->SetBranchAddress("Re_phi", &Re_phi);
+    nt->SetBranchAddress("Im_phi", &Im_phi);
+    nt->SetBranchAddress("Re_theta", &Re_theta);
+    nt->SetBranchAddress("Im_theta", &Im_theta);
 
     nt->BuildIndex("thetas", "phis");
 
@@ -91,6 +91,22 @@ TVector3*  LPDAZ::GetVector(double zenith,double azimuth){
 
     return v;
     }
+
+TVector3* LPDAZ::GetPhiHat(TVector3* v){
+    double theta = v->Theta();
+    double phi = v->Phi();
+    TVector3* pHat = new TVector3(-1.0*TMath::Sin(phi),TMath::Cos(phi),0.);
+
+    return pHat;
+}
+
+TVector3* LPDAZ::GetThetaHat(TVector3* v){
+    double theta = v->Theta();
+    double phi = v->Phi();
+    TVector3* tHat = new TVector3(TMath::Cos(theta)*TMath::Cos(phi),TMath::Cos(theta)*TMath::Sin(phi),-1.0*TMath::Sin(theta));
+
+    return tHat;
+}
 
 LPDAZ::AntennaAngles LPDAZ::Cartesian2WPLD(TVector3* v){
         /// Conversion from Cartesian to WiPLD
@@ -156,9 +172,31 @@ double LPDAZ::GetEffectiveHeight(double gain,
         return A_e;
     }
 
-void LPDAZ::LoadGain(  double* n_boresight,
-                      double* n_eplane,
-                      double* n_arrivaldir){
+double LPDAZ::GetEffectiveLength(double Z,
+                                double wavelength,
+                                double I_phi,
+                                double I_theta,
+                                double* n_boresight,
+                                double* n_eplane,
+                                double* n_arrivaldir,
+                                double* n_pol,
+                                double Z_0=119.9169*TMath::Pi()){
+
+        TVector3* WD_arrivaldir = AlignVector(n_boresight,n_eplane,n_arrivaldir);
+        TVector3* WD_pol = AlignVector(n_boresight,n_eplane,n_pol);
+
+        TVector3* pHat = GetPhiHat(WD_arrivaldir);
+        TVector3* tHat = GetThetaHat(WD_arrivaldir);
+
+        double l_phi = ( 2*wavelength * Z* I_phi) / (Z_0);
+        double l_theta = ( 2*wavelength * Z* I_theta) / (Z_0);
+
+        return l_phi*TMath::Abs(WD_pol->Dot(*pHat)) + l_theta*TMath::Abs(WD_pol->Dot(*tHat));
+    }
+
+TVector3* LPDAZ::AlignVector(double* n_boresight,
+                            double* n_eplane,
+                            double* n_arrivaldir){
 
       TVector3 boresight(n_boresight[0],n_boresight[1],n_boresight[2]);
       TVector3 eplane(n_eplane[0],n_eplane[1],n_eplane[2]);
@@ -180,6 +218,15 @@ void LPDAZ::LoadGain(  double* n_boresight,
       v->RotateZ(-1*azi_orientation * TMath::Pi() / 180.);
       v->RotateY(-1*zen_orientation * TMath::Pi() / 180.);
       v->RotateZ(TMath::Pi()/2.-additional_rotation);
+
+      return v;
+    }
+
+void LPDAZ::LoadGain(  double* n_boresight,
+                      double* n_eplane,
+                      double* n_arrivaldir){
+
+      TVector3* v = AlignVector(n_boresight,n_eplane,n_arrivaldir);
 
       AntennaAngles ant_angles = Cartesian2WPLD(v);
 

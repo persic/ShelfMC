@@ -32,10 +32,10 @@ class LPDA {
         Float_t phis[1];
         Float_t frequencies[219];
         Double_t gains[219];
-	//        Double_t Re_phi[219];
-	//        Double_t Im_phi[219];
-	//        Double_t Re_theta[219];
-	//        Double_t Im_theta[219];
+	      Double_t Re_phi[219];
+	      Double_t Im_phi[219];
+	      Double_t Re_theta[219];
+	      Double_t Im_theta[219];
 
         // ZTree
         Int_t NN[1];
@@ -52,6 +52,8 @@ class LPDA {
         void LoadData(double theta_d, double phi_d);
         void CheckBoundaries(double &theta_d, double &phi_d);
         TVector3* GetVector(double zenith,double azimuth);
+        TVector3* GetPhiHat(TVector3* v);
+        TVector3* GetThetaHat(TVector3* v);
 
         struct AntennaAngles {
             double theta;
@@ -77,6 +79,20 @@ class LPDA {
                                 double ant_Z,
                                 double c,
                                 double Z_0);
+
+        double GetEffectiveLength(double Z,
+                                        double wavelength,
+                                        double I_phi,
+                                        double I_theta,
+                                        double* n_boresight,
+                                        double* n_eplane,
+                                        double* n_arrivaldir,
+                                        double* n_pol,
+                                        double Z_0);
+
+        TVector3* AlignVector(double* n_boresight,
+                                    double* n_eplane,
+                                    double* n_arrivaldir);
 
         virtual ~LPDA(); //destructor
 };

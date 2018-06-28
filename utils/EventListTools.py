@@ -1,5 +1,7 @@
 import sys, os
 import xml.etree.ElementTree as ET
+import ROOT
+import root_numpy
 import numpy as np
 
 def indent(elem, level=0):
@@ -310,6 +312,80 @@ def ReadEventListARASimToListObject(infn):
         E.SetInelasticity(Inelasticity)
 
         Events.append(E)
+    return Events
+
+def ReadShelfMCRootToListObject(infn,keepNums=False):
+    Events=[]
+
+    Fin = ROOT.TFile(infn)
+    PAM = Fin.Get("PAM")
+
+    ParamList = {'evtNum':'ievt',
+                'log10E':'Energy',
+                'flavor':'flavor',
+                'current':'mycurrent',
+                'xyz':'Posi_Int',
+                'inelasticity':'y',
+                'nnu_theta':'theta_nu',
+                'nnu_phi':'phi_nu',
+                }
+
+    ParameterArray =  root_numpy.tree2array(PAM,ParamList.values())
+    #ParameterArray.dtype.names = tuple(ParamList.keys())
+
+    for (Num, Exponent, FlavorInt, CurrentInt, Posnu, Inelasticity, ThetaDir, PhiDir) in ParameterArray:
+        E = EventProps()
+        if keepNums:
+            E.SetNum(Num)
+        else:
+            E.SetNum(i+1)
+        E.SetExponent(Exponent)
+        E.SetFlavorInt(FlavorInt)
+        E.SetCurrentInt(CurrentInt-1)
+        E.SetRPos(RPos)
+        E.SetX(Posnu[0])
+        E.SetY(Posnu[1])
+        E.SetZ(Posnu[2])
+        E.SetThetaDir(np.deg2rad(ThetaDir))
+        E.SetPhiDir(np.deg2rad(PhiDir))
+        E.SetInelasticity(Inelasticity)
+        Events.append(E)
+
+    return Events
+
+def ReadShelfMCNumpyToListObject(infn,keepNums=False):
+    Events=[]
+
+    ParamList = {'evtNum':'ievt',
+                'log10E':'Energy',
+                'flavor':'flavor',
+                'current':'mycurrent',
+                'xyz':'Posi_Int',
+                'inelasticity':'y',
+                'nnu_theta':'theta_nu',
+                'nnu_phi':'phi_nu',
+                }
+
+    ParameterArray =  np.load(infn)
+    #ParameterArray.dtype.names = tuple(ParamList.keys())
+
+    for i, Evt in enumerate(ParameterArray):
+        E = EventProps()
+        if keepNums:
+            E.SetNum(Evt['evtNum'])
+        else:
+            E.SetNum(i+1)
+        E.SetExponent(Evt['log10E'])
+        E.SetFlavorInt(Evt['flavor'])
+        E.SetCurrentInt(Evt['current']-1)
+        E.SetX(Evt['xyz'][0])
+        E.SetY(Evt['xyz'][1])
+        E.SetZ(Evt['xyz'][2])
+        E.SetThetaDir(np.deg2rad(Evt['nnu_theta']))
+        E.SetPhiDir(np.deg2rad(Evt['nnu_phi']))
+        E.SetInelasticity(Evt['inelasticity'])
+        Events.append(E)
+
     return Events
 
 def WriteARASimList(outfn,Events,Origin=[0,0,2700.]):

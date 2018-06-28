@@ -52,6 +52,8 @@ class LPDAZ {
         void LoadData(double theta_d, double phi_d);
         void CheckBoundaries(double &theta_d, double &phi_d);
         TVector3* GetVector(double zenith,double azimuth);
+        TVector3* GetPhiHat(TVector3* v);
+        TVector3* GetThetaHat(TVector3* v);
 
         struct AntennaAngles {
             double theta;
@@ -77,6 +79,20 @@ class LPDAZ {
                                 double ant_Z,
                                 double c,
                                 double Z_0);
+
+        double GetEffectiveLength(double Z,
+                                        double wavelength,
+                                        double I_phi,
+                                        double I_theta,
+                                        double* n_boresight,
+                                        double* n_eplane,
+                                        double* n_arrivaldir,
+                                        double* n_pol,
+                                        double Z_0);
+
+        TVector3* AlignVector(double* n_boresight,
+                                  double* n_eplane,
+                                  double* n_arrivaldir);
 
         virtual ~LPDAZ(); //destructor
 };

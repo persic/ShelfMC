@@ -215,6 +215,8 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 
       Float_t viewangle_triggered;  //KD: vangle variable
       Float_t viewangle_triggered_mirror; //KD: mirror variable
+      Float_t viewangle_triggered_LPA[100]; //viewangle for each antenna
+      Float_t viewangle_triggered_LPA_mirror[100]; //viewangle for each mirror antenna
       Float_t attenfactor;
       Float_t attenfactor_mirror;
       Float_t dis;
@@ -468,6 +470,8 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
    //KD: my adding new variables here
    tree1->Branch("viewangle_triggered", &b1.viewangle_triggered, "viewangle_triggered/F");
    tree1->Branch("viewangle_triggered_mirror", &b1.viewangle_triggered_mirror, "viewangle_triggered_mirror/F");
+   tree1->Branch("viewangle_triggered_LPA", &b1.viewangle_triggered_LPA, "viewangle_triggered_LPA[N_Ant_perST]/F");
+   tree1->Branch("viewangle_triggered_LPA_mirror", &b1.viewangle_triggered_LPA_mirror, "viewangle_triggered_LPA_mirror[N_Ant_perST]/F");
    tree1->Branch("attenfactor", &b1.attenfactor, "attenfactor/F");
    tree1->Branch("attenfactor_mirror", &b1.attenfactor_mirror, "attenfactor_mirror/F");
    tree1->Branch("dis", &b1.dis, "dis/F");
@@ -1268,7 +1272,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
       //neglecting upgoing neutrinos
       // continue;
       GetAttenlength(posnu, attenlength_up, attenlength_down);
-      // cout<<attenlength_up<<" "<<attenlength_down<<endl;
+      //cout<< "attenlength_up = " <<attenlength_up<<", attenlength_down = "<<attenlength_down<<endl;
 
       n1 = GetN(posnu[2]); //get the refraction index at the interaction point
       elpm = GetLPM(n1); //KD: probably shouldn't be n1 but apparently it gets overriden in GetSpread below anyway?
@@ -1880,10 +1884,10 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 	    for  (int i = 0; i < N_Ant_perST; i++) {
 	      AntType[i]=StationGeometry[i].Type;
 	      for (int j = 0; j<3; j++){
-		ATCoordinates8[i][j] = ATCoordinate[j] + StationGeometry[j].position[0];
-		Ant_n_epol[i][j]=StationGeometry[i].n_epol[j];
-		Ant_n_boresight[i][j]=StationGeometry[i].n_boresight[j];
-		  }
+      		ATCoordinates8[i][j] = ATCoordinate[j] + StationGeometry[i].position[j];
+      		Ant_n_epol[i][j]=StationGeometry[i].n_epol[j];
+      		Ant_n_boresight[i][j]=StationGeometry[i].n_boresight[j];
+		      }
 	    }
 
             //define some variables before going into the antenna loop of one station
@@ -2022,20 +2026,20 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                nsignal_atAT[2] = cos(theta2);
 
                if (FIRN) {
-
-                  if (posnu[2] >= (ICETHICK - FIRNDEPTH)) { //if direct events interact in the firn
+                 double nz = GetN(ATCoordinates8[WhichAntenna][2]);
+                  if (posnu[2] >= (ICETHICK - FIRNDEPTH)) { //if direct events interact in the firn (must be corrected for antenna position)
                      hy2 = hy1; //the distance from the interaction point to the antenna
                      hy1 = 0;
                   }
 
                   else { //if direct events interact in the ice
-                    double h1 = ICETHICK - FIRNDEPTH - posnu[2];
-                    double h2 = FIRNDEPTH;
+                    double h1 = ICETHICK - FIRNDEPTH - posnu[2]; // Thickness of the solid ice the signal must traverse
+                    double h2 = FIRNDEPTH + ATCoordinates8[WhichAntenna][2] - ICETHICK; // Thickness of the firn the signal must traverse (antennas must be in firn)
                     double deltax = sqrt(Square(posnu[0] - ATCoordinates8[WhichAntenna][0]) + Square(posnu[1] - ATCoordinates8[WhichAntenna][1]));
                     if (H_PROP && shadowed) {
                       deltax-=hy3;
                     }
-                    Refract(deltax,h1,h2,n1,n2,hy1,hy2,theta1,theta2);
+                    Refract(deltax,h1,h2,n1,nz,hy1,hy2,theta1,theta2);
                     if (H_PROP && shadowed) {
                       theta2=PI/2.0;
                     }
@@ -2412,8 +2416,12 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                      term_LPA = vmmhz[i] * FREQ_BIN * 0.5 * GaintoHeight(gainv, freq[i] * 1.E6) *
                                 sqrt((pow(e_component_LPA * exp(-2 * ALOG2 * (hitangle_e_LPA / flare[0][i]) * (hitangle_e_LPA / flare[0][i])), 2)  +   pow(e_component_LPA * exp(-2 * ALOG2 * (hitangle_h_LPA / flare[1][i]) * (hitangle_h_LPA / flare[1][i])), 2)) / 2);
 		    */
-		    if (FIRN)
-		      term_LPA = vmmhz[i] * FREQ_BIN * 0.5 * GetHeff(AntType[WhichAntenna], freq[i],n_boresight,n_epol, nsignal_atAT, n_pol);
+		    if (FIRN){
+          if (AntType[WhichAntenna]==2 || AntType[WhichAntenna]==4 || AntType[WhichAntenna]==5)
+		        term_LPA = vmmhz[i] * FREQ_BIN * 0.5 * GetHeffVect(AntType[WhichAntenna], freq[i],n_boresight,n_epol, nsignal_atAT, n_pol);
+          else
+            term_LPA = vmmhz[i] * FREQ_BIN * 0.5 * GetHeff(AntType[WhichAntenna], freq[i],n_boresight,n_epol, nsignal_atAT, n_pol);
+          }
 		    else
 		      term_LPA = vmmhz[i] * FREQ_BIN * 0.5 * GetHeff(AntType[WhichAntenna], freq[i],n_boresight,n_epol, nposnu2AT, n_pol);
 
@@ -2537,6 +2545,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 //b1.Emax_atposnu       = sum_vmmhz1m_unattened_max;
                b1.hitangle_e_LPA[WhichAntenna]     = hitangle_e_LPA * RAD2DEG;
                b1.hitangle_h_LPA[WhichAntenna]     = hitangle_h_LPA * RAD2DEG;
+               b1.viewangle_triggered_LPA[WhichAntenna] = viewangle * RAD2DEG;
                b1.theta_my_signalAT[WhichAntenna]  = theta2 * RAD2DEG;
                b1.phi_my_signalAT[WhichAntenna] = phi_nposnu2AT * RAD2DEG;
                b1.totaltime[WhichAntenna]    = abs_time;
@@ -2965,15 +2974,15 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                if (FIRN) {
 
                   //NOTE: order of firn calculation is reversed as compared to direct
-
+                  double nz_mirror = GetN(-MirrorATCoordinates8[WhichMirrorAntenna][2]);
                   if (posnu[2] < (ICETHICK - FIRNDEPTH)) { //interact in the ice
                     double h1_mirror = (ICETHICK - FIRNDEPTH) + posnu[2];
-                    double h2_mirror = FIRNDEPTH;
+                    double h2_mirror = FIRNDEPTH - MirrorATCoordinates8[WhichMirrorAntenna][2] - ICETHICK;
                     double deltax_mirror = sqrt(Square(posnu[0] - MirrorATCoordinates8[WhichMirrorAntenna][0]) + Square(posnu[1] - MirrorATCoordinates8[WhichMirrorAntenna][1]));
                     if (H_PROP && shadowed_mirror) {
                       deltax_mirror -= hy3_mirror;
                     }
-                    Refract(deltax_mirror,h1_mirror,h2_mirror,n1,n2,hy1_mirror,hy2_mirror,theta1_mirror,theta2_mirror);
+                    Refract(deltax_mirror,h1_mirror,h2_mirror,n1,nz_mirror,hy1_mirror,hy2_mirror,theta1_mirror,theta2_mirror);
                     if (H_PROP && shadowed_mirror) {
                       theta2_mirror=PI/2.0;
                     }
@@ -3106,12 +3115,12 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
 
                   else { //reflected events happen in the firn
                     double h1_mirror = 2 * (ICETHICK - FIRNDEPTH);
-                    double h2_mirror = FIRNDEPTH + (posnu[2] - (ICETHICK - FIRNDEPTH));
+                    double h2_mirror = (-MirrorATCoordinates8[WhichMirrorAntenna][2] - (ICETHICK - FIRNDEPTH)) + (posnu[2] - (ICETHICK - FIRNDEPTH));
                     double deltax_mirror = sqrt(Square(posnu[0] - MirrorATCoordinates8[WhichMirrorAntenna][0]) + Square(posnu[1] - MirrorATCoordinates8[WhichMirrorAntenna][1]));
                     if (H_PROP && shadowed_mirror) {
                       deltax_mirror -= hy3_mirror;
                     }
-                    Refract(deltax_mirror,h1_mirror,h2_mirror,NICE,NFIRN,hy1_mirror,hy2_mirror,theta1_mirror,theta2_mirror);
+                    Refract(deltax_mirror,h1_mirror,h2_mirror,n1,nz_mirror,hy1_mirror,hy2_mirror,theta1_mirror,theta2_mirror);
                     if (H_PROP && shadowed_mirror) {
                       theta2_mirror=PI/2.0;
                     }
@@ -3508,8 +3517,12 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                      term_LPA = vmmhz[i] * FREQ_BIN * 0.5 * GaintoHeight(gainv, freq[i] * 1.E6) *
                                 sqrt((pow(e_component_LPA * exp(-2 * ALOG2 * (hitangle_e_LPA / flare[0][i]) * (hitangle_e_LPA / flare[0][i])), 2)  +   pow(e_component_LPA * exp(-2 * ALOG2 * (hitangle_h_LPA / flare[1][i]) * (hitangle_h_LPA / flare[1][i])), 2)) / 2);
 */
-		    if (FIRN)
-		      term_LPA = vmmhz[i] * FREQ_BIN * 0.5 * GetHeff(AntType[WhichMirrorAntenna], freq[i],n_boresight_mirror,n_epol_mirror, nsignal_mirror_atAT, n_pol);
+		    if (FIRN){
+          if (AntType[WhichMirrorAntenna]==2 || AntType[WhichMirrorAntenna]==4 || AntType[WhichMirrorAntenna]==5)
+		        term_LPA = vmmhz[i] * FREQ_BIN * 0.5 * GetHeffVect(AntType[WhichMirrorAntenna], freq[i],n_boresight_mirror,n_epol_mirror, nsignal_mirror_atAT, n_pol);
+          else
+            term_LPA = vmmhz[i] * FREQ_BIN * 0.5 * GetHeff(AntType[WhichMirrorAntenna], freq[i],n_boresight_mirror,n_epol_mirror, nsignal_mirror_atAT, n_pol);
+          }
 		    else
 		      term_LPA = vmmhz[i] * FREQ_BIN * 0.5 * GetHeff(AntType[WhichMirrorAntenna], freq[i],n_boresight_mirror,n_epol_mirror, nposnu2MirrorAT, n_pol);
 
@@ -3598,6 +3611,7 @@ int main(int argc, char** argv) //MC IceShelf 09/01/2005
                b1.sum_vmmhz1m_unattened_mirror_max       = sum_vmmhz1m_unattened_mirror_max;
                b1.hitangle_e_LPA_mirror[WhichMirrorAntenna] = hitangle_e_LPA * RAD2DEG;
                b1.hitangle_h_LPA_mirror[WhichMirrorAntenna] = hitangle_h_LPA * RAD2DEG;
+               b1.viewangle_triggered_LPA_mirror[WhichMirrorAntenna] = viewangle_mirror * RAD2DEG;
                b1.theta_my_signalAT_mirror[WhichMirrorAntenna] = theta2_mirror * RAD2DEG;
                b1.phi_my_signalAT_mirror[WhichMirrorAntenna]   = phi_nposnu2MirrorAT * RAD2DEG;
                b1.totaltime_mirror[WhichMirrorAntenna]      = abs_time_mirror;

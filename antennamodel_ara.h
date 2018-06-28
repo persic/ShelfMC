@@ -15,17 +15,17 @@ class TChain;
 class ARA_Ant {
 
     private:
-    
+
         TChain* nt;
         TChain* ntt;
-    
+
     public:
-    
+
         ARA_Ant();
         char* filename;
 //         int nfreq; // Number of frequencies that tree was made with
         ARA_Ant(char* filename);
-        
+
         // AntTree
         Int_t N[1];
         Float_t thetas[1];
@@ -34,44 +34,58 @@ class ARA_Ant {
         Double_t gains[60];
         Double_t phases[60];
 
-        
+
         // ZTree
         Int_t NN[0];
         Double_t Re_Z[60];
-        
+
         double theta_d;
         double phi_d;
-        
+
         int theta_i;
         int phi_i;
         int n;
-        
+
         void LoadData(double theta_d, double phi_d);
         void CheckBoundaries(double &theta_d, double &phi_d);
-        TVector3* GetVector(double zenith,double azimuth); 
-        
+        TVector3* GetVector(double zenith,double azimuth);
+        TVector3* GetPhiHat(TVector3* v);
+        TVector3* GetThetaHat(TVector3* v);
+
         struct AntennaAngles {
             double theta;
             double phi;
             };
-            
-//         AntennaAngles GetThetaAndPhiFlexible(double zenith, 
-//                                              double azimuth, 
-//                                              double azi_orientation, 
+
+//         AntennaAngles GetThetaAndPhiFlexible(double zenith,
+//                                              double azimuth,
+//                                              double azi_orientation,
 //                                              double zen_orientation);
-        
+
         double InterpolateToSingleFrequency(double freq, int nfreq, float* frequencies, double* gains);
-//         
-        void LoadGain(double* n_dipole, 
-                        double* n_arrivaldir); 
-//                             
-        double GetEffectiveHeight( 
+//
+        void LoadGain(double* n_dipole,
+                        double* n_arrivaldir);
+//
+        double GetEffectiveHeight(
                                 double gain,
                                 double freq,
-                                double ant_Z, 
+                                double ant_Z,
                                 double c,
                                 double Z_0);
-        
+
+        double GetEffectiveLength(double Z,
+                                        double wavelength,
+                                        double I_phi,
+                                        double I_theta,
+                                        double* n_boresight,
+                                        double* n_arrivaldir,
+                                        double* n_pol,
+                                        double Z_0);
+
+        TVector3* AlignVector(double* n_boresight,
+                                    double* n_arrivaldir);
+
         virtual ~ARA_Ant(); //destructor
 };
 

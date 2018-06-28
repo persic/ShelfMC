@@ -17,6 +17,10 @@ void GetNuFlavor(string& nuflavor)
 void GetCurrent(string& current)
 {
    //CC or NC
+   //based on cross-section ratio from
+   //R. Gandhi, C. Quigg, M. H. Reno, and I. Sarcevic, “Neutrino interactions at ultrahigh energies,”
+   //Phys. Rev. D 58 no. 9, (Nov., 1998) 093009
+   //arXiv:hep-ph/9807264
    double temp = Rand3.Rndm();
    if (temp <= 0.7064)
       current = "cc";
@@ -1048,6 +1052,9 @@ double GetLPM(double X0DEPTH)
 
 
 double Gety()
+//Paremetrized based on
+//R. Gandhi, C. Quigg, M. H. Reno, and I. Sarcevic, “Ultrahigh-energy neutrino interactions,” hep-ph/9512364.
+//arXiv:hep-ph/9512364
 {
    float rnd;
    float x = 0;
@@ -1312,6 +1319,99 @@ double GaintoHeight(double gain, double freq)
    return 2.0*sqrt(gain / 4 / PI * C * C / (freq * freq) * Zr / Z0 * NICE);
 } //GaintoHeight
 
+double GetHeffVect(int AntType, double freq, double* n_boresight, double* n_epol, double* n_prop, double* n_pol){
+  double n_arrival[3];
+  double *p_arrival = n_arrival;
+  for (int i=1;i<3;i++){
+    n_arrival[i] = -n_prop[i];
+  }
+  if (AntType==2){//100MHz Create LPDA with Anna's Antenna Model Framework
+
+    int NC = Create100->N[0];
+
+    freq = freq/1.30; //since this antenna model is in the firn, frequencies should be shifted
+    double wavelength =C / (freq*1.E6) ;
+
+    double Re_Z = Create100->InterpolateToSingleFrequency(freq,  NC, Create100->frequencies, Create100->Re_Z);
+    double Im_Z = Create100->InterpolateToSingleFrequency(freq,  NC, Create100->frequencies, Create100->Im_Z);
+    double Re_phi = Create100->InterpolateToSingleFrequency(freq,  NC, Create100->frequencies, Create100->Re_phi);
+    double Im_phi = Create100->InterpolateToSingleFrequency(freq,  NC, Create100->frequencies, Create100->Im_phi);
+    double Re_theta = Create100->InterpolateToSingleFrequency(freq,  NC, Create100->frequencies, Create100->Re_theta);
+    double Im_theta = Create100->InterpolateToSingleFrequency(freq,  NC, Create100->frequencies, Create100->Im_theta);
+
+    double Za = sqrt(Re_Z*Re_Z + Im_Z*Im_Z);
+    double I_phi = sqrt(Re_phi*Re_phi + Im_phi*Im_phi);
+    double I_theta = sqrt(Re_theta*Re_theta + Im_theta*Im_theta);
+
+    double Heff = Create100->GetEffectiveLength(Za, wavelength, I_phi, I_theta, n_boresight, n_epol, p_arrival, n_pol, Z0);
+    return Heff;
+  }
+//  else if (AntType==3){//ARA Bicone dipole
+//
+//    int NC = ARA_Bicone->N[0];
+//    double wavelength =1.3 * C / (freq*1.E6) //Adjust wavelength for index of firn
+//
+//    double Re_Z = ARA_Bicone->InterpolateToSingleFrequency(freq,  NC, ARA_Bicone->frequencies, ARA_Bicone->Re_Z);
+//    double Im_Z = ARA_Bicone->InterpolateToSingleFrequency(freq,  NC, ARA_Bicone->frequencies, ARA_Bicone->Im_Z);
+//    double Re_phi = ARA_Bicone->InterpolateToSingleFrequency(freq,  NC, ARA_Bicone->frequencies, ARA_Bicone->Re_phi);
+//    double Im_phi = ARA_Bicone->InterpolateToSingleFrequency(freq,  NC, ARA_Bicone->frequencies, ARA_Bicone->Im_phi);
+//    double Re_theta = ARA_Bicone->InterpolateToSingleFrequency(freq,  NC, ARA_Bicone->frequencies, ARA_Bicone->Re_theta);
+//    double Im_theta = ARA_Bicone->InterpolateToSingleFrequency(freq,  NC, ARA_Bicone->frequencies, ARA_Bicone->Im_theta);
+//
+//    double Heff =  ARA_Bicone->GetEffectiveLength(Za, wavelength, I_phi, I_theta, n_epol, n_arrival, n_pol)
+//
+//    return Heff;
+//
+//  }
+  else if (AntType==4){//50MHz Create LPDA with Anna's Antenna Model Framework
+
+    int NC = Create50->N[0];
+
+    freq = freq/1.30; //since this antenna model is in the firn, frequencies should be shifted
+    double wavelength =C / (freq*1.E6) ;
+
+    double Re_Z = Create50->InterpolateToSingleFrequency(freq,  NC, Create50->frequencies, Create50->Re_Z);
+    double Im_Z = Create50->InterpolateToSingleFrequency(freq,  NC, Create50->frequencies, Create50->Im_Z);
+    double Re_phi = Create50->InterpolateToSingleFrequency(freq,  NC, Create50->frequencies, Create50->Re_phi);
+    double Im_phi = Create50->InterpolateToSingleFrequency(freq,  NC, Create50->frequencies, Create50->Im_phi);
+    double Re_theta = Create50->InterpolateToSingleFrequency(freq,  NC, Create50->frequencies, Create50->Re_theta);
+    double Im_theta = Create50->InterpolateToSingleFrequency(freq,  NC, Create50->frequencies, Create50->Im_theta);
+
+    double Za = sqrt(Re_Z*Re_Z + Im_Z*Im_Z);
+    double I_phi = sqrt(Re_phi*Re_phi + Im_phi*Im_phi);
+    double I_theta = sqrt(Re_theta*Re_theta + Im_theta*Im_theta);
+
+    double Heff = Create50->GetEffectiveLength(Za, wavelength, I_phi, I_theta, n_boresight, n_epol, p_arrival, n_pol,Z0);
+    return Heff;
+  }
+  else if (AntType==5){//100MHz Create LPDA In Firn with simulated boundary
+
+    int NC = Create100Boundary->N[0];
+
+    freq = freq/1.30; //since this antenna model is in the firn, frequencies should be shifted
+    double wavelength =C / (freq*1.E6) ;
+
+    double Re_Z = Create100Boundary->InterpolateToSingleFrequency(freq,  NC, Create100Boundary->frequencies, Create100Boundary->Re_Z);
+    double Im_Z = Create100Boundary->InterpolateToSingleFrequency(freq,  NC, Create100Boundary->frequencies, Create100Boundary->Im_Z);
+    double Re_phi = Create100Boundary->InterpolateToSingleFrequency(freq,  NC, Create100Boundary->frequencies, Create100Boundary->Re_phi);
+    double Im_phi = Create100Boundary->InterpolateToSingleFrequency(freq,  NC, Create100Boundary->frequencies, Create100Boundary->Im_phi);
+    double Re_theta = Create100Boundary->InterpolateToSingleFrequency(freq,  NC, Create100Boundary->frequencies, Create100Boundary->Re_theta);
+    double Im_theta = Create100Boundary->InterpolateToSingleFrequency(freq,  NC, Create100Boundary->frequencies, Create100Boundary->Im_theta);
+
+    double Za = sqrt(Re_Z*Re_Z + Im_Z*Im_Z);
+    double I_phi = sqrt(Re_phi*Re_phi + Im_phi*Im_phi);
+    double I_theta = sqrt(Re_theta*Re_theta + Im_theta*Im_theta);
+
+    double Heff = Create100Boundary->GetEffectiveLength(Za, wavelength, I_phi, I_theta, n_boresight, n_epol, p_arrival, n_pol,Z0);
+    return Heff;
+    }
+  else {
+    cout<<"invalid Antenna Type!"<<endl;
+    return -1;
+  }
+
+}
+
 double GetHeff(int AntType, double freq, double* n_boresight, double* n_epol, double* n_prop, double* n_pol)
 {
 
@@ -1561,6 +1661,11 @@ void GetFresnel(//const Vector &surface_normal,
 
 } //GetFresnel
 
+void GetThetaHatPhiHat(double * n_boresight, double* n_epol, double* n_prop, double& ThetaHat, double& PhiHat){
+
+
+
+}
 
 void GetHitAngle(double* n_boresight, double* n_epol, double* n_prop, double* n_pol, double& hitangle_e, double& hitangle_h, double& e_component,
                      double& h_component)
