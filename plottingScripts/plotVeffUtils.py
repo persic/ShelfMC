@@ -147,5 +147,5 @@ def GetAllColumns(DataArray):
 	return E, VeffAve, VeffNuE, VeffNuMu, VeffNuTau, VeffErrAve, VeffErrNuE, VeffErrNuMu, VeffErrNuTau
 
 def SaveCSV(DataArray,outfn):
-	names = ['E', 'VeffAve', 'VeffNuE', 'VeffNuMu', 'VeffNuTau', 'VeffErrAve', 'VeffErrNuE', 'VeffErrNuMu', 'VeffErrNuTau']
-	np.savetxt(outfn,outArray,delimiter=",",header=names)
+	names = 'E, VeffAve, VeffNuE, VeffNuMu, VeffNuTau, VeffErrAve, VeffErrNuE, VeffErrNuMu, VeffErrNuTau'
+	np.savetxt(outfn,DataArray,delimiter=",",header=names)
