@@ -148,4 +148,4 @@ def GetAllColumns(DataArray):
 
 def SaveCSV(DataArray,outfn):
 	names = ['E', 'VeffAve', 'VeffNuE', 'VeffNuMu', 'VeffNuTau', 'VeffErrAve', 'VeffErrNuE', 'VeffErrNuMu', 'VeffErrNuTau']
-	nn.savetxt(outfn,outArray,delimiter=",",header=names)
+	np.savetxt(outfn,outArray,delimiter=",",header=names)
