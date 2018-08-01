@@ -30,14 +30,18 @@ ParamList = {'evtNum':'ievt',
             'nnu_theta':'theta_nu',
             'nnu_phi':'phi_nu',
             'viewangle':'viewangle_triggered',
-            'viewangle_Ant':'viewangle_triggered_LPA',
+            #'viewangle_Ant':'viewangle_triggered_LPA',
             'coneAngle':'changle',
             'n_pol':'Fresnel_Pol_D',
             'freq':'freq_my',
-#            'EField':'vmmhz_my',
+            'distance':'dis',
+            'attenfactor':'attenfactor',
+            #'EField':'vmmhz_my',
             'vMaxTrig':'volte_allAT_mymax',
             'vTrig_Ant':'volt_LPA',
-            'weight':'weight'
+            'weight':'weight',
+            'nStnTrigDirect':'sum_triggeredST',
+            'nStnTrigRefl':'sum_triggeredST_mirror'
             }
 
 ParameterArray =  root_numpy.tree2array(PAM,ParamList.values())
