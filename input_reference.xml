@@ -22,6 +22,7 @@
   <NFIRN>1.30</NFIRN> <!--1.30-->
   <C_INDEX>34.48</C_INDEX> <!--Exponential scale factor for indec of refraction fit-->
   <CONST_ATTENLENGTH>0</CONST_ATTENLENGTH> <!--use constant attenuation length if ==1-->
+  <SP_ATTEN>0</SP_ATTEN> <!--use pre-defined South Pole Attenuation Model-->
   <ATTEN_UP>500.0</ATTEN_UP> <!--Average Attenuation Length of the ice-->
   <ATTEN_DOWN>250.0</ATTEN_DOWN> <!--not used anymore except for CONST_ATTENLENGTH-->
   <ATTEN_H>400.0</ATTEN_H> <!--Effective Attenuation Length for horizontal propagation.  Needs H_PROP==1-->

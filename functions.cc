@@ -187,9 +187,45 @@ void GetPosnuBin(double* posnu, int& posnu_iRow, int& posnu_iCol)
 
 double AttenLengthAtDepth(double d)
 {
-  d *= 420. / ICETHICK;
-  double L = (1250.*0.08886 * exp(-0.048827 * (225.6746 - 86.517596 * log10(848.870 - (d)))));
-  L *= ATTEN_UP/262.0;
+  double L = 0;
+  if (SP_ATTEN){
+    //SP attenuation length parametrization from https://icecube.wisc.edu/~mnewcomb/radio/atten/
+    // temp pfofile from https://icecube.wisc.edu/~mnewcomb/radio/temp/
+    double temp = 1.83415e-09*pow(d,3)-1.59061e-08*pow(d,2)+0.00267687*d+-51.0696;
+    double f = 0.3;
+
+    double f0=0.0001;
+    double f2=3.16;
+
+    double w0=log(f0);
+    double w1=0.0;
+    double w2=log(f2);
+    double w=log(f);
+
+    double b0= -6.74890+0.026709*temp-0.000884*temp*temp;
+    double b1= -6.22121-0.070927*temp-0.001773*temp*temp;
+    double b2= -4.09468-0.002213*temp-0.000332*temp*temp;
+    double xln=0.0;
+
+
+    if (f < 1.0){
+        double a0=(b1*w0-b0*w1)/(w0-w1);
+        double bb0=(b1-b0)/(w1-w0);
+        xln=a0+bb0*w;
+      }
+    else{
+        double a1=(b2*w1-b1*w2)/(w1-w2);
+        double bb1=(b2-b1)/(w2-w1);
+        xln=a1+bb1*w;
+      }
+
+    L =  1000./exp(xln)*1.e-3;
+  }
+  else {
+    d *= 420. / ICETHICK;
+    L = (1250.*0.08886 * exp(-0.048827 * (225.6746 - 86.517596 * log10(848.870 - (d)))));
+    L *= ATTEN_UP/262.0;
+  }
   return L;
 }
 
@@ -1330,7 +1366,7 @@ double GetHeffVect(int AntType, double freq, double* n_boresight, double* n_epol
     int NC = Create100->N[0];
 
     freq = freq/1.30; //since this antenna model is in the firn, frequencies should be shifted
-    double wavelength =C / (freq*1.E6) ;
+    double wavelength =C / (freq*1.E6);
 
     double Re_Z = Create100->InterpolateToSingleFrequency(freq,  NC, Create100->frequencies, Create100->Re_Z);
     double Im_Z = Create100->InterpolateToSingleFrequency(freq,  NC, Create100->frequencies, Create100->Im_Z);
@@ -2915,6 +2951,9 @@ int ReadInputXML(const char * infn){
   if (ErrorStat) {printf(ErrMesg); return 1;}
 
   ErrorStat = SetBoolValueXML(pRoot, CONST_ATTENLENGTH, "CONST_ATTENLENGTH");
+  if (ErrorStat) {printf(ErrMesg); return 1;}
+
+  ErrorStat = SetBoolValueXML(pRoot, SP_ATTEN, "SP_ATTEN");
   if (ErrorStat) {printf(ErrMesg); return 1;}
 
   ErrorStat = SetBoolValueXML(pRoot, HEXAGONAL, "HEXAGONAL");

@@ -34,6 +34,7 @@ double NSIGMA;//threshold for trigger
 double TNOISE;//Noise Temperature
 double EXPONENT;//energy exponent
 int CONST_ATTENLENGTH;//0 means not constant attenlength
+int SP_ATTEN;//1 to use SP attenuation length parametrization from https://icecube.wisc.edu/~mnewcomb/radio/atten/ and https://icecube.wisc.edu/~mnewcomb/radio/temp/
 int ATTEN_EXP = 1; //use the data from Minna Bluff measurement
 int ATTEN_FREQ = 0; //let attenuation length be a function of frequency when f<122MHz
 double ATTEN_UP;
